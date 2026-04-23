@@ -1,0 +1,1 @@
+<img src="{{ asset('images/puntiq-cantiq.png') }}" {{ $attributes->merge(['class' => 'w-24 h-24 object-contain']) }}>

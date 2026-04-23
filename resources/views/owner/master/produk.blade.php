@@ -1,0 +1,274 @@
+<x-app-layout>
+    <div class="p-6 bg-base-100 min-h-screen">
+        <div class="text-sm breadcrumbs mb-4 opacity-50">
+            <ul>
+                <li><a href="{{ route('owner.master.produk.index') }}">Produk</a></li>
+                <li>Daftar Produk</li>
+            </ul>
+        </div>
+
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-base-content">Daftar Produk</h1>
+            </div>
+            <button class="btn btn-primary" onclick="modal_tambah_produk.showModal()">
+                Tambah Produk
+            </button>
+        </div>
+
+        <div class="overflow-x-auto bg-base-200 rounded-xl shadow-sm border border-base-300">
+            <table class="table table-zebra w-full">
+                <thead class="bg-base-200 text-base-content font-bold">
+                    <tr>
+                        <th>Nama Produk</th>
+                        <th>HPP Standar</th>
+                        <th>Harga Jual</th>
+                        <th>Stok</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-base-100">
+                    @forelse($produks->groupBy('kategori') as $kategori => $groupProduk)
+                        <tr class="bg-base-200/80 border-y border-base-300">
+                            <td colspan="4" class="py-3 px-6">
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-soft badge-accent ">{{ $kategori }}</span>
+                                    <div class="h-px grow bg-base-300 ml-2"></div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        @foreach ($groupProduk as $produk)
+                            <tr class="hover:bg-primary/5 transition-colors group">
+                                <td class="pl-6">
+                                    <div class="group-hover:text-primary transition-colors">
+                                        {{ $produk->varian }}</div>
+                                    <div class="opacity-40 font-mono tracking-tighter text-xs">Kode:
+                                        #PRD-{{ str_pad($produk->id, 3, '0', STR_PAD_LEFT) }}</div>
+                                </td>
+
+                                <td>
+                                    <div class="text-sm">Rp
+                                        {{ number_format($produk->hpp_standar, 0, ',', '.') }}</div>
+                                    <div class="flex gap-2 mt-1">
+                                        <div class="text-[9px] opacity-50 uppercase bg-base-300 px-1 rounded">Upah:
+                                            Rp{{ number_format($produk->est_biaya_tenaga, 0, ',', '.') }}
+                                        </div>
+                                        <div class="text-[9px] opacity-50 uppercase bg-base-300 px-1 rounded">OH:
+                                            {{ $produk->est_biaya_overhead }}%</div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="text-sm">Rp
+                                        {{ number_format($produk->harga_jual, 0, ',', '.') }}</div>
+                                </td>
+
+                                <td>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-black {{ $produk->stok <= $produk->safety_stok ? 'text-error' : 'text-success' }}">
+                                            {{ $produk->stok }} Pcs
+                                        </span>
+                                        <div class="flex items-center gap-1.5 opacity-60 text-xs">
+                                            <span
+                                                class="w-2 h-2 rounded-full {{ $produk->stok <= $produk->safety_stok ? 'bg-error animate-pulse' : 'bg-success' }}"></span>
+                                            Min: {{ $produk->safety_stok }}
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="flex justify-center gap-2">
+                                        <form action="{{ route('owner.produk.updateStokMinimal', $produk->id) }}"
+                                            method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-info btn-square"
+                                                title="Sesuaikan Stok Minimal">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <button class="btn btn-square btn-sm btn-outline btn-warning"
+                                            onclick="modal_edit_{{ $produk->id }}.showModal()" title="Edit Produk">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path
+                                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            </svg>
+                                        </button>
+                                        <button class="btn btn-square btn-sm btn-outline btn-error"
+                                            onclick="modal_hapus_{{ $produk->id }}.showModal()" title="Hapus Produk">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <dialog id="modal_edit_{{ $produk->id }}" class="modal">
+                                <div class="modal-box w-11/12 max-w-2xl border-t-4 border-warning">
+                                    <h3 class="font-bold text-lg mb-4">Edit Master Produk</h3>
+                                    <form action="{{ route('owner.master.produk.update', $produk->id) }}"
+                                        method="POST">
+                                        @csrf @method('PUT')
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                        class="label-text font-bold text-xs uppercase opacity-60">Kategori</span></label>
+                                                <input list="kategori_suggestions" name="kategori"
+                                                    value="{{ $produk->kategori }}" class="input input-bordered w-full"
+                                                    required>
+                                            </div>
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                        class="label-text font-bold text-xs uppercase opacity-60">Varian
+                                                        Rasa</span></label>
+                                                <input type="text" name="varian" value="{{ $produk->varian }}"
+                                                    class="input input-bordered w-full" required />
+                                            </div>
+                                        </div>
+
+                                        <div class="divider text-xs opacity-50">Standard Costing & Inventory</div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                        class="label-text font-bold text-xs uppercase opacity-60">
+                                                        Harga Jual</span></label>
+                                                <input type="number" name="harga_jual" step="0.01"
+                                                    value="{{ $produk->harga_jual }}"
+                                                    class="input input-bordered w-full" required />
+                                            </div>
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                        class="label-text font-bold text-xs uppercase opacity-60">Upah
+                                                        Tenaga Kerja (Rp)</span></label>
+                                                <input type="number" name="est_biaya_tenaga" step="0.01"
+                                                    value="{{ $produk->est_biaya_tenaga }}"
+                                                    class="input input-bordered w-full" required />
+                                            </div>
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                        class="label-text font-bold text-xs uppercase opacity-60">Overhead
+                                                        (%)
+                                                    </span></label>
+                                                <input type="number" step="0.01" name="est_biaya_overhead"
+                                                    value="{{ $produk->est_biaya_overhead }}"
+                                                    class="input input-bordered w-full" required />
+                                            </div>
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                        class="label-text font-bold text-xs uppercase opacity-60">Stok
+                                                        Saat Ini</span></label>
+                                                <input type="number" name="stok" value="{{ $produk->stok }}"
+                                                    class="input input-bordered w-full" required />
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-action">
+                                            <button type="button" class="btn btn-ghost"
+                                                onclick="this.closest('dialog').close()">Batal</button>
+                                            <button type="submit" class="btn btn-warning px-8">Simpan
+                                                Perubahan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </dialog>
+
+                            <dialog id="modal_hapus_{{ $produk->id }}" class="modal">
+                                <div class="modal-box border-t-4 border-error">
+                                    <h3 class="font-bold text-lg text-error flex items-center gap-2">Konfirmasi Hapus
+                                    </h3>
+                                    <p class="py-4 text-sm">Hapus <strong>{{ $produk->varian }}</strong>? Tindakan ini
+                                        akan menghapus data HPP terkait.</p>
+                                    <div class="modal-action">
+                                        <form action="{{ route('owner.master.produk.destroy', $produk->id) }}"
+                                            method="POST">
+                                            @csrf @method('DELETE')
+                                            <button type="button" class="btn btn-ghost"
+                                                onclick="this.closest('dialog').close()">Batal</button>
+                                            <button type="submit" class="btn btn-error text-white">Ya, Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </dialog>
+                        @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center py-20 opacity-30 italic">Belum ada produk terdaftar
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <dialog id="modal_tambah_produk" class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box w-11/12 max-w-3xl border-t-4 border-primary">
+                <h3 class="font-bold text-xl mb-6">Input Produk Baru</h3>
+                <form action="{{ route('owner.master.produk.store') }}" method="POST">
+                    @csrf
+                    <div class="bg-base-200 p-6 rounded-xl space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-bold">Kategori
+                                        Produk</span></label>
+                                <input list="kategori_suggestions" name="kategori"
+                                    class="input input-bordered w-full" placeholder="Pilih atau ketik..." required>
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-bold">Varian Rasa</span></label>
+                                <input type="text" name="varian" placeholder="Contoh: Manis, Asin, Coklat"
+                                    class="input input-bordered w-full" required />
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-bold">Harga Jual</span></label>
+                                <input type="number" name="harga_jual" step="0.01" placeholder="10000"
+                                    class="input input-bordered w-full" required />
+                            </div>
+                        </div>
+
+                        <div class="divider text-xs opacity-50 uppercase tracking-widest">Parameter Biaya Standar</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-primary">Est. Upah per Pcs (Rp)</span>
+                                </label>
+                                <input type="number" name="est_biaya_tenaga" step="0.01" placeholder="1000"
+                                    class="input input-bordered w-full border-primary/30" required />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-primary">Est. Overhead (%)</span>
+                                </label>
+                                <input type="number" step="0.01" name="est_biaya_overhead" placeholder="10"
+                                    class="input input-bordered w-full border-primary/30" required />
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold opacity-60 text-xs uppercase">Stok
+                                    Awal</span></label>
+                            <input type="number" name="stok" value="0"
+                                class="input input-bordered w-24 shadow-inner" required />
+                        </div>
+                    </div>
+
+                    <div class="modal-action mt-6">
+                        <button type="button" class="btn btn-ghost"
+                            onclick="modal_tambah_produk.close()">Batal</button>
+                        <button type="submit" class="btn btn-primary px-10 text-white">Simpan Produk</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+    </div>
+</x-app-layout>
