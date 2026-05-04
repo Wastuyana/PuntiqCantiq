@@ -17,11 +17,12 @@ return new class extends Migration
             $table->date('tanggal_produksi');
             $table->date('tanggal_kadaluarsa')->nullable();
             $table->enum('status', ['draft', 'selesai'])->default('draft');
-            // $table->tinyInteger('checklist_sop')->default(0);
-            // $table->text('sop_details')->nullable();
-            $table->decimal('biaya_tenagakerja', 15, 2);
-            $table->decimal('biaya_overhead', 15, 2);
-            $table->decimal('total_biaya', 15, 2);
+            $table->tinyInteger('checklist_sop')->default(0);
+            $table->text('sop_details')->nullable();
+            $table->decimal('biaya_bahan', 15, 2)->default(0);
+            $table->decimal('biaya_tenagakerja', 15, 2)->default(0);
+            $table->decimal('biaya_overhead', 15, 2)->default(0);
+            $table->decimal('total_biaya', 15, 2)->default(0);
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->onDelete('cascade');

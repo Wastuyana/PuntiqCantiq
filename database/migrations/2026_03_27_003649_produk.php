@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kategori');
             $table->string('varian');
+            $table->string('ukuran');
             $table->integer('stok');
             $table->integer('safety_stok');
             $table->decimal('est_biaya_tenaga', 15, 2);

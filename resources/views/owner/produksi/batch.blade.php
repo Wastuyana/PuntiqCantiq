@@ -1,9 +1,15 @@
 <x-app-layout>
     <div class="p-6 bg-base-100 min-h-screen">
+        <div class="text-sm breadcrumbs mb-4 opacity-50">
+            <ul>
+                <li><a href="{{ route('owner.produksi.batch.index') }}">BATCH</a></li>
+                <li>DAFTAR BATCH</li>
+            </ul>
+        </div>
+
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-base-content">Riwayat Produksi (Batch)</h1>
-                <p class="text-sm text-base-content/60">Pantau proses masak, input biaya, dan hitung HPP Aktual</p>
             </div>
             <a href="{{ route('owner.produksi.batch.create') }}" class="btn btn-primary">
                 Buat Batch
@@ -15,7 +21,7 @@
                 <thead class="bg-base-200 text-base-content">
                     <tr>
                         <th>Tanggal Produksi</th>
-                        <th>Produk yang Dibuat</th>
+                        {{-- <th>Produk yang Dibuat</th> --}}
                         <th>Status Produksi</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -33,11 +39,12 @@
                                     </div>
                                 </td>
 
-                                <td>
+                                {{-- <td>
                                     <div class="flex flex-col gap-1">
                                         @foreach ($batch->batch_hasil->take(3) as $hasil)
                                             <span
-                                                class="badge badge-sm badge-soft badge-accent">{{ $hasil->produk->kategori }} - {{ $hasil->produk->varian }}</span>
+                                                class="badge badge-sm badge-soft badge-accent">{{ $hasil->produk->kategori }}
+                                                - {{ $hasil->produk->varian }}</span>
                                         @endforeach
 
                                         @if ($batch->batch_hasil->count() > 3)
@@ -45,7 +52,7 @@
                                                 lainnya</span>
                                         @endif
                                     </div>
-                                </td>
+                                </td> --}}
 
                                 <td>
                                     @if ($batch->status == 'draft')

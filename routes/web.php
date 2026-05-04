@@ -10,6 +10,7 @@ use App\Http\Controllers\BomController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PanduanKerjaController;
 use App\Http\Controllers\PenyesuaianStokController;
+use App\Http\Controllers\RekomendasiProdController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -50,11 +51,17 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
     Route::post('/owner/master/produk/{id}/update-stok-minimal', [ProdukController::class, 'updateStokMinimal'])
         ->name('owner.produk.updateStokMinimal');
-        
+
     Route::resource('owner/produksi/batch', BatchController::class)->names('owner.produksi.batch');
 
     Route::get('owner/produksi/penyesuaian/create/{batch_id}', [PenyesuaianStokController::class, 'create'])
         ->name('owner.produksi.penyesuaian.create');
+
+    Route::get('owner/produksi/rekomendasi', [RekomendasiProdController::class, 'rekomendasiProduksi'])
+        ->name('owner.produksi.rekomendasi');
+
+    Route::post('owner/produksi/rekomendasi', [RekomendasiProdController::class, 'storeKeBatch'])
+        ->name('owner.produksi.rekomendasi.keBatch');
 
     Route::post('owner/produksi/penyesuaian/store', [PenyesuaianStokController::class, 'store'])
         ->name('owner.produksi.penyesuaian.store');

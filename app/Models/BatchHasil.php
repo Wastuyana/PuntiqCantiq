@@ -14,6 +14,9 @@ class BatchHasil extends Model
         'produk_id',
         'hasil_target',
         'hasil_aktual',
+        'detail_biaya_bahan',
+        'detail_biaya_tenagakerja',
+        'detail_biaya_overhead',
         'hpp_aktual'
     ];
 

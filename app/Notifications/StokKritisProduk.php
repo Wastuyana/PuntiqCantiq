@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Notifications;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+
+class StokKritisProduk extends Notification
+{
+    use Queueable;
+
+    protected $produk;
+
+    /**
+     * Create a new notification instance.
+     */
+    public function __construct($produk)
+    {
+        $this->produk = $produk;
+    }
+
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @return array<int, string>
+     */
+    public function via(object $notifiable): array
+    {
+        return ['database'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'id_produk' => (int)$this->produk->id_produk,
+            'pesan' => 'Stok ' . $this->produk->varian . ' krisis! Sisa: ' . $this->produk->stok,
+            'link' => 'owner.produksi.rekomendasi',
+            'tipe' => 'stok_krisis'
+        ];
+    }
+
+    public function toDatabase(object $notifiable): array
+    {
+        return [
+            'id_produk' => (int)$this->produk->id,
+            'pesan' => 'Stok ' . $this->produk->varian . ' krisis! Sisa: ' . $this->produk->stok,
+            'link' => '#',
+            'tipe' => 'stok_krisis'
+        ];
+    }
+}

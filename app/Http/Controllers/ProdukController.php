@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\DetailPenjualan;
+use App\Models\Setting;
 
 class ProdukController extends Controller
 {
@@ -16,7 +17,6 @@ class ProdukController extends Controller
     {
         $produks = Produk::orderBy('kategori')->get();
 
-        // Ambil semua kategori unik yang pernah diinput
         $daftarKategori = Produk::distinct()->pluck('kategori');
 
         return view('owner.master.produk', compact('produks', 'daftarKategori'));
@@ -39,12 +39,14 @@ class ProdukController extends Controller
         $request->validate([
             'kategori' => 'required',
             'varian' => 'required',
+            'ukuran' => 'required',
             'stok' => 'required|integer|min:0',
         ]);
 
         Produk::create([
             'kategori' => $request->kategori,
             'varian' => $request->varian,
+            'ukuran' => $request->ukuran,
             'stok' => $request->stok,
             'safety_stok' => $request->safety_stok ?? 0,
             'est_biaya_tenaga' => $request->est_biaya_tenaga ?? 0,
@@ -80,6 +82,7 @@ class ProdukController extends Controller
         $request->validate([
             'kategori' => 'required|string',
             'varian'   => 'required|string',
+            'ukuran'   => 'required|string',
             'stok'     => 'required|integer|min:0',
             'est_biaya_tenaga' => 'required|numeric|min:0',
             'est_biaya_overhead' => 'required|numeric|min:0',
@@ -90,6 +93,7 @@ class ProdukController extends Controller
         $produk->update([
             'kategori' => $request->kategori,
             'varian'   => $request->varian,
+            'ukuran'   => $request->ukuran,
             'stok'     => $request->stok,
             'est_biaya_tenaga' => $request->est_biaya_tenaga,
             'est_biaya_overhead' => $request->est_biaya_overhead,
@@ -115,7 +119,7 @@ class ProdukController extends Controller
 
     public function indexBom()
     {
-        $produks = Produk::with('bom.bahan_baku')->get();
+        $produks = Produk::with('bom.bahan_baku')->orderby('kategori')->get();
 
         return view('owner.master.bom', compact('produks'));
     }
@@ -124,7 +128,7 @@ class ProdukController extends Controller
     {
         $produk = Produk::findOrFail($id);
         $produk->save();
-        $leadTime = 2; // Contoh: butuh 2 hari untuk produksi kembali
+        $leadTime = 2;
 
         // 1. Ambil data penjualan 30 hari terakhir untuk produk ini
         $dataPenjualan = DetailPenjualan::where('produk_id', $id)

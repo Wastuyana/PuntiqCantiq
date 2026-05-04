@@ -24,4 +24,13 @@ class DetailPenjualan extends Model
     {
         return $this->belongsTo(Produk::class);
     }
+
+    public static function getTotalPenjualan($produkId, $hari = 30)
+    {
+        return self::where('produk_id', $produkId)
+            ->whereHas('penjualan', function ($q) use ($hari) {
+                $q->where('tanggal_penj', '>=', now()->subDays($hari));
+            })
+            ->sum('jumlah_produk');
+    }
 }

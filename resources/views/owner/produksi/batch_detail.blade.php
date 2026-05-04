@@ -18,8 +18,7 @@
                 <div class="space-y-4 mt-2">
                     @foreach ($batch->batch_hasil as $hasil)
                         <div class="p-3 bg-base-50 rounded-lg border border-base-100">
-                            <span class="block text-md opacity-50 font-bold">{{ $hasil->produk->kategori }}</span>
-                            <span class="font-bold text-md text-primary-content">{{ $hasil->produk->varian }}</span>
+                            <span class="font-bold text-md text-primary-content">{{ $hasil->produk->kategori }} - {{ $hasil->produk->varian }} - {{ $hasil->produk->ukuran }}</span>
 
                             <div class="flex justify-between text-sm mt-2">
                                 <span class="opacity-70">Hasil Aktual:</span>
@@ -38,34 +37,6 @@
                         <span>Tgl Kadaluarsa:</span>
                         <span>{{ \Carbon\Carbon::parse($batch->tanggal_kadaluarsa)->format('d M Y') }}</span>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card bg-white shadow-sm border border-base-200">
-            <div class="card-body">
-                <h2 class="card-title text-sm uppercase opacity-50">Ringkasan Biaya Batch</h2>
-                <div class="space-y-3 mt-2 text-sm">
-                    <div class="flex justify-between">
-                        <span>Total Bahan Baku:</span>
-                        <b>Rp
-                            {{ number_format($batch->total_biaya) }}</b>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Total Tenaga Kerja:</span>
-                        <b>Rp {{ number_format($batch->biaya_tenagakerja) }}</b>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Total Overhead:</span>
-                        <b>Rp {{ number_format($batch->biaya_overhead) }}</b>
-                    </div>
-                    <div class="divider m-0"></div>
-                    <div class="flex justify-between text-md font-bold">
-                        <span>Total Biaya Produksi:</span>
-                        <span class="text-primary">Rp {{ number_format($batch->total_biaya_produksi) }}</span>
-                    </div>
-                    <p class="text-[10px] italic opacity-50 mt-2">*Total biaya ini kemudian dibagi secara
-                        proporsional ke setiap varian untuk menghasilkan HPP Aktual di samping.</p>
                 </div>
             </div>
         </div>
@@ -110,6 +81,34 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <div class="card bg-white shadow-sm border border-base-200">
+            <div class="card-body">
+                <h2 class="card-title text-sm uppercase opacity-50">Ringkasan Biaya Batch</h2>
+                <div class="space-y-3 mt-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Total Bahan Baku:</span>
+                        <b>Rp
+                            {{ number_format($batch->biaya_bahan) }}</b>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Total Tenaga Kerja:</span>
+                        <b>Rp {{ number_format($batch->biaya_tenagakerja) }}</b>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Total Overhead:</span>
+                        <b>Rp {{ number_format($batch->biaya_overhead) }}</b>
+                    </div>
+                    <div class="divider m-0"></div>
+                    <div class="flex justify-between text-md font-bold">
+                        <span>Total Biaya Produksi:</span>
+                        <span class="text-primary">Rp {{ number_format($batch->total_biaya) }}</span>
+                    </div>
+                    <p class="text-[10px] italic opacity-50 mt-2">*Total biaya ini kemudian dibagi secara
+                        proporsional ke setiap varian untuk menghasilkan HPP Aktual di samping.</p>
+                </div>
+            </div>
         </div>
 
         <div class="card bg-base-100 border border-error/20 mt-8">

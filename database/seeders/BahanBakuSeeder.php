@@ -12,9 +12,10 @@ class BahanBakuSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\BahanBaku::create(['nama' => 'Pisang', 'satuan' => 'sisir', 'harga_satuan' => 20000, 'stok' => 50]);
+        \App\Models\BahanBaku::create(['nama' => 'Pisang', 'satuan' => 'sisir', 'harga_satuan' => 20000, 'stok' => 100]);
         \App\Models\BahanBaku::create(['nama' => 'Minyak Goreng', 'satuan' => 'liter', 'harga_satuan' => 18000, 'stok' => 20]);
         \App\Models\BahanBaku::create(['nama' => 'Cokelat Bubuk', 'satuan' => 'kg', 'harga_satuan' => 50000, 'stok' => 10]);
         \App\Models\BahanBaku::create(['nama' => 'Garam', 'satuan' => 'kg', 'harga_satuan' => 16000, 'stok' => 1]);
+        \App\Models\BahanBaku::create(['nama' => 'Kemasan', 'satuan' => 'pcs', 'harga_satuan' => 2000, 'stok' => 1000]);
     }
 }

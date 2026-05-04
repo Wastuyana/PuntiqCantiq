@@ -31,7 +31,7 @@ class BatchController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $batches = Batch::with(['batch_hasil'])
             ->latest()->get();
@@ -41,8 +41,10 @@ class BatchController extends Controller
             ->get();
 
         $generatedNoBatch = Batch::generateNoBatch();
+        $rekomendasiIds = $request->input('produk_ids', []);
+        $rekomendasiTarget = $request->input('hasil_target', []);
 
-        return view('owner.produksi.batch_create', compact('batches', 'produks', 'generatedNoBatch'));
+        return view('owner.produksi.batch_create', compact('batches', 'produks', 'generatedNoBatch', 'rekomendasiIds', 'rekomendasiTarget'));
     }
 
     /**
@@ -50,7 +52,6 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'produk_ids' => 'required|array',
             'hasil_target' => 'required|array',
@@ -63,14 +64,14 @@ class BatchController extends Controller
                 'nomor_batch'      => Batch::generateNoBatch(),
                 'user_id'          => \Illuminate\Support\Facades\Auth::id(),
                 'tanggal_produksi' => $request->tanggal_produksi,
+                'status'           => $request->status,
+                'checklist_sop'    => 0,
+                'sop_details'      => null,
                 'biaya_tenagakerja' => 0,
+                'biaya_bahan'       => 0,
                 'biaya_overhead'    => 0,
-                'status'            => $request->status,
                 'total_biaya'       => 0,
             ]);
-
-            $totalTenagaKerja = 0;
-            $totalOverhead = 0;
 
             foreach ($request->produk_ids as $produkId) {
                 $target = $request->hasil_target[$produkId] ?? 0;
@@ -79,14 +80,15 @@ class BatchController extends Controller
 
                 $produk = Produk::with('bom.bahan_baku')->findOrFail($produkId);
 
-                $totalTenagaKerja += $produk->est_biaya_tenaga ?? 0;
-                $totalOverhead += $produk->est_biaya_overhead ?? 0;
 
                 $batch->batch_hasil()->create([
-                    'produk_id'    => $produkId,
-                    'hasil_target' => $target,
-                    'hasil_aktual' => 0,
-                    'hpp_aktual'   => 0,
+                    'produk_id'             => $produkId,
+                    'hasil_target'          => $target,
+                    'hasil_aktual'          => 0,
+                    'detail_biaya_bahan'    => 0,
+                    'detail_biaya_tenagakerja' => 0,
+                    'detail_biaya_overhead' => 0,
+                    'hpp_aktual'            => 0,
                 ]);
 
                 foreach ($produk->bom as $item) {
@@ -100,17 +102,11 @@ class BatchController extends Controller
                     $batchBahan->bahan_aktual = 0;
                     $batchBahan->save();
 
-                    // 4. Jika langsung selesai, potong stok
                     if ($request->status == 'selesai') {
                         $item->bahan_baku->decrement('stok', $totalButuh);
                     }
                 }
             }
-
-            $batch->update([
-                'biaya_tenagakerja' => $totalTenagaKerja,
-                'biaya_overhead'    => $totalOverhead,
-            ]);
 
             return redirect()->route('owner.produksi.batch.index')->with('success', 'Data Batch berhasil disimpan!');
         });
@@ -149,32 +145,45 @@ class BatchController extends Controller
     {
         $batch = Batch::findOrFail($id);
 
-        return DB::transaction(function () use ($request, $batch) {
+        // Simpan status lama sebelum diupdate untuk pengecekan stok
+        $statusLama = $batch->status;
+
+        return DB::transaction(function () use ($request, $batch, $statusLama) {
+            // 1. Update hasil produksi & Tambah stok produk jadi
             foreach ($request->hasil_aktual as $hasilId => $nilaiAktual) {
                 $batchHasil = $batch->batch_hasil()->find($hasilId);
                 if ($batchHasil) {
                     $batchHasil->update(['hasil_aktual' => $nilaiAktual]);
-
                     $batchHasil->produk->increment('stok', $nilaiAktual);
                 }
             }
 
+            // 2. Update pemakaian bahan & Kurangi stok bahan baku
             foreach ($request->bahan_aktual as $bahanId => $nilaiBahan) {
                 $batchBahan = $batch->batch_bahan()->find($bahanId);
                 if ($batchBahan) {
                     $batchBahan->update(['bahan_aktual' => $nilaiBahan]);
+
+                    if ($statusLama === 'draft') {
+                        $batchBahan->bahan_baku->decrement('stok', $nilaiBahan);
+                    }
                 }
             }
 
+            // 3. Simpan biaya & selesaikan batch
             $batch->update([
                 'status' => 'selesai',
                 'tanggal_kadaluarsa' => $request->tanggal_kadaluarsa,
+                'biaya_tenagakerja' => $request->biaya_tenagakerja,
+                'biaya_overhead' => $request->biaya_overhead,
+                'checklist_sop' => 1,
+                'sop_details' => $request->sop_details,
             ]);
 
+            // 4. Kalkulasi HPP Aktual
             $batch->hitungHPPHppAktual();
 
-            return redirect()->route('owner.produksi.batch.index')
-                ->with('success', 'Produksi Multivarian Selesai & HPP Otomatis Terhitung!');
+            return redirect()->route('owner.produksi.batch.index')->with('success', 'Produksi Selesai!');
         });
     }
 

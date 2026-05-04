@@ -1,5 +1,12 @@
 <x-app-layout>
     <div class="p-6 bg-base-100 min-h-screen">
+        <div class="text-sm breadcrumbs mb-4 opacity-50">
+            <ul>
+                <li><a href="{{ route('owner.master.panduan.index') }}">PANDUAN KERJA</a></li>
+                <li>DOKUMENTASI PANDUAN KERJA</li>
+            </ul>
+        </div>
+
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-base-content">Dokumentasi Panduan Kerja</h1>
         </div>
@@ -25,7 +32,7 @@
                             <td>
                                 <form action="{{ route('owner.master.panduan.destroy', $item->id) }}" method="POST">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"
+                                    <button type="submit" class="btn btn-error btn-sm"
                                         onclick="return confirm('Hapus poin ini?')">
                                         Hapus
                                     </button>

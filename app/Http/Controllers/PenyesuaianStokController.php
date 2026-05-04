@@ -37,6 +37,9 @@ class PenyesuaianStokController extends Controller
             $produk = Produk::findOrFail($request->produk_id);
             $produk->decrement('stok', $request->jumlah_rusak);
 
+            $produk->refresh();
+            $produk->cekStokKrisis();
+
             return redirect()->route('owner.produksi.batch.index')
                 ->with('success', 'Laporan stok rusak berhasil diproses dan stok produk telah diperbarui.');
         });

@@ -58,7 +58,7 @@
 
                 <li>
                     <a href="{{ route('dashboard') }}"
-                        class="{{ request()->routeIs('*dashboard*') ? 'bg-blue-50 text-blue-600 font-semibold' : '' }} rounded-lg px-4 py-3 flex items-center gap-3">
+                        class="{{ request()->routeIs('*dashboard*') ? 'text-primary-content font-semibold' : '' }} rounded-lg px-4 py-3 flex items-center gap-3">
 
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor" class="h-5 w-5">
@@ -96,6 +96,12 @@
                                     <a href="{{ route('owner.produksi.batch.index') }}"
                                         class="{{ request()->routeIs('owner.produksi.batch.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Batch
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('owner.produksi.rekomendasi') }}"
+                                        class="{{ request()->routeIs('owner.produksi.rekomendasi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Rekomendasi Produksi
                                     </a>
                                 </li>
                             </ul>

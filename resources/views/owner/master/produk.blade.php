@@ -2,8 +2,8 @@
     <div class="p-6 bg-base-100 min-h-screen">
         <div class="text-sm breadcrumbs mb-4 opacity-50">
             <ul>
-                <li><a href="{{ route('owner.master.produk.index') }}">Produk</a></li>
-                <li>Daftar Produk</li>
+                <li><a href="{{ route('owner.master.produk.index') }}">PRODUK</a></li>
+                <li>DAFTAR PRODUK</li>
             </ul>
         </div>
 
@@ -11,7 +11,7 @@
             <div>
                 <h1 class="text-2xl font-bold text-base-content">Daftar Produk</h1>
             </div>
-            <button class="btn btn-primary" onclick="modal_tambah_produk.showModal()">
+            <button class="btn btn-outline btn-primary" onclick="modal_tambah_produk.showModal()">
                 Tambah Produk
             </button>
         </div>
@@ -21,49 +21,27 @@
                 <thead class="bg-base-200 text-base-content font-bold">
                     <tr>
                         <th>Nama Produk</th>
-                        <th>HPP Standar</th>
-                        <th>Harga Jual</th>
+                        <th>Ukuran</th>
                         <th>Stok</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-base-100">
                     @forelse($produks->groupBy('kategori') as $kategori => $groupProduk)
-                        <tr class="bg-base-200/80 border-y border-base-300">
-                            <td colspan="4" class="py-3 px-6">
-                                <div class="flex items-center gap-2">
-                                    <span class="badge badge-soft badge-accent ">{{ $kategori }}</span>
-                                    <div class="h-px grow bg-base-300 ml-2"></div>
-                                </div>
-                            </td>
-                        </tr>
-
                         @foreach ($groupProduk as $produk)
                             <tr class="hover:bg-primary/5 transition-colors group">
-                                <td class="pl-6">
+                                <td>
                                     <div class="group-hover:text-primary transition-colors">
-                                        {{ $produk->varian }}</div>
+                                        {{ $produk->kategori }} - {{ $produk->varian }}</div>
                                     <div class="opacity-40 font-mono tracking-tighter text-xs">Kode:
                                         #PRD-{{ str_pad($produk->id, 3, '0', STR_PAD_LEFT) }}</div>
                                 </td>
 
                                 <td>
-                                    <div class="text-sm">Rp
-                                        {{ number_format($produk->hpp_standar, 0, ',', '.') }}</div>
-                                    <div class="flex gap-2 mt-1">
-                                        <div class="text-[9px] opacity-50 uppercase bg-base-300 px-1 rounded">Upah:
-                                            Rp{{ number_format($produk->est_biaya_tenaga, 0, ',', '.') }}
-                                        </div>
-                                        <div class="text-[9px] opacity-50 uppercase bg-base-300 px-1 rounded">OH:
-                                            {{ $produk->est_biaya_overhead }}%</div>
-                                    </div>
+                                    <div class="group-hover:text-primary transition-colors">
+                                        {{ $produk->ukuran }}</div>
                                 </td>
-
-                                <td>
-                                    <div class="text-sm">Rp
-                                        {{ number_format($produk->harga_jual, 0, ',', '.') }}</div>
-                                </td>
-
+                                
                                 <td>
                                     <div class="flex flex-col">
                                         <span
@@ -134,6 +112,12 @@
                                                 <input type="text" name="varian" value="{{ $produk->varian }}"
                                                     class="input input-bordered w-full" required />
                                             </div>
+                                            <div class="form-control">
+                                                <label class="label"><span
+                                                            class="label-text font-bold text-xs uppercase opacity-60">Ukuran</span></label>
+                                                <input type="text" name="ukuran" value="{{ $produk->ukuran }}"
+                                                    class="input input-bordered w-full" required />
+                                            </div>
                                         </div>
 
                                         <div class="divider text-xs opacity-50">Standard Costing & Inventory</div>
@@ -143,7 +127,7 @@
                                                 <label class="label"><span
                                                         class="label-text font-bold text-xs uppercase opacity-60">
                                                         Harga Jual</span></label>
-                                                <input type="number" name="harga_jual" step="0.01"
+                                                <input type="number" name="harga_jual" step="any"
                                                     value="{{ $produk->harga_jual }}"
                                                     class="input input-bordered w-full" required />
                                             </div>
@@ -151,7 +135,7 @@
                                                 <label class="label"><span
                                                         class="label-text font-bold text-xs uppercase opacity-60">Upah
                                                         Tenaga Kerja (Rp)</span></label>
-                                                <input type="number" name="est_biaya_tenaga" step="0.01"
+                                                <input type="number" name="est_biaya_tenaga" step="any"
                                                     value="{{ $produk->est_biaya_tenaga }}"
                                                     class="input input-bordered w-full" required />
                                             </div>
@@ -160,7 +144,7 @@
                                                         class="label-text font-bold text-xs uppercase opacity-60">Overhead
                                                         (%)
                                                     </span></label>
-                                                <input type="number" step="0.01" name="est_biaya_overhead"
+                                                <input type="number" step="any" name="est_biaya_overhead"
                                                     value="{{ $produk->est_biaya_overhead }}"
                                                     class="input input-bordered w-full" required />
                                             </div>
@@ -176,7 +160,7 @@
                                         <div class="modal-action">
                                             <button type="button" class="btn btn-ghost"
                                                 onclick="this.closest('dialog').close()">Batal</button>
-                                            <button type="submit" class="btn btn-warning px-8">Simpan
+                                            <button type="submit" class="btn btn-outline btn-warning px-8">Simpan
                                                 Perubahan</button>
                                         </div>
                                     </form>
@@ -222,16 +206,21 @@
                                 <label class="label"><span class="label-text font-bold">Kategori
                                         Produk</span></label>
                                 <input list="kategori_suggestions" name="kategori"
-                                    class="input input-bordered w-full" placeholder="Pilih atau ketik..." required>
+                                    class="input input-bordered w-full" required>
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold">Varian Rasa</span></label>
-                                <input type="text" name="varian" placeholder="Contoh: Manis, Asin, Coklat"
+                                <input type="text" name="varian" 
+                                    class="input input-bordered w-full" required />
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-bold">Ukuran</span></label>
+                                <input type="text" name="ukuran" 
                                     class="input input-bordered w-full" required />
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold">Harga Jual</span></label>
-                                <input type="number" name="harga_jual" step="0.01" placeholder="10000"
+                                <input type="number" name="harga_jual" step="any"
                                     class="input input-bordered w-full" required />
                             </div>
                         </div>
@@ -240,16 +229,16 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text font-bold text-primary">Est. Upah per Pcs (Rp)</span>
+                                    <span class="label-text">Est. Upah per Pcs (Rp)</span>
                                 </label>
-                                <input type="number" name="est_biaya_tenaga" step="0.01" placeholder="1000"
+                                <input type="number" name="est_biaya_tenaga" step="any" 
                                     class="input input-bordered w-full border-primary/30" required />
                             </div>
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text font-bold text-primary">Est. Overhead (%)</span>
+                                    <span class="label-text ">Est. Overhead (%)</span>
                                 </label>
-                                <input type="number" step="0.01" name="est_biaya_overhead" placeholder="10"
+                                <input type="number" step="any" name="est_biaya_overhead"
                                     class="input input-bordered w-full border-primary/30" required />
                             </div>
                         </div>
@@ -257,7 +246,7 @@
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold opacity-60 text-xs uppercase">Stok
                                     Awal</span></label>
-                            <input type="number" name="stok" value="0"
+                            <input type="number" name="stok" step="amy"
                                 class="input input-bordered w-24 shadow-inner" required />
                         </div>
                     </div>
@@ -265,7 +254,7 @@
                     <div class="modal-action mt-6">
                         <button type="button" class="btn btn-ghost"
                             onclick="modal_tambah_produk.close()">Batal</button>
-                        <button type="submit" class="btn btn-primary px-10 text-white">Simpan Produk</button>
+                        <button type="submit" class="btn btn-outline btn-primary px-10">Simpan Produk</button>
                     </div>
                 </form>
             </div>

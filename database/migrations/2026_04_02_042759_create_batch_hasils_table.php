@@ -17,9 +17,12 @@ return new class extends Migration
                 ->constrained('batch')
                 ->onDelete('cascade');
             $table->foreignId('produk_id')
-                ->constrained('produk')->onDelete('cascade');
+                ->constrained('produk');
             $table->integer('hasil_target');
             $table->integer('hasil_aktual')->default(0);
+            $table->decimal('detail_biaya_bahan', 15, 2);
+            $table->decimal('detail_biaya_tenagakerja', 15, 2);
+            $table->decimal('detail_biaya_overhead', 15, 2);
             $table->decimal('hpp_aktual', 15, 2);
             $table->timestamps();
         });

@@ -28,7 +28,7 @@
                             </div>
 
                             <div class="form-control mt-4">
-                                <label class="label"><span class="label-text font-semibold">Status Awal</span></label>
+                                <label class="label"><span class="label-text font-semibold">Status</span></label>
                                 <select name="status" class="select select-bordered w-full">
                                     <option value="draft">Draft</option>
                                     <option value="selesai">Selesai</option>
@@ -45,24 +45,34 @@
 
                             <div class="grid grid-cols-1 gap-3">
                                 @foreach ($produks as $p)
+                                    @php
+                                        $isRecommended = in_array((string) $p->id, $rekomendasiIds ?? []);
+                                        $targetValue = $rekomendasiTarget[$p->id] ?? '';
+                                    @endphp
                                     <div
-                                        class="flex items-center gap-4 bg-base-50 p-4 rounded-xl border border-base-200 hover:border-primary transition-all">
+                                        class="flex items-center gap-4 bg-base-50 p-4 rounded-xl border {{ $isRecommended ? 'border-primary bg-primary/5' : 'border-base-200' }} hover:border-primary transition-all">
                                         <input type="checkbox" name="produk_ids[]" value="{{ $p->id }}"
                                             class="checkbox checkbox-primary product-check"
+                                            {{ $isRecommended ? 'checked' : '' }}
                                             data-resep="{{ json_encode($p->bom) }}" onchange="updateEstimasi()">
 
                                         <div class="flex-1">
-                                            <span class="font-bold text-sm block">{{ $p->kategori }}</span>
-                                            <span class="text-xs opacity-70">{{ $p->varian }}</span>
+                                            <span class="font-bold text-sm block">{{ $p->kategori }} - {{ $p->varian }} - {{ $p->ukuran }}</span>
+                                            @if ($isRecommended)
+                                                <span class="badge badge-primary badge-xs ml-1">Rekomendasi</span>
+                                            @endif
                                         </div>
 
                                         <div class="w-32">
-                                            <label class="label p-0 mb-1"><span
-                                                    class="text-[10px] uppercase font-bold opacity-50">Target
-                                                    (Pcs)</span></label>
+                                            <label class="label p-0 mb-1">
+                                                <span class="text-[10px] uppercase font-bold opacity-50">Target
+                                                    (Pcs)
+                                                </span>
+                                            </label>
                                             <input type="number" name="hasil_target[{{ $p->id }}]"
-                                                class="input input-bordered input-sm w-full target-input"
-                                                placeholder="0" disabled oninput="updateEstimasi()">
+                                                class="input input-bordered input-sm w-full target-input {{ $isRecommended ? 'border-primary' : '' }}"
+                                                placeholder="0" {{ $isRecommended ? '' : 'disabled' }}
+                                                value="{{ $targetValue }}" oninput="updateEstimasi()">
                                         </div>
                                     </div>
                                 @endforeach
@@ -87,8 +97,7 @@
                                     <ul id="daftar_bahan" class="text-sm space-y-2"></ul>
                                 </div>
 
-                                <div
-                                    class="alert alert-warning bg-warning text-secondary-content border-none text-xs">
+                                <div class="alert alert-warning bg-warning text-secondary-content border-none text-xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-4 w-4"
                                         fill="none" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -109,6 +118,10 @@
     </div>
 
     <script>
+        window.onload = function() {
+            updateEstimasi();
+        };
+
         function updateEstimasi() {
             const checkboxes = document.querySelectorAll('.product-check');
             const listBahan = document.getElementById('daftar_bahan');
@@ -129,7 +142,10 @@
                     inputTarget.classList.add('border-primary');
 
                     const targetValue = parseFloat(inputTarget.value) || 0;
-                    const dataResep = JSON.parse(cb.getAttribute('data-resep'));
+
+                    // Tambahkan pengecekan dataResep agar tidak error jika null
+                    const rawResep = cb.getAttribute('data-resep');
+                    const dataResep = rawResep ? JSON.parse(rawResep) : [];
 
                     dataResep.forEach(item => {
                         const nama = item.bahan_baku.nama;
@@ -141,7 +157,6 @@
                     });
                 } else {
                     inputTarget.disabled = true;
-                    inputTarget.value = '';
                     inputTarget.classList.remove('border-primary');
                 }
             });

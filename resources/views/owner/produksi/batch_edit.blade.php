@@ -30,8 +30,9 @@
                                                 <span
                                                     class="block text-[10px] uppercase opacity-50 font-extrabold mb-1">Varian
                                                     Produk</span>
-                                                <span class="font-bold text-xl text-primary">
-                                                    {{ $hasil->produk->kategori }} - {{ $hasil->produk->varian }}
+                                                <span
+                                                    class="font-bold text-xl text-secondary-content">{{ $hasil->produk->kategori }}
+                                                    - {{ $hasil->produk->varian }} - {{ $hasil->produk->ukuran }}</span>
                                                 </span>
                                             </div>
                                             <div class="badge badge-outline opacity-50 italic">ID:
@@ -59,14 +60,17 @@
                                     </div>
                                 @endforeach
                             </div>
-
-                            <div class="form-control max-w-xs mt-4">
-                                <label class="label"><span class="label-text font-bold text-xs">Tanggal Kadaluarsa
-                                        (Semua Varian)</span></label>
-                                <input type="date" name="tanggal_kadaluarsa" value="{{ $batch->tanggal_kadaluarsa }}"
-                                    class="input input-bordered font-medium">
-                            </div>
                         </section>
+
+                        <div class="form-control w-full grid grid-cols-1">
+                            <label class="label"><span
+                                    class="text-xs uppercase opacity-50 font-bold tracking-wider">Tanggal
+                                    Kadaluarsa
+                                </span></label>
+                            <input type="date" name="tanggal_kadaluarsa"
+                                value="{{ now()->addMonths(6)->format('Y-m-d') }}"
+                                class="input input-bordered font-bold text-sm focus:border-primary">
+                        </div>
 
                         <section class="space-y-4">
                             <h3 class="text-xs uppercase opacity-50 font-bold tracking-wider">Pemakaian Bahan Baku</h3>
@@ -95,49 +99,65 @@
                         </section>
 
                         <section class="space-y-4">
-                            <h3 class="text-xs uppercase opacity-50 font-bold tracking-wider">Detail Biaya Overhead
-                                & Tenaga Kerja</h3>
-                            <div class="space-y-3 mt-2 text-sm">
-                                <div class="flex justify-items-start gap-4">
-                                    <span>Tenaga Kerja :</span>
-                                    <b>Rp {{ number_format($batch->biaya_tenagakerja) }}</b>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="text-xs uppercase opacity-50 font-bold tracking-wider">Total Biaya
+                                            Tenaga Kerja (Rp)</span>
+                                    </label>
+                                    <input type="number" name="biaya_tenagakerja"
+                                        value="{{ $batch->estimasi_tenaga_kerja }}"
+                                        class="input input-bordered font-bold text-sm focus:border-primary"
+                                        placeholder="Masukkan total biaya tenaga kerja">
+                                    <label class="label">
+                                        <span class="label-text-alt opacity-50 italic">Estimasi awal: Rp
+                                            {{ number_format($batch->estimasi_tenaga_kerja) }}</span>
+                                    </label>
                                 </div>
-                                <div class="flex justify-items-start gap-4">
-                                    <span>Overhead :</span>
-                                    <b>{{ number_format($batch->biaya_overhead) }}%</b>
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-bold text-xs">Total Biaya Overhead (Rp)</span>
+                                    </label>
+                                    <input type="number" name="biaya_overhead" value="{{ $batch->estimasi_overhead }}"
+                                        class="input input-bordered font-bold text-sm focus:border-primary"
+                                        placeholder="Masukkan total biaya overhead">
+                                    <label class="label">
+                                        <span class="label-text-alt opacity-50 italic">
+                                            Estimasi otomatis: Rp {{ number_format($batch->estimasi_overhead) }}
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </section>
 
                         <section class="space-y-4">
-                            <h3
-                                class="text-xs uppercase opacity-50 font-bold tracking-wider flex items-center gap-2 text-primry-content">
+                            <h3 class="text-xs uppercase opacity-50 font-bold tracking-wider flex items-center gap-2">
                                 Checklist CPPOB-IRT
                             </h3>
+                            <!-- Kita kirim hidden input checklist_sop sebagai 1 jika disubmit -->
+                            <input type="hidden" name="checklist_sop" value="1">
+
                             <div class="bg-warning/5 p-6 rounded-2xl border border-warning/20 space-y-4">
-                                <label class="flex items-start gap-4 cursor-pointer group">
-                                    <input type="checkbox" required class="checkbox checkbox-warning checkbox-sm mt-1">
-                                    <span class="text-sm italic text-gray-600 group-hover:text-black leading-relaxed">
-                                        Peralatan & wadah produksi telah dicuci bersih dan dikeringkan sebelum digunakan
-                                    </span>
-                                </label>
-                                <label class="flex items-start gap-4 cursor-pointer group">
-                                    <input type="checkbox" required class="checkbox checkbox-warning checkbox-sm mt-1">
-                                    <span class="text-sm italic text-gray-600 group-hover:text-black leading-relaxed">
-                                        Personil produksi dalam kondisi kesehatan yang baik.
-                                    </span>
-                                </label>
-                                <label class="flex items-start gap-4 cursor-pointer group">
-                                    <input type="checkbox" required class="checkbox checkbox-warning checkbox-sm mt-1">
-                                    <span class="text-sm italic text-gray-600 group-hover:text-black leading-relaxed">
-                                        Bahan baku pisang telah melalui sortir kualitas dan pencucian bersih. </span>
-                                </label>
-                                <label class="flex items-start gap-4 cursor-pointer group">
-                                    <input type="checkbox" required class="checkbox checkbox-warning checkbox-sm mt-1">
-                                    <span class="text-sm italic text-gray-600 group-hover:text-black leading-relaxed">
-                                        Kualitas produk akhir telah diperiksa serta siapu ntuk dikemas.
-                                    </span>
-                                </label>
+                                @php
+                                    $checks = [
+                                        'Peralatan & wadah produksi telah dicuci bersih dan dikeringkan sebelum digunakan',
+                                        'Personil produksi dalam kondisi kesehatan yang baik.',
+                                        'Bahan baku pisang telah melalui sortir kualitas dan pencucian bersih.',
+                                        'Kualitas produk akhir telah diperiksa serta siap untuk dikemas.',
+                                    ];
+                                @endphp
+
+                                @foreach ($checks as $index => $text)
+                                    <label class="flex items-start gap-4 cursor-pointer group">
+                                        <!-- Name menggunakan array sop_details agar bisa disimpan sebagai JSON -->
+                                        <input type="checkbox" name="sop_details[]" value="{{ $text }}"
+                                            required class="checkbox checkbox-warning checkbox-sm mt-1">
+                                        <span
+                                            class="text-sm italic text-gray-600 group-hover:text-black leading-relaxed">
+                                            {{ $text }}
+                                        </span>
+                                    </label>
+                                @endforeach
                             </div>
                         </section>
 
