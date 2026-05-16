@@ -1,17 +1,18 @@
 <x-app-layout>
     <div class="p-6 bg-base-100 min-h-screen">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-primary">Penyesuaian Stok (Barang Rusak)</h2>
-                <p class="text-sm opacity-60">Laporkan produk yang rusak setelah proses produksi selesai.</p>
-            </div>
-            <a href="{{ route('owner.produksi.batch.index') }}" class="btn btn-ghost btn-sm">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Batch
-            </a>
+        <div class="text-sm breadcrumbs mb-4 opacity-50">
+            <ul>
+                <li><a href="{{ route('admin.produksi.batch.index') }}">BATCH</a></li>
+                <li>PENYESUAIAN STOK</li>
+            </ul>
+        </div>
+
+        <div>
+            <h1 class="text-2xl font-bold text-base-content">Penyesuaian Stok</h1>
         </div>
 
         <div class="">
-            <form action="{{ route('owner.produksi.penyesuaian.store') }}" method="POST">
+            <form action="{{ route('admin.produksi.penyesuaian.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="batch_id" value="{{ $batch->id }}">
 
@@ -19,10 +20,10 @@
                     <div class="card-body space-y-6">
 
                         <div
-                            class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10">
+                            class="grid grid-cols-1 md:grid-cols-2 gap-4  p-4 rounded-xl">
                             <div>
                                 <span class="text-[10px] uppercase font-bold opacity-50 block">Nomor Batch</span>
-                                <span class="font-bold text-lg text-primary">{{ $batch->nomor_batch }}</span>
+                                <span class="font-bold text-lg">{{ $batch->nomor_batch }}</span>
                             </div>
                             <div>
                                 <span class="text-[10px] uppercase font-bold opacity-50 block">Tanggal Produksi</span>
@@ -31,7 +32,6 @@
                             </div>
                         </div>
 
-                        <hr class="opacity-10">
 
                         <div class="form-control">
                             <label class="label">
@@ -42,7 +42,7 @@
                                 <option value="" disabled selected>-- Pilih Produk dari Batch Ini --</option>
                                 @foreach ($batch->batch_hasil as $item)
                                     <option value="{{ $item->produk_id }}">
-                                        {{ $item->produk->kategori }} - {{ $item->produk->varian }}
+                                        {{ $item->produk->kategori }} - {{ $item->produk->varian }} - {{ $item->produk->ukuran }}
                                     </option>
                                 @endforeach
                             </select>
@@ -78,8 +78,7 @@
                             <label class="label">
                                 <span class="label-text font-bold">Keterangan</span>
                             </label>
-                            <textarea name="keterangan" class="textarea textarea-bordered h-24 focus:border-primary"
-                                placeholder="Sebab keusakan"></textarea>
+                            <textarea name="keterangan" class="textarea textarea-bordered h-24 focus:border-primary" placeholder="Sebab keusakan"></textarea>
                             <label class="label">
                                 <span class="label-text-alt text-error">
                                     @error('keterangan')
@@ -90,8 +89,8 @@
                         </div>
 
                         <div class="card-actions justify-end mt-4">
-                            <button type="submit" class="btn btn-primary w-full md:w-auto px-10 shadow-lg">
-                                <i class="fas fa-save mr-2"></i> Simpan Penyesuaian
+                            <button type="submit" class="btn btn-outline btn-primary w-full md:w-auto px-10 shadow-lg">
+                                Simpan Penyesuaian
                             </button>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-6 bg-base-100 min-h-screen">
+    <div class="p-6">
         <div class="text-sm breadcrumbs mb-4 opacity-50">
             <ul>
                 <li><a href="{{ route('owner.produksi.rekomendasi') }}">REKOMENDASI PRODUKSI</a></li>
@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <form action="{{ route('owner.produksi.batch.create') }}" method="GET"> 
+        <form action="{{ route('owner.produksi.batch.create') }}" method="GET">
             <input type="hidden" name="no_batch" value="{{ $generatedNoBatch }}">
             <input type="hidden" name="tanggal_produksi" value="{{ date('Y-m-d') }}">
             <input type="hidden" name="status" value="draft">
@@ -76,9 +76,10 @@
                                 <tr>
                                     <td colspan="2" class="text-center py-4">
                                         <div class="mt-6">
-                                            <button type="submit" class="btn btn-primary w-full shadow-lg"
-                                                onclick="return confirm('Apakah Anda yakin ingin membuat batch produksi berdasarkan rekomendasi ini?')">
-                                                Konfirmasi Batch </button>
+                                            <button type="button" class="btn btn-primary w-full shadow-md"
+                                                onclick="confirmBatch(this)">
+                                                Konfirmasi Batch
+                                            </button>
                                         </div>
                                     </td>
                                 @else
@@ -122,4 +123,23 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmBatch(button) {
+            Swal.fire({
+                title: 'Konfirmasi Batch?',
+                text: "Apakah Anda yakin ingin membuat batch produksi berdasarkan rekomendasi ini?.",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Buat Sekarang!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            })
+        }
+    </script>
 </x-app-layout>

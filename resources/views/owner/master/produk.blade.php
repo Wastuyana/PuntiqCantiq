@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-6 bg-base-100 min-h-screen">
+    <div class="p-6">
         <div class="text-sm breadcrumbs mb-4 opacity-50">
             <ul>
                 <li><a href="{{ route('owner.master.produk.index') }}">PRODUK</a></li>
@@ -23,6 +23,7 @@
                         <th>Nama Produk</th>
                         <th>Ukuran</th>
                         <th>Stok</th>
+                        <th>Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -41,16 +42,20 @@
                                     <div class="group-hover:text-primary transition-colors">
                                         {{ $produk->ukuran }}</div>
                                 </td>
-                                
+
+                                <td>
+                                    <div class="group-hover:text-primary transition-colors">
+                                        {{ $produk->stok }}</div>
+                                </td>
+
                                 <td>
                                     <div class="flex flex-col">
-                                        <span
-                                            class="font-black {{ $produk->stok <= $produk->safety_stok ? 'text-error' : 'text-success' }}">
-                                            {{ $produk->stok }} Pcs
-                                        </span>
-                                        <div class="flex items-center gap-1.5 opacity-60 text-xs">
-                                            <span
-                                                class="w-2 h-2 rounded-full {{ $produk->stok <= $produk->safety_stok ? 'bg-error animate-pulse' : 'bg-success' }}"></span>
+                                        @if ($produk->stok <= $produk->safety_stok)
+                                            <span class="badge badge-error badge-sm badge-outline">Kritis</span>
+                                        @else
+                                            <span class="badge badge-success badge-sm badge-outline">Aman</span>
+                                        @endif
+                                        <div class="flex items-center gap-1.5 opacity-60 text-xs mt-1">
                                             Min: {{ $produk->safety_stok }}
                                         </div>
                                     </div>
@@ -61,13 +66,13 @@
                                         <form action="{{ route('owner.produk.updateStokMinimal', $produk->id) }}"
                                             method="POST">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-info btn-square"
+                                            <button type="submit" class="btn btn-sm btn-info btn-square btn-outline"
                                                 title="Sesuaikan Stok Minimal">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                    class="size-4">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                                 </svg>
                                             </button>
                                         </form>
@@ -114,7 +119,7 @@
                                             </div>
                                             <div class="form-control">
                                                 <label class="label"><span
-                                                            class="label-text font-bold text-xs uppercase opacity-60">Ukuran</span></label>
+                                                        class="label-text font-bold text-xs uppercase opacity-60">Ukuran</span></label>
                                                 <input type="text" name="ukuran" value="{{ $produk->ukuran }}"
                                                     class="input input-bordered w-full" required />
                                             </div>
@@ -210,13 +215,11 @@
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold">Varian Rasa</span></label>
-                                <input type="text" name="varian" 
-                                    class="input input-bordered w-full" required />
+                                <input type="text" name="varian" class="input input-bordered w-full" required />
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold">Ukuran</span></label>
-                                <input type="text" name="ukuran" 
-                                    class="input input-bordered w-full" required />
+                                <input type="text" name="ukuran" class="input input-bordered w-full" required />
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold">Harga Jual</span></label>
@@ -231,7 +234,7 @@
                                 <label class="label">
                                     <span class="label-text">Est. Upah per Pcs (Rp)</span>
                                 </label>
-                                <input type="number" name="est_biaya_tenaga" step="any" 
+                                <input type="number" name="est_biaya_tenaga" step="any"
                                     class="input input-bordered w-full border-primary/30" required />
                             </div>
                             <div class="form-control">

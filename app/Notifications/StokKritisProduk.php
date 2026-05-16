@@ -52,7 +52,7 @@ class StokKritisProduk extends Notification
         return [
             'id_produk' => (int)$this->produk->id_produk,
             'pesan' => 'Stok ' . $this->produk->varian . ' krisis! Sisa: ' . $this->produk->stok,
-            'link' => 'owner.produksi.rekomendasi',
+            'link' => 'rekomendasi_produksi',
             'tipe' => 'stok_krisis'
         ];
     }
@@ -62,7 +62,7 @@ class StokKritisProduk extends Notification
         return [
             'id_produk' => (int)$this->produk->id,
             'pesan' => 'Stok ' . $this->produk->varian . ' krisis! Sisa: ' . $this->produk->stok,
-            'link' => '#',
+            'link' => 'rekomendasi_produksi',
             'tipe' => 'stok_krisis'
         ];
     }

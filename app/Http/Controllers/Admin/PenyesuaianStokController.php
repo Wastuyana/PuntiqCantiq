@@ -1,24 +1,38 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Batch;
 use App\Models\PenyesuaianStok;
 use App\Models\Produk;
 use Illuminate\Support\Facades\DB;
+use App\Services\ProductionService;
 
 class PenyesuaianStokController extends Controller
 {
+    protected $productionService;
+    
+    public function __construct(ProductionService $productionService)
+    {
+        $this->productionService = $productionService;
+    }
+
+     /**
+     * Show the form for creating a new resource.
+     */
+
     public function create($batch_id)
     {
         $batch = Batch::with('batch_hasil.produk')->findOrFail($batch_id);
 
-        return view('owner.produksi.penyesuaian_stok', compact('batch'));
+        return view('admin.produksi.penyesuaian_stok', compact('batch'));
     }
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'batch_id' => 'required|exists:batch,id',
             'produk_id' => 'required|exists:produk,id',
@@ -38,9 +52,9 @@ class PenyesuaianStokController extends Controller
             $produk->decrement('stok', $request->jumlah_rusak);
 
             $produk->refresh();
-            $produk->cekStokKrisis();
+            $this->productionService->cekStokKritis($produk);
 
-            return redirect()->route('owner.produksi.batch.index')
+            return redirect()->route('admin.produksi.batch.index')
                 ->with('success', 'Laporan stok rusak berhasil diproses dan stok produk telah diperbarui.');
         });
     }

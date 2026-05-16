@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="p-6">
+    <div class="p-6 bg-base-100 min-h-screen">
         <div class="w-full">
             <div class="text-sm breadcrumbs mb-6 opacity-50 uppercase font-bold tracking-widest">
                 <ul>
-                    <li><a href="{{ route('owner.produksi.batch.index') }}">Batch</a></li>
+                    <li><a href="{{ route('admin.produksi.batch.index') }}">Batch</a></li>
                     <li>Finalisasi Produksi</li>
                 </ul>
             </div>
@@ -14,7 +14,7 @@
                     <p class="text-sm opacity-50 mt-1">Lengkapi data aktual untuk menyelesaikan proses produksi.</p>
                 </div>
 
-                <form action="{{ route('owner.produksi.batch.update', $batch->id) }}" method="POST">
+                <form action="{{ route('admin.produksi.batch.update', $batch->id) }}" method="POST">
                     @csrf @method('PUT')
 
                     <div class="space-y-10">
@@ -106,24 +106,24 @@
                                             Tenaga Kerja (Rp)</span>
                                     </label>
                                     <input type="number" name="biaya_tenagakerja"
-                                        value="{{ $estimasiTK }}"
+                                        value="{{ $batch->estimasi_tenaga_kerja }}"
                                         class="input input-bordered font-bold text-sm focus:border-primary"
                                         placeholder="Masukkan total biaya tenaga kerja">
                                     <label class="label">
                                         <span class="label-text-alt opacity-50 italic">Estimasi awal: Rp
-                                            {{ number_format($estimasiTK) }}</span>
+                                            {{ number_format($batch->estimasi_tenaga_kerja) }}</span>
                                     </label>
                                 </div>
                                 <div class="form-control w-full">
                                     <label class="label">
                                         <span class="label-text font-bold text-xs">Total Biaya Overhead (Rp)</span>
                                     </label>
-                                    <input type="number" name="biaya_overhead" value="{{ $estimasiOverhead }}"
+                                    <input type="number" name="biaya_overhead" value="{{ $batch->estimasi_overhead }}"
                                         class="input input-bordered font-bold text-sm focus:border-primary"
                                         placeholder="Masukkan total biaya overhead">
                                     <label class="label">
                                         <span class="label-text-alt opacity-50 italic">
-                                            Estimasi otomatis: Rp {{ number_format($estimasiOverhead) }}
+                                            Estimasi otomatis: Rp {{ number_format($batch->estimasi_overhead) }}
                                         </span>
                                     </label>
                                 </div>
@@ -166,7 +166,7 @@
                                 Simpan & Selesaikan Produksi
                             </button>
 
-                            <a href="{{ route('owner.produksi.batch.index') }}"
+                            <a href="{{ route('admin.produksi.batch.index') }}"
                                 class="btn btn-ghost px-4 opacity-50 hover:opacity-100 font-bold ">
                                 Batal
                             </a>

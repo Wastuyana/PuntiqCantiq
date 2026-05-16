@@ -5,16 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Bom;
 use App\Models\Produk;
-use App\Models\BahanBaku;
+use App\Services\ProductionService;
 
 class BomController extends Controller
 {
+    protected $productionService;
+
+    public function __construct(ProductionService $productionService)
+    {
+        $this->productionService = $productionService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $produks = Produk::with('bom.bahan_baku')->orderby('kategori')->get();
+
+        return view('owner.master.bom', compact('produks'));
     }
 
     /**
@@ -28,7 +37,7 @@ class BomController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, ProductionService $productionService)
     {
         $produk = Produk::findOrFail($request->produk_id);
         $request->validate([
@@ -41,6 +50,10 @@ class BomController extends Controller
             'bahan_baku_id' => $request->bahan_baku_id,
             'jumlah_kebutuhan' => $request->jumlah_kebutuhan,
         ]);
+
+        $hppTerbaru = $productionService->hitungHppStandar($produk->fresh());
+
+        $produk->update(['hpp_standar' => $hppTerbaru]);
 
         return redirect()->back()->with('success', 'Bahan baku berhasil ditambahkan ke resep!');
     }

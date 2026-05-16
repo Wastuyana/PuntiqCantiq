@@ -19,7 +19,8 @@
             <div class="card-body">
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="font-bold text-base">Notifikasi</h3>
-                    <span class="text-xs opacity-50">{{ auth()->user()->unreadNotifications->count() }} pesan baru</span>
+                    <span class="text-xs opacity-50">{{ auth()->user()->unreadNotifications->count() }} pesan
+                        baru</span>
                 </div>
 
                 <div class="flex flex-col gap-1 max-h-96 overflow-y-auto mt-2">
@@ -33,9 +34,9 @@
                                 <div class="flex justify-between items-center mt-2">
                                     <span
                                         class="text-[10px] opacity-50">{{ $notification->created_at->diffForHumans() }}</span>
-                                    <a href="{{ $notification->data['link'] }}"
+                                    <a href="{{ route('notifications.read', $notification->id) }}"
                                         class="text-[10px] font-bold text-primary hover:underline">
-                                        Detail
+                                        Tandai Baca
                                     </a>
                                 </div>
                             </div>

@@ -8,24 +8,36 @@ use App\Models\Batch;
 use App\Models\BatchBahan;
 use App\Models\Produk;
 use Illuminate\Support\Facades\DB;
+use App\Services\ProductionService;
 
 class BatchController extends Controller
 {
+    protected $productionService;
+
+    public function __construct(ProductionService $productionService)
+    {
+        $this->productionService = $productionService;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $batches = Batch::with(['batch_hasil'])
+        $bulan = $request->get('bulan', now()->month);
+        $tahun = $request->get('tahun', now()->year);
+        $batches = Batch::with(['batch_hasil'])->orderBy('tanggal_produksi', 'desc')
+            ->whereMonth('tanggal_produksi', $bulan)
+            ->whereYear('tanggal_produksi', $tahun)
             ->latest()->get();
 
-        $produks = Produk::has('bom')
-            ->with('bom.bahan_baku')
-            ->get();
+        // $produks = Produk::has('bom')
+        //     ->with('bom.bahan_baku')
+        //     ->get();
 
-        $generatedNoBatch = Batch::generateNoBatch();
+        $generatedNoBatch = $this->productionService->generateNoBatch();
 
-        return view('owner.produksi.batch', compact('batches', 'produks', 'generatedNoBatch'));
+        return view('owner.produksi.batch', compact('batches', 'generatedNoBatch'));
     }
 
     /**
@@ -40,9 +52,9 @@ class BatchController extends Controller
             ->with('bom.bahan_baku')
             ->get();
 
-        $generatedNoBatch = Batch::generateNoBatch();
-        $rekomendasiIds = $request->input('produk_ids', []);
+        $generatedNoBatch = $this->productionService->generateNoBatch();
         $rekomendasiTarget = $request->input('hasil_target', []);
+        $rekomendasiIds = $request->input('produk_ids', []);
 
         return view('owner.produksi.batch_create', compact('batches', 'produks', 'generatedNoBatch', 'rekomendasiIds', 'rekomendasiTarget'));
     }
@@ -52,6 +64,7 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->all());
         $request->validate([
             'produk_ids' => 'required|array',
             'hasil_target' => 'required|array',
@@ -60,8 +73,9 @@ class BatchController extends Controller
         ]);
 
         return DB::transaction(function () use ($request) {
+            $generatedNoBatch = $this->productionService->generateNoBatch();
             $batch = Batch::create([
-                'nomor_batch'      => Batch::generateNoBatch(),
+                'nomor_batch'      => $generatedNoBatch,
                 'user_id'          => \Illuminate\Support\Facades\Auth::id(),
                 'tanggal_produksi' => $request->tanggal_produksi,
                 'status'           => $request->status,
@@ -126,7 +140,7 @@ class BatchController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id, ProductionService $productionService)
     {
         $batch = Batch::findOrFail($id);
 
@@ -135,20 +149,23 @@ class BatchController extends Controller
                 ->with('error', 'Batch ini sudah selesai dan tidak bisa diubah lagi.');
         }
 
-        return view('owner.produksi.batch_edit', compact('batch'));
+        $estimasiTK = $productionService->hitungEstimasiTenagaKerja($batch);
+        $estimasiOverhead = $productionService->hitungEstimasiOverhead($batch);
+
+        return view('owner.produksi.batch_edit', compact('batch', 'estimasiTK', 'estimasiOverhead'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, ProductionService $productionService)
     {
         $batch = Batch::findOrFail($id);
 
         // Simpan status lama sebelum diupdate untuk pengecekan stok
         $statusLama = $batch->status;
 
-        return DB::transaction(function () use ($request, $batch, $statusLama) {
+        return DB::transaction(function () use ($request, $batch, $statusLama, $productionService) {
             // 1. Update hasil produksi & Tambah stok produk jadi
             foreach ($request->hasil_aktual as $hasilId => $nilaiAktual) {
                 $batchHasil = $batch->batch_hasil()->find($hasilId);
@@ -181,7 +198,7 @@ class BatchController extends Controller
             ]);
 
             // 4. Kalkulasi HPP Aktual
-            $batch->hitungHPPHppAktual();
+            $productionService->hitungHppAktual($batch);
 
             return redirect()->route('owner.produksi.batch.index')->with('success', 'Produksi Selesai!');
         });

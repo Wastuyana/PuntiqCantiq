@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="p-6">
+    <div class="p-6 bg-base-100 min-h-screen">
         <div class="text-sm breadcrumbs mb-4 opacity-50">
             <ul>
-                <li><a href="{{ route('owner.master.bom.index') }}">BOM</a></li>
+                <li><a href="{{ route('admin.produk.bom') }}">BOM</a></li>
                 <li>DAFTAR BOM</li>
             </ul>
         </div>
@@ -32,14 +32,14 @@
                                 <td>{{ $produk->ukuran }}</td>
                                 <td>
                                     Rp
-                                    {{ number_format($produk->hpp_standar, 0,',', '.') }}
+                                    {{ number_format($produk->hpp_standar, 0, ',', '.') }}
                                 </td>
                                 <td>
                                     Rp
                                     {{ number_format($produk->harga_jual, 0, ',', '.') }}
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('owner.master.bom.edit', $produk->id) }}"
+                                    <a href="{{ route('admin.produk.detailBom', $produk->id) }}"
                                         class="btn btn-soft btn-sm btn-primary">
                                         Lihat Komposisi
                                     </a>

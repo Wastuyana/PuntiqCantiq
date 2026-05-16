@@ -27,22 +27,15 @@ class Bom extends Model
 
     protected static function booted()
     {
-        static::saved(function ($bom) {
-            $produk = $bom->produk;
-            if ($produk) {
-                $produk->update([
-                    'hpp_standar' => $produk->hitungHppStandar()
-                ]);
-            }
-        });
+        static::saved(fn($bom) => $bom->updateProdukHpp());
+        static::deleted(fn($bom) => $bom->updateProdukHpp());
+    }
 
-        static::deleted(function ($bom) {
-            $produk = $bom->produk;
-            if ($produk) {
-                $produk->update([
-                    'hpp_standar' => $produk->hitungHppStandar()
-                ]);
-            }
-        });
+    public function updateProdukHpp()
+    {
+        $financeService = app(\App\Services\ProductionService::class);
+        $this->produk?->update([
+            'hpp_standar' => $financeService->hitungHppStandar($this->produk->fresh())
+        ]);
     }
 }

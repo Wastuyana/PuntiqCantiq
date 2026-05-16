@@ -78,10 +78,11 @@
                                 class="{{ request()->routeIs('owner.produksi.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M16.712 4.33a9.027 9.027 0 0 1 1.652 1.306c.51.51.944 1.064 1.306 1.652M16.712 4.33l-3.448 4.138m3.448-4.138a9.014 9.014 0 0 0-9.424 0M19.67 7.288l-4.138 3.448m4.138-3.448a9.014 9.014 0 0 1 0 9.424m-4.138-5.976a3.736 3.736 0 0 0-.88-1.388 3.737 3.737 0 0 0-1.388-.88m2.268 2.268a3.765 3.765 0 0 1 0 2.528m-2.268-4.796a3.765 3.765 0 0 0-2.528 0m4.796 4.796c-.181.506-.475.982-.88 1.388a3.736 3.736 0 0 1-1.388.88m2.268-2.268 4.138 3.448m0 0a9.027 9.027 0 0 1-1.306 1.652c-.51.51-1.064.944-1.652 1.306m0 0-3.448-4.138m3.448 4.138a9.014 9.014 0 0 1-9.424 0m5.976-4.138a3.765 3.765 0 0 1-2.528 0m0 0a3.736 3.736 0 0 1-1.388-.88 3.737 3.737 0 0 1-.88-1.388m2.268 2.268L7.288 19.67m0 0a9.024 9.024 0 0 1-1.652-1.306 9.027 9.027 0 0 1-1.306-1.652m0 0 4.138-3.448M4.33 16.712a9.014 9.014 0 0 1 0-9.424m4.138 5.976a3.765 3.765 0 0 1 0-2.528m0 0c.181-.506.475-.982.88-1.388a3.736 3.736 0 0 1 1.388-.88m-2.268 2.268L4.33 7.288m6.406 1.18L7.288 4.33m0 0a9.024 9.024 0 0 0-1.652 1.306A9.025 9.025 0 0 0 4.33 7.288" />
+                                            d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.13 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.149-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.063 16.658.26-1.477m2.605-14.772.26-1.477m0 17.726-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205 12 12m6.894 5.785-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495" />
                                     </svg>
+
                                     Produksi
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -115,11 +116,13 @@
                                 class="{{ request()->routeIs('owner.master.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                            d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
                                     </svg>
-                                    Data Master
+
+                                    Produk
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
@@ -136,21 +139,21 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('owner.master.bom') }}"
-                                        class="{{ request()->routeIs('owner.master.bom') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
+                                    <a href="{{ route('owner.master.bom.index') }}"
+                                        class="{{ request()->routeIs('owner.master.bom.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
                                         Bills Of Materials (BoM)
                                     </a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a href="{{ route('owner.master.panduan.index') }}"
                                         class="{{ request()->routeIs('owner.master.panduan.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
                                         Panduan Kerja
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li>
-                                    <a href="{{ route('owner.master.higiene_profile') }}"
-                                        class="{{ request()->routeIs('owner.master.higiene_profile') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
-                                        Profil Higiene
+                                    <a href="{{ route('owner.master.standar_produksi') }}"
+                                        class="{{ request()->routeIs('owner.master.standar_produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
+                                        Standar Produksi
                                     </a>
                                 </li>
                             </ul>
@@ -168,13 +171,122 @@
                             Inventory
                         </a>
                     </li>
+
+                    <li>
+                        <details class="group"
+                            {{ request()->routeIs('owner.produksi.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->routeIs('owner.laporan*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                                    </svg>
+                                    Laporan
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('owner.laporan') }}"
+                                        class="{{ request()->routeIs('owner.laporan') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Laporan Produksi
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
                 @endrole
 
                 @role('admin')
-                    <li class="mt-4 menu-title text-xs font-bold opacity-40 uppercase tracking-widest text-secondary">
-                        Produksi</li>
-                    <li><a href="{{ route('admin.dashboard') }}"
-                            class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">📦 Input Produksi</a></li>
+                    <li>
+                        <details class="group"
+                            {{ request()->routeIs('admin.produk.*') || request()->routeIs('admin.dashboard') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->routeIs('admin.produk.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                                    </svg>
+
+                                    Produk
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('admin.produk.index') }}"
+                                        class="{{ request()->routeIs('admin.produk.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Produk
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.produk.bom') }}"
+                                        class="{{ request()->routeIs('admin.produk.bom') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
+                                        Bills Of Materials (BoM)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.produksi.standar_produksi') }}"
+                                        class="{{ request()->routeIs('admin.produksi.standar_produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
+                                        Standar Produksi
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                        <details class="group"
+                            {{ request()->routeIs('admin.produksi.*') || request()->routeIs('admin.dashboard') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->routeIs('admin.produksi.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.13 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.149-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.063 16.658.26-1.477m2.605-14.772.26-1.477m0 17.726-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205 12 12m6.894 5.785-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495" />
+                                    </svg>
+
+                                    Produksi
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('admin.produksi.batch.index') }}"
+                                        class="{{ request()->routeIs('admin.produksi.batch.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Batch
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.produksi.rekomendasi') }}"
+                                        class="{{ request()->routeIs('admin.produksi.rekomendasi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Rekomendasi Produksi
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
                 @endrole
             </ul>
         </div>

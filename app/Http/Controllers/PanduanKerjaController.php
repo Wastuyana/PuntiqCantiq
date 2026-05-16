@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PanduanKerja;
+use App\Models\Setting;
 
 class PanduanKerjaController extends Controller
 {
@@ -72,8 +73,12 @@ class PanduanKerjaController extends Controller
         return redirect()->back()->with('success', 'Parameter SOP berhasil dihapus!');
     }
 
-    public function indexHigiene()
+    public function standarProduksi()
     {
-        return view('owner.master.profile_higiene');
+        $settings = Setting::all();
+
+        $panduans = PanduanKerja::all();
+
+        return view('owner.master.standar_produksi', compact('settings', 'panduans'));
     }
 }

@@ -1,11 +1,11 @@
 <x-app-layout>
-    <div class="p-6">
+    <div class="p-6 bg-base-100 min-h-screen">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">Buat Batch Produksi Baru</h2>
-            <a href="{{ route('owner.produksi.batch.index') }}" class="btn btn-ghost"> Kembali</a>
+            <a href="{{ route('admin.produksi.batch.index') }}" class="btn btn-ghost"> Kembali</a>
         </div>
 
-        <form action="{{ route('owner.produksi.batch.store') }}" method="POST">
+        <form action="{{ route('admin.produksi.batch.store') }}" method="POST">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -57,7 +57,8 @@
                                             data-resep="{{ json_encode($p->bom) }}" onchange="updateEstimasi()">
 
                                         <div class="flex-1">
-                                            <span class="font-bold text-sm block">{{ $p->kategori }} - {{ $p->varian }} - {{ $p->ukuran }}</span>
+                                            <span class="font-bold text-sm block">{{ $p->kategori }} -
+                                                {{ $p->varian }} - {{ $p->ukuran }}</span>
                                             @if ($isRecommended)
                                                 <span class="badge badge-primary badge-xs ml-1">Rekomendasi</span>
                                             @endif

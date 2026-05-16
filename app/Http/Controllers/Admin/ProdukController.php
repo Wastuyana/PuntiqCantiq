@@ -1,21 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
-use App\Services\ProductionService;
+use App\Models\DetailPenjualan;
 
 class ProdukController extends Controller
 {
-    protected $productionService;
-
-    public function __construct(ProductionService $productionService)
-    {
-        $this->productionService = $productionService;
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -25,7 +18,7 @@ class ProdukController extends Controller
 
         $daftarKategori = Produk::distinct()->pluck('kategori');
 
-        return view('owner.master.produk', compact('produks', 'daftarKategori'));
+        return view('admin.produk.produk', compact('produks', 'daftarKategori'));
     }
 
     /**
@@ -83,7 +76,7 @@ class ProdukController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
             'kategori' => 'required|string',
@@ -112,7 +105,7 @@ class ProdukController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $produk = Produk::findOrFail($id);
 
@@ -127,18 +120,48 @@ class ProdukController extends Controller
     {
         $produks = Produk::with('bom.bahan_baku')->orderby('kategori')->get();
 
-        return view('owner.master.bom', compact('produks'));
+        return view('admin.produk.bom', compact('produks'));
     }
 
-    public function updateStokMinimal($id, ProductionService $productionService)
+    public function updateStokMinimal($id)
     {
         $produk = Produk::findOrFail($id);
-        $success = $productionService->updateSafetyStockProduk($produk);
+        $produk->save();
+        $leadTime = 2;
 
-        if (!$success) {
+        // 1. Ambil data penjualan 30 hari terakhir untuk produk ini
+        $dataPenjualan = DetailPenjualan::where('produk_id', $id)
+            ->whereHas('penjualan', function ($q) {
+                $q->where('tanggal_penj', '>=', now()->subDays(30));
+            })
+            ->selectRaw('DATE(created_at) as tanggal, SUM(jumlah_produk) as total')
+            ->groupBy('tanggal')
+            ->get();
+
+        if ($dataPenjualan->isEmpty()) {
             return back()->with('error', 'Data penjualan 30 hari terakhir tidak ditemukan.');
         }
 
+        // 2. Hitung d (rata-rata) dan dmax (maksimal harian)
+        $d = $dataPenjualan->avg('total');
+        $dmax = $dataPenjualan->max('total');
+
+        // 3. Hitung sesuai rumus 
+        $safetyStock = ($dmax - $d) * $leadTime;
+        $batasMinimal = ($d * $leadTime) + $safetyStock;
+
+        // 4. Update data ke database
+        $produk->update([
+            'safety_stok' => ceil($batasMinimal) // Kita bulatkan ke atas
+        ]);
+
         return back()->with('success', 'Batas stok minimal berhasil diperbarui berdasarkan tren 30 hari terakhir!');
+    }
+
+    public function detailBom($id)
+    {
+        $produk = Produk::with('bom.bahan_baku')->findOrFail($id);
+        $allBahanBaku = \App\Models\BahanBaku::all();
+        return view('admin.produk.detail_bom', compact('produk', 'allBahanBaku'));
     }
 }
