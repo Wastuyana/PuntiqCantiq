@@ -11,10 +11,13 @@ class BahanBaku extends Model
     protected $table = 'bahan_baku';
 
     protected $fillable = [
+        'kode_bahan',
         'nama',
         'stok',
         'satuan',
-        'harga_satuan'
+        'harga_satuan',
+        'ss_bahan',
+        'rop_bahan'
     ];
 
     public function bom(): HasMany
@@ -25,5 +28,10 @@ class BahanBaku extends Model
     public function batch_bahan_baku(): HasMany
     {
         return $this->hasMany(BatchBahan::class, 'bahan_baku_id');
+    }
+
+    public function bahan_masuks(): HasMany
+    {
+        return $this->hasMany(BahanMasuk::class, 'bahan_baku_id');
     }
 }

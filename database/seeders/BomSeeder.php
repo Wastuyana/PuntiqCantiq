@@ -46,23 +46,18 @@ class BomSeeder extends Seeder
                 'jumlah_kebutuhan' => $kebutuhanMinyak
             ]);
 
-            // Garam (sedikit saja, misal 0.005 kg per produk)
             Bom::create([
                 'produk_id' => $produk->id,
                 'bahan_baku_id' => $garam,
                 'jumlah_kebutuhan' => 0.005
             ]);
 
-            // Kemasan (pasti 1 pcs)
             Bom::create([
                 'produk_id' => $produk->id,
                 'bahan_baku_id' => $kemasan,
                 'jumlah_kebutuhan' => 1
             ]);
 
-            // --- Bahan Tambahan (Varian Spesifik) ---
-
-            // Jika varian mengandung kata 'Coklat' atau 'Choco'
             if (str_contains(strtolower($produk->varian), 'coklat') || str_contains(strtolower($produk->kategori), 'choco')) {
                 Bom::create([
                     'produk_id' => $produk->id,

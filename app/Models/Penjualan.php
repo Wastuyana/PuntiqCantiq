@@ -18,4 +18,9 @@ class Penjualan extends Model
     {
         return $this->hasMany(DetailPenjualan::class, 'penjualan_id');
     }
+    
+    public function pelanggan()
+    {
+        return $this->hasOne(Pelanggan::class, 'penjualan_id');
+    }
 }

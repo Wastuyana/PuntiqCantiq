@@ -17,6 +17,9 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PanduanKerjaController;
 use App\Http\Controllers\RekomendasiProdController;
+use App\Http\Controllers\BahanMasukController;
+use App\Http\Controllers\QcController;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -69,7 +72,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::post('owner/produksi/rekomendasi', [RekomendasiProdController::class, 'storeKeBatch'])
         ->name('owner.produksi.rekomendasi.keBatch');;
 
-    Route::get('/owner/bahan-baku', [BahanBakuController::class, 'index'])->name('owner.bahan_baku');
+    Route::resource('/owner/inventory/bahan-baku', BahanBakuController::class)->names('owner.inventory.bahan_baku');
+
+    Route::resource('/owner/inventory/bahan-masuk', BahanMasukController::class)->names('owner.inventory.bahan_masuk');
+
+    Route::resource('/owner/inventory/qc', QcController::class)->names('owner.inventory.qc');
+
+    Route::resource('/owner/supplier', SupplierController::class)->names('owner.supplier');
 
     Route::get('/owner/laporan', [LaporanController::class, 'index'])->name('owner.laporan');
 

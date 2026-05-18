@@ -160,15 +160,60 @@
                         </details>
                     </li>
 
+                    <li>
+                        <details class="group"
+                            {{ request()->routeIs('owner.inventory.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->routeIs('owner.inventory.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+
+                                    Inventory
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('owner.inventory.bahan_baku.index') }}"
+                                        class="{{ request()->routeIs('owner.inventory.bahan_baku.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Bahan Baku
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('owner.inventory.bahan_masuk.index') }}"
+                                        class="{{ request()->routeIs('owner.inventory.bahan_masuk.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Pencatatan Bahan Masuk
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('owner.inventory.qc.index') }}"
+                                        class="{{ request()->routeIs('owner.inventory.qc.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        QC
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+
                     <li class="mt-2">
-                        <a href="{{ route('owner.bahan_baku') }}"
-                            class="{{ request()->routeIs('owner.bahan_baku') ? 'bg-blue-50 text-blue-600 font-medium' : '' }} rounded-lg px-4 py-3 flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        <a href="{{ route('owner.supplier.index') }}"
+                            class="{{ request()->routeIs('*owner.supplier*') ? 'text-primary-content font-semibold' : '' }} rounded-lg px-4 py-3 flex items-center gap-3">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
                             </svg>
-                            Inventory
+                            <span>Supplier</span>
                         </a>
                     </li>
 
