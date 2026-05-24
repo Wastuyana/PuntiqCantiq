@@ -282,4 +282,42 @@ class ProductionService
             'kapasitasMax' => $kapasitasMax
         ];
     }
+
+    public function updateSafetyStockBahan($bahanBaku)
+    {
+        // 1. Hitung Rata-rata Lead Time (dari tabel BahanMasuk)
+        // Asumsi: Anda memiliki model BahanMasuk dengan relasi ke BahanBaku
+        // dan kolom 'tanggal_pesan' serta 'tanggal_masuk'
+        $leadTimes = \App\Models\BahanMasuk::where('bahan_baku_id', $bahanBaku->id)
+            ->whereNotNull('tanggal_masuk')
+            ->get()
+            ->map(function ($item) {
+                return \Carbon\Carbon::parse($item->tanggal_pesan)
+                    ->diffInDays(\Carbon\Carbon::parse($item->tanggal_masuk));
+            });
+
+        $avgLeadTime = $leadTimes->isEmpty() ? 2 : $leadTimes->avg();
+
+        // 2. Data Pemakaian (dari tabel batch_bahan)
+        $dataPemakaian = \App\Models\BatchBahan::where('bahan_baku_id', $bahanBaku->id)
+            ->where('created_at', '>=', now()->subDays(90))
+            ->selectRaw('DATE(created_at) as tanggal, SUM(bahan_aktual) as total')
+            ->groupBy('tanggal')
+            ->get();
+
+        if ($dataPemakaian->isEmpty()) return false;
+
+        // 3. Hitung Statistik
+        $d = $dataPemakaian->avg('total');      // Rata-rata harian
+        $dmax = $dataPemakaian->max('total');   // Maksimal harian
+
+        // Rumus SS & ROP
+        $safetyStock = ($dmax - $d) * $avgLeadTime;
+        $rop = ($d * $avgLeadTime) + $safetyStock;
+
+        return $bahanBaku->update([
+            'safety_stock' => max(0, ceil($safetyStock)),
+            'rop' => ceil($rop)
+        ]);
+    }
 }

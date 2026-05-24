@@ -15,11 +15,10 @@ class BahanMasukController extends Controller
     public function index()
     {
         $suppliers = Supplier::all();
-        $bahanBakus = BahanBaku::all();
-        // Eager loading agar tidak berat saat ambil data relasi
-        $bahanMasuk = BahanMasuk::with(['supplier', 'bahanBaku'])->orderBy('tanggal_masuk', 'desc')->get();
+        $bahanBaku = BahanBaku::all();
+        $bahanMasuk = BahanMasuk::with(['supplier', 'bahan_baku'])->orderBy('tanggal_masuk', 'desc')->get();
 
-        return view('owner.inventory.bahan_masuk', compact('suppliers', 'bahanBakus', 'bahanMasuk'));
+        return view('admin.inventory.bahan_masuk', compact('suppliers', 'bahanBaku', 'bahanMasuk'));
     }
 
     /**
@@ -35,18 +34,36 @@ class BahanMasukController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'supplier_id'   => 'required',
-            'id'         => 'required',
-            'tanggal_masuk' => 'required|date',
+            'bahan_baku_id' => 'required',
+            'tanggal_pesan' => 'required|date',
+            'tanggal_masuk' => 'required|date|after_or_equal:tanggal_pesan',
             'jumlah_total'  => 'required|numeric|min:1',
-            'harga_beli'    => 'required|numeric|min:0',
+            'harga_beli'    => 'required|numeric', 
         ]);
 
-        BahanMasuk::create($request->all());
+        // Hitung Harga Satuan
+        $hargaSatuan = $request->harga_beli / $request->jumlah_total;
 
-        return redirect()->back()->with('success', 'Data kedatangan dan harga berhasil dicatat!');
+        // 1. Simpan Bahan Masuk
+        $bm = new \App\Models\BahanMasuk();
+        $bm->supplier_id   = $request->supplier_id;
+        $bm->bahan_baku_id = $request->bahan_baku_id;
+        $bm->tanggal_pesan = $request->tanggal_pesan;
+        $bm->tanggal_masuk = $request->tanggal_masuk;
+        $bm->jumlah_total  = $request->jumlah_total;
+        $bm->harga_beli    = $request->harga_beli;
+        $bm->status        = 'pending';
+        $bm->save();
+
+        // 2. Update Data Bahan Baku
+        $bahan = \App\Models\BahanBaku::find($request->bahan_baku_id);
+        $bahan->harga_satuan = $hargaSatuan;
+        $bahan->harga_updated_at = now();
+        $bahan->save();
+
+        return redirect()->back()->with('success', 'Data masuk & harga berhasil diperbarui!');
     }
 
     public function destroy($id)

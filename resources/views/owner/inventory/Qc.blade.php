@@ -19,9 +19,7 @@
             </div>
         @endif
 
-        <!-- SIKAT HABIS RADIO BUTTON: Pakai Alpine.js (Bawaan Laravel Breeze) untuk Tab -->
         <div x-data="{ tab: 'antrian' }">
-            <!-- Tombol Navigasi Tab -->
             <div class="flex gap-2 mb-6">
                 <button @click="tab = 'antrian'" :class="tab == 'antrian' ? 'btn-primary text-white' : 'btn-ghost'"
                     class="btn btn-md shadow-sm">
@@ -43,7 +41,7 @@
                                     <span class="badge badge-outline badge-warning font-bold italic">PENDING</span>
                                     <span class="text-xs opacity-50">{{ $item->tanggal_masuk }}</span>
                                 </div>
-                                <h3 class="text-2xl font-extrabold text-gray-700 mt-2">{{ $item->bahanBaku->nama }}</h3>
+                                <h3 class="text-2xl font-extrabold text-gray-700 mt-2">{{ $item->bahan_baku->nama }}</h3>
                                 <div class="mt-4 p-3 bg-base-200 rounded-lg text-sm space-y-2">
                                     <p class="flex justify-between"><span>📦 Total:</span> <b>{{ $item->jumlah_total }}
                                             unit</b></p>
@@ -51,9 +49,8 @@
                                             class="truncate ml-2">{{ $item->supplier->nama_supplier }}</b></p>
                                 </div>
                                 <div class="card-actions mt-6">
-                                    <!-- Pakai onclick JavaScript agar modal terbuka tanpa checkbox kelihatan -->
                                     <button
-                                        onclick="document.getElementById('modal_qc_{{ $item->bm_id }}').showModal()"
+                                        onclick="document.getElementById('modal_qc_{{ $item->bahan_masuk_id }}').showModal()"
                                         class="btn btn-warning btn-block text-white font-bold">
                                         Mulai Verifikasi
                                     </button>
@@ -62,16 +59,14 @@
                         </div>
 
                         <!-- MODAL (DaisyUI Native Dialog - NO CHECKBOX) -->
-                        <dialog id="modal_qc_{{ $item->bm_id }}" class="modal modal-bottom sm:modal-middle">
+                        <dialog id="modal_qc_{{ $item->bahan_masuk_id }}" class="modal modal-bottom sm:modal-middle">
                             <div class="modal-box border-t-8 border-warning">
-                                <h3 class="font-bold text-xl">Cek Kondisi: {{ $item->bahanBaku->nama }}</h3>
+                                <h3 class="font-bold text-xl">Cek Kondisi: {{ $item->bahan_baku->nama }}</h3>
                                 <p class="text-sm py-2 opacity-70">Pastikan total Bagus + Rusak sesuai dengan jumlah
                                     kedatangan ({{ $item->jumlah_total }}).</p>
-
-                                <form action="{{ route('owner.qc.store') }}" method="POST" class="mt-4">
+                                <form action="{{ route('owner.inventory.qc.store') }}" method="POST" class="mt-4">
                                     @csrf
-                                    <input type="hidden" name="bm_id" value="{{ $item->bm_id }}">
-
+                                    <input type="hidden" name="bahan_masuk_id" value="{{ $item->id }}">
                                     <div class="grid grid-cols-2 gap-4">
                                         <div class="form-control">
                                             <label class="label font-bold text-success">Kondisi Bagus</label>
@@ -94,7 +89,7 @@
 
                                     <div class="modal-action">
                                         <button type="button"
-                                            onclick="document.getElementById('modal_qc_{{ $item->bm_id }}').close()"
+                                            onclick="document.getElementById('modal_qc_{{ $item->bahan_masuk_id }}').close()"
                                             class="btn btn-ghost">Batal</button>
                                         <button type="submit" class="btn btn-primary px-10">Selesaikan QC</button>
                                     </div>
@@ -104,8 +99,7 @@
                     @empty
                         <div
                             class="col-span-full py-20 text-center bg-base-200 rounded-3xl border-4 border-dashed border-base-300">
-                            <span class="text-4xl">☕</span>
-                            <p class="text-gray-500 mt-4 italic font-medium">Santai dulu, belum ada barang baru yang
+                            <p class="text-gray-500 mt-4 italic font-medium">Belum ada barang baru yang
                                 perlu dicek.</p>
                         </div>
                     @endforelse
@@ -132,9 +126,9 @@
                                     <td class="text-xs">{{ \Carbon\Carbon::parse($h->tanggal_qc)->format('d M Y') }}
                                     </td>
                                     <td><span
-                                            class="font-bold text-primary">{{ $h->bahanMasuk->bahanBaku->nama }}</span>
+                                            class="font-bold text-primary">{{ $h->bahan_masuk->bahan_baku->nama }}</span>
                                     </td>
-                                    <td class="text-xs">{{ $h->bahanMasuk->supplier->nama_supplier }}</td>
+                                    <td class="text-xs">{{ $h->bahan_masuk->supplier->nama_supplier }}</td>
                                     <td class="text-center">
                                         <div class="badge badge-success text-white font-bold">{{ $h->jumlah_bagus }}
                                         </div>

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('mitra', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('penjualan_id')->constrained('penjualan');
             $table->string('kode_mitra', 20)->unique();
             $table->string('nama_mitra', 20)->unique();
             $table->string('alamat_mitra', 500)->nullable();

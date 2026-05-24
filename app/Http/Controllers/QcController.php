@@ -13,32 +13,32 @@ class QcController extends Controller
     public function index()
     {
         // Antrian QC (yang masih pending)
-        $waitingList = BahanMasuk::with(['bahanBaku', 'supplier'])
+        $waitingList = BahanMasuk::with(['bahan_baku', 'supplier'])
             ->where('status', 'pending')
             ->get();
 
         // History QC (yang sudah diproses)
-        $historyQC = \App\Models\QcBahan::with(['bahanMasuk.bahanBaku', 'bahanMasuk.supplier'])
+        $historyQC = \App\Models\QcBahan::with(['bahan_masuk.bahan_baku', 'bahan_masuk.supplier'])
             ->latest()
             ->get();
 
-        return view('owner.Qc', compact('waitingList', 'historyQC'));
+        return view('owner.inventory.Qc', compact('waitingList', 'historyQC'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'bm_id' => 'required',
+            'bahan_masuk_id' => 'required|exists:bahan_masuk,id',
             'jumlah_bagus' => 'required|numeric|min:0',
             'jumlah_rusak' => 'required|numeric|min:0',
         ]);
 
         DB::transaction(function () use ($request) {
-            $bm = BahanMasuk::findOrFail($request->bm_id);
+            $bm = BahanMasuk::findOrFail($request->bahan_masuk_id);
 
             // 1. Simpan ke tabel qc_bahan
             QcBahan::create([
-                'bm_id' => $bm->bm_id,
+                'bahan_masuk_id' => $bm->id,
                 'jumlah_bagus' => $request->jumlah_bagus,
                 'jumlah_rusak' => $request->jumlah_rusak,
                 'catatan' => $request->catatan,
@@ -46,7 +46,7 @@ class QcController extends Controller
             ]);
 
             // 2. Tambah stok ke tabel bahan_baku (Hanya yang bagus)
-            $bahan = BahanBaku::findOrFail($bm->id);
+            $bahan = BahanBaku::findOrFail($bm->bahan_baku_id);
             $bahan->stok += $request->jumlah_bagus;
             $bahan->save();
 

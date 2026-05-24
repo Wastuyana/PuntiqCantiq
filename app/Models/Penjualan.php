@@ -12,15 +12,23 @@ class Penjualan extends Model
         'tanggal_penj',
         'total_prod',
         'subtotal_harga',
+        'status_customer',
+        'pelanggan_id',
+        'metode_pembayaran'
     ];
 
     public function detail_penjualan()
     {
-        return $this->hasMany(DetailPenjualan::class, 'penjualan_id');
+        return $this->hasMany(DetailPenjualan::class, 'penjualan_id', 'id');
     }
     
     public function pelanggan()
     {
-        return $this->hasOne(Pelanggan::class, 'penjualan_id');
+        return $this->belongsTo(Pelanggan::class, 'pelanggan_id', 'id');
+    }
+
+    public function mitra()
+    {
+        return $this->belongsTo(Mitra::class, 'mitra_id', 'id');
     }
 }

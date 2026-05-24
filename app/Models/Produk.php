@@ -17,6 +17,7 @@ class Produk extends Model
         'varian',
         'ukuran',
         'stok',
+        'stok_mitra',
         'safety_stok',
         'est_biaya_tenaga',
         'est_biaya_overhead',

@@ -14,7 +14,8 @@ class BahanMasuk extends Model
         'tanggal_masuk',
         'jumlah_total',
         'harga_beli',
-        'status'
+        'status',
+        'harga_satuan'
     ];
 
     public function supplier()

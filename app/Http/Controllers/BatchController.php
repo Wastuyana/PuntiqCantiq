@@ -64,7 +64,6 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
         $request->validate([
             'produk_ids' => 'required|array',
             'hasil_target' => 'required|array',
