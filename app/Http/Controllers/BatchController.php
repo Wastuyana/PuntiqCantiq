@@ -64,7 +64,6 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
         $request->validate([
             'produk_ids' => 'required|array',
             'hasil_target' => 'required|array',
@@ -158,7 +157,7 @@ class BatchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id, ProductionService $productionService)
+    public function update(Request $request, int $id, ProductionService $productionService)
     {
         $batch = Batch::findOrFail($id);
 

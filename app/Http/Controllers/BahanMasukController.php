@@ -49,7 +49,7 @@ class BahanMasukController extends Controller
         return redirect()->back()->with('success', 'Data kedatangan dan harga berhasil dicatat!');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $bm = BahanMasuk::findOrFail($id);
         $bm->delete();

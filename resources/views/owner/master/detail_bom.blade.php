@@ -36,6 +36,12 @@
             </div>
         </div>
 
+        @if (session('success'))
+            <div class="alert alert-success mb-6 shadow-sm font-medium">
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         <div class="card bg-white shadow-xl border border-base-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="table table-zebra" id="table-bom">
@@ -99,7 +105,7 @@
                                         <tr>
                                             <td class="border-none">
                                                 <select name="bahan_baku_id"
-                                                    class="select select-sm select-ghost w-full focus:bg-white font-bold"
+                                                    class="select select-sm select-ghost w-full focus:bg-white bg-white font-bold"
                                                     required>
                                                     <option disabled selected>Tambah bahan...</option>
                                                     @foreach ($allBahanBaku as $bahan)

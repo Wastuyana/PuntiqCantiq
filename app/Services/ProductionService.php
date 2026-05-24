@@ -233,6 +233,7 @@ class ProductionService
                 'id' => $p->id,
                 'nama' => $p->kategori . ' - ' . $p->varian,
                 'stok_aktual' => $p->stok,
+                'safety_stock' => $p->safety_stok,
                 'd_avg' => round($dAvg, 2),
                 'q_rec' => max($qRec, 0),
                 'prioritas' => $prioritas,
@@ -263,10 +264,12 @@ class ProductionService
                         $namaBahan = $bom->bahan_baku->nama;
                         $satuan = $bom->bahan_baku->satuan;
                         $kebutuhan = $bom->jumlah_kebutuhan * $item['jumlah_acc'];
+                        $stokBahanAktual = $bom->bahan_baku->stok;
 
                         if (!isset($totalKebutuhanBahan[$namaBahan])) {
                             $totalKebutuhanBahan[$namaBahan] = 0;
                             $satuanBahan[$namaBahan] = $satuan;
+                            $stokBahan[$namaBahan] = $stokBahanAktual;
                         }
                         $totalKebutuhanBahan[$namaBahan] += $kebutuhan;
                     }
@@ -279,6 +282,7 @@ class ProductionService
             'daftarTunggu' => collect($daftarFinal)->where('jumlah_acc', '==', 0)->where('q_rec', '>', 0),
             'totalKebutuhanBahan' => $totalKebutuhanBahan,
             'satuanBahan' => $satuanBahan,
+            'stokBahan' => $stokBahan ?? [],
             'kapasitasMax' => $kapasitasMax
         ];
     }

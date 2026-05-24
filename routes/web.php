@@ -13,13 +13,14 @@ use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\BomController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanProdController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PanduanKerjaController;
 use App\Http\Controllers\RekomendasiProdController;
 use App\Http\Controllers\BahanMasukController;
 use App\Http\Controllers\QcController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\LaporanHppController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -80,10 +81,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
     Route::resource('/owner/supplier', SupplierController::class)->names('owner.supplier');
 
-    Route::get('/owner/laporan', [LaporanController::class, 'index'])->name('owner.laporan');
+    Route::get('/owner/laporan/produksi', [LaporanProdController::class, 'index'])->name('owner.laporan.produksi');
+    Route::get('/laporan-produksi/export-excel', [LaporanProdController::class, 'exportExcel'])->name('owner.laporan.export.excel');
+    Route::get('/laporan-produksi/export-pdf', [LaporanProdController::class, 'exportPdf'])->name('owner.laporan.export.pdf');
 
-    Route::get('/laporan-produksi/export-excel', [LaporanController::class, 'exportExcel'])->name('owner.laporan.export.excel');
-    Route::get('/laporan-produksi/export-pdf', [LaporanController::class, 'exportPdf'])->name('owner.laporan.export.pdf');
+    Route::get('/owner/laporan/hpp', [LaporanHppController::class, 'index'])->name('owner.laporan.hpp');
+    Route::get('/laporan-hpp/export-excel', [LaporanHppController::class, 'exportExcel'])->name('owner.laporan.hpp.excel');
+    Route::get('/laporan-hpp/export-pdf', [LaporanHppController::class, 'exportPdf'])->name('owner.laporan.hpp.pdf');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

@@ -22,7 +22,6 @@ class CekStokKritis extends Command
         $produks = Produk::whereRaw('stok <= safety_stok')->get();
 
         foreach ($produks as $produk) {
-            // Panggil dari service yang baru
             $service->cekStokKritis($produk);
         }
 

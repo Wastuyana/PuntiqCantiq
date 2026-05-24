@@ -36,9 +36,14 @@
                                     <input type="hidden" name="produk_ids[]" value="{{ $item['id'] }}">
                                 </td>
 
-                                <td class="text-center">{{ $item['stok_aktual'] }}</td>
+                                <td class="text-center font-bold">
+                                    <span
+                                        class="badge {{ $item['stok_aktual'] <= $item['safety_stock'] ? 'badge-error text-white' : 'badge-success text-white' }} px-3 py-2 text-xs">
+                                        {{ $item['stok_aktual'] }}
+                                    </span>
+                                </td>
 
-                                <td class="text-center">
+                                <td class="text-center font-bold">
                                     {{ $item['jumlah_acc'] }}
                                     <input type="hidden" name="hasil_target[{{ $item['id'] }}]"
                                         value="{{ $item['jumlah_acc'] }}">
@@ -60,6 +65,7 @@
                         <thead class="bg-base-200 text-base-content">
                             <tr>
                                 <th>Bahan Baku</th>
+                                <th class="text-center">Stok </th>
                                 <th class="text-center">Target Kebutuhan</th>
                             </tr>
                         </thead>
@@ -67,24 +73,33 @@
                             @if (count($totalKebutuhanBahan) > 0)
                                 @foreach ($totalKebutuhanBahan as $nama => $total)
                                     <tr>
-                                        <td>{{ $nama }}</td>
-                                        <td class="text-center">{{ number_format($total, 2, ',', '.') }}
-                                            <small>{{ $satuanBahan[$nama] }}</small>
+                                        <td class="font-medium">{{ $nama }}</td>
+
+                                        <td class="text-center">
+                                            {{ number_format($stokBahan[$nama], 0, ',', '.') }}
+                                            <small class="opacity-60">{{ $satuanBahan[$nama] }}</small>
+                                        </td>
+
+                                        <td
+                                            class="text-center font-bold {{ $stokBahan[$nama] < $total ? 'text-error animate-pulse' : 'text-base-content' }}">
+                                            {{ number_format($total, 2, ',', '.') }}
+                                            <small class="font-normal opacity-60">{{ $satuanBahan[$nama] }}</small>
                                         </td>
                                     </tr>
                                 @endforeach
                                 <tr>
-                                    <td colspan="2" class="text-center py-4">
-                                        <div class="mt-6">
+                                    <td colspan="3" class="text-center py-4">
+                                        <div class="mt-4">
                                             <button type="button" class="btn btn-primary w-full shadow-md"
                                                 onclick="confirmBatch(this)">
                                                 Konfirmasi Batch
                                             </button>
                                         </div>
                                     </td>
-                                @else
+                                </tr>
+                            @else
                                 <tr>
-                                    <td colspan="2" class="text-center py-4 opacity-50 italic small">
+                                    <td colspan="3" class="text-center py-4 opacity-50 italic text-sm">
                                         Tidak ada bahan yang perlu disiapkan.
                                     </td>
                                 </tr>

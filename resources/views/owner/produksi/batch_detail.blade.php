@@ -13,45 +13,59 @@
         </div>
 
         <div class="card bg-white shadow-sm border border-base-200">
-            <div class="card-body">
-                <h2 class="card-title text-sm uppercase opacity-50">Hasil Produksi</h2>
-                <div class="space-y-4 mt-2">
-                    @foreach ($batch->batch_hasil as $hasil)
-                        <div class="p-3 bg-base-50 rounded-lg border border-base-100">
-                            <span class="font-bold text-md text-primary-content">{{ $hasil->produk->kategori }} - {{ $hasil->produk->varian }} - {{ $hasil->produk->ukuran }}</span>
+            <div class="card-body p-4">
+                <h2 class="card-title text-sm uppercase opacity-50 mb-2">Hasil Produksi</h2>
 
-                            <div class="flex justify-between text-sm mt-2">
-                                <span class="opacity-70">Hasil Aktual:</span>
-                                <span class="font-bold">{{ number_format($hasil->hasil_aktual) }} Pcs</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="opacity-70">HPP Aktual:</span>
-                                <span class="font-bold text-success">Rp
-                                    {{ number_format($hasil->hpp_aktual) }}</span>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="overflow-x-auto rounded-xl border border-base-100">
+                    <table class="table table-zebra w-full text-sm">
+                        <thead class="bg-base-50 text-base-content">
+                            <tr>
+                                <th>Detail Produk</th>
+                                <th class="text-center">Target Produksi</th>
+                                <th class="text-center">Hasil Aktual</th>
+                                <th class="text-right">HPP Aktual</th>
+                            </tr>
+                        </thead>
 
-                    <div class="divider m-0"></div>
-                    <div class="flex justify-between items-center text-sm text-error font-bold">
-                        <span>Tgl Kadaluarsa:</span>
-                        <span>{{ \Carbon\Carbon::parse($batch->tanggal_kadaluarsa)->format('d M Y') }}</span>
-                    </div>
+                        <tbody>
+                            @foreach ($batch->batch_hasil as $hasil)
+                                <tr class="hover">
+                                    <td class="font-medium text-base-content">
+                                        {{ $hasil->produk->kategori }} -
+                                        {{ $hasil->produk->varian }}
+                                        <span class="text-xs opacity-60">({{ $hasil->produk->ukuran }})</span>
+                                    </td>
+                                    <td class="text-center font-semibold">
+                                        {{ number_format($hasil->hasil_target) }} Pcs
+                                    </td>
+                                    <td class="text-center font-semibold">
+                                        <span
+                                            class="badge {{ $hasil->hasil_aktual > $hasil->hasil_target ? 'badge-error' : 'badge-ghost' }}">
+                                            {{ number_format($hasil->hasil_aktual, 2) }}
+                                            {{ $hasil->produk->satuan }}
+                                        </span>
+                                    </td>
+                                    <td class="text-right font-bold text-success">
+                                        Rp {{ number_format($hasil->hpp_aktual, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+
+                        <tfoot class="bg-error/5 border-t border-error/20">
+                            <tr>
+                                <td colspan="3" class="text-error font-bold uppercase text-xs p-3">
+                                    Tgl Kadaluarsa :
+                                </td>
+                                <td class="text-right text-error font-bold text-sm p-3">
+                                    {{ \Carbon\Carbon::parse($batch->tanggal_kadaluarsa)->format('d M Y') }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>
-
-        {{-- <div class="card bg-primary text-primary-content shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title text-sm uppercase opacity-70">Audit Keamanan Pangan</h2>
-                <p class="text-xs italic">Batch ini telah divalidasi sesuai standar CPPOB-IRT untuk Home Industry.
-                </p>
-                <div class="mt-4 bg-white/20 p-3 rounded-lg">
-                    <span class="text-xs">Status Higienitas:</span>
-                    <p class="font-bold">Tervalidasi Sistem</p>
-                </div>
-            </div>
-        </div> --}}
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-base-200">
             <div class="p-4 bg-base-200 font-bold flex items-center gap-2">
@@ -61,7 +75,7 @@
                 <thead>
                     <tr class="bg-base-100">
                         <th>Nama Bahan</th>
-                        <th class="text-center">Target (Estimasi)</th>
+                        <th class="text-center">Target Terpakai</th>
                         <th class="text-center">Aktual Terpakai</th>
                     </tr>
                 </thead>

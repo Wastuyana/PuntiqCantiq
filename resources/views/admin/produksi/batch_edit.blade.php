@@ -105,25 +105,24 @@
                                         <span class="text-xs uppercase opacity-50 font-bold tracking-wider">Total Biaya
                                             Tenaga Kerja (Rp)</span>
                                     </label>
-                                    <input type="number" name="biaya_tenagakerja"
-                                        value="{{ $batch->estimasi_tenaga_kerja }}"
+                                    <input type="number" name="biaya_tenagakerja" value="{{ $estimasiTK }}"
                                         class="input input-bordered font-bold text-sm focus:border-primary"
                                         placeholder="Masukkan total biaya tenaga kerja">
                                     <label class="label">
                                         <span class="label-text-alt opacity-50 italic">Estimasi awal: Rp
-                                            {{ number_format($batch->estimasi_tenaga_kerja) }}</span>
+                                            {{ number_format($estimasiTK) }}</span>
                                     </label>
                                 </div>
                                 <div class="form-control w-full">
                                     <label class="label">
                                         <span class="label-text font-bold text-xs">Total Biaya Overhead (Rp)</span>
                                     </label>
-                                    <input type="number" name="biaya_overhead" value="{{ $batch->estimasi_overhead }}"
+                                    <input type="number" name="biaya_overhead" value="{{ $estimasiOverhead }}"
                                         class="input input-bordered font-bold text-sm focus:border-primary"
                                         placeholder="Masukkan total biaya overhead">
                                     <label class="label">
                                         <span class="label-text-alt opacity-50 italic">
-                                            Estimasi otomatis: Rp {{ number_format($batch->estimasi_overhead) }}
+                                            Estimasi otomatis: Rp {{ number_format($estimasiOverhead) }}
                                         </span>
                                     </label>
                                 </div>
