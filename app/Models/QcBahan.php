@@ -16,7 +16,7 @@ class QcBahan extends Model
         'tanggal_qc'
     ];
 
-    public function bahan_masuks()
+    public function bahan_masuk()
     {
         return $this->belongsTo(BahanMasuk::class, 'bahan_masuk_id');
     }

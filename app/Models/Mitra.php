@@ -14,9 +14,4 @@ class Mitra extends Model
         'alamat_mitra',
         'no_hp'
     ];
-
-    public function penjualan()
-    {
-        return $this->belongsTo(Penjualan::class, 'penjualan_id');
-    }
 }

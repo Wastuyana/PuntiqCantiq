@@ -57,7 +57,7 @@
                                         </svg>
                                     </label>
 
-                                    <form action="{{ route('owner.supplier.destroy', $s->id) }}" method="POST"
+                                    <form action="{{ route('owner.partner.supplier.destroy', $s->id) }}" method="POST"
                                         onsubmit="return confirm('Hapus supplier ini?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-square btn-outline btn-error">
@@ -86,7 +86,7 @@
     <div class="modal">
         <div class="modal-box max-w-lg">
             <h3 class="font-bold text-lg mb-4">Tambah Supplier Baru</h3>
-            <form action="{{ route('owner.supplier.store') }}" method="POST">
+            <form action="{{ route('owner.partner.supplier.store') }}" method="POST">
                 @csrf
                 @if ($errors->any())
                     <div class="alert alert-error shadow-sm mb-4 py-2">
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="modal-action">
-                    <a href="{{ route('owner.supplier.index') }}" class="btn btn-ghost">Batal</a>
+                    <a href="{{ route('owner.partner.supplier.index') }}" class="btn btn-ghost">Batal</a>
                     <button type="submit" class="btn btn-primary px-6">Simpan Data</button>
                 </div>
             </form>
@@ -136,7 +136,7 @@
         <div class="modal">
             <div class="modal-box max-w-lg text-left">
                 <h3 class="font-bold text-lg mb-4">Edit Supplier: {{ $s->nama_supplier }}</h3>
-                <form action="{{ route('owner.supplier.update', $s->id) }}" method="POST">
+                <form action="{{ route('owner.partner.supplier.update', $s->id) }}" method="POST">
                     @csrf @method('PUT')
                     @if ($errors->any())
                         <div class="alert alert-error shadow-sm mb-4 py-2">
@@ -174,7 +174,7 @@
                     </div>
 
                     <div class="modal-action">
-                        <a href="{{ route('owner.supplier.index') }}" class="btn btn-ghost">Batal</a>
+                        <a href="{{ route('owner.partner.supplier.index') }}" class="btn btn-ghost">Batal</a>
                         <button type="submit" class="btn btn-primary px-6">Simpan Perubahan</button>
                     </div>
                 </form>

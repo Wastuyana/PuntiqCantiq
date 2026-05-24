@@ -10,7 +10,7 @@ class SupplierController extends Controller
     public function index()
     {
         $suppliers = Supplier::all();
-        return view('owner.supplier', compact('suppliers'));
+        return view('owner.partner.supplier', compact('suppliers'));
     }
 
     public function store(Request $request)
@@ -38,7 +38,7 @@ class SupplierController extends Controller
             'no_hp' => $request->no_hp,
         ]);
 
-        return redirect()->route('owner.supplier.index')->with('success', 'Supplier berhasil ditambah!');
+        return redirect()->route('owner.partner.supplier.index')->with('success', 'Supplier berhasil ditambah!');
     }
 
     public function update(Request $request, int $id)

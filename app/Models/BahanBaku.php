@@ -17,7 +17,8 @@ class BahanBaku extends Model
         'satuan',
         'harga_satuan',
         'ss_bahan',
-        'rop_bahan'
+        'rop_bahan',
+        'harga_updated_at'
     ];
 
     public function bom(): HasMany
