@@ -109,7 +109,7 @@
                         @forelse($history as $row)
                         <tr>
                             <td class="font-medium text-gray-600 text-sm">
-                                {{ \Carbon\Carbon::parse($row->tanggal_penj)->translatedFormat('d M Y, H:i') }}
+                                {{ \Carbon\Carbon::parse($row->tanggal_penj)->translatedFormat('d M Y') }}
                             </td>
                             <td>
                                 <div class="font-bold text-gray-800">{{ $row->mitra->nama_mitra ?? 'Umum/Terhapus' }}</div>

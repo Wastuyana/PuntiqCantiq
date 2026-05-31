@@ -4,73 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\BahanBaku;
 use App\Models\BahanMasuk;
-use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class BahanMasukController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $suppliers = Supplier::all();
-        $bahanBaku = BahanBaku::all();
-        $bahanMasuk = BahanMasuk::with(['supplier', 'bahan_baku'])->orderBy('tanggal_masuk', 'desc')->get();
+        // Data yang masih 'di_pesan' akan muncul di tabel pencatatan
+        $pesananPending = BahanMasuk::where('proses_pemesanan', 'di_pesan')->get();
+        
+        // Data yang sudah selesai dicatat masuk ke riwayat
+        $bahanMasuk = BahanMasuk::where('proses_pemesanan', 'selesai_dicatat')->get();
 
-        return view('admin.inventory.bahan_masuk', compact('suppliers', 'bahanBaku', 'bahanMasuk'));
+        return view('admin.inventory.bahan_masuk', compact('pesananPending', 'bahanMasuk'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'supplier_id'   => 'required',
-            'bahan_baku_id' => 'required',
-            'tanggal_pesan' => 'required|date',
-            'tanggal_masuk' => 'required|date|after_or_equal:tanggal_pesan',
+            'tanggal_masuk' => 'required|date',
             'jumlah_total'  => 'required|numeric|min:1',
-            'harga_beli'    => 'required|numeric', 
         ]);
 
-        // Hitung Harga Satuan
-        $hargaSatuan = $request->harga_beli / $request->jumlah_total;
+        $bm = BahanMasuk::findOrFail($id);
 
-        // 1. Simpan Bahan Masuk
-        $bm = new \App\Models\BahanMasuk();
-        $bm->supplier_id   = $request->supplier_id;
-        $bm->bahan_baku_id = $request->bahan_baku_id;
-        $bm->tanggal_pesan = $request->tanggal_pesan;
-        $bm->tanggal_masuk = $request->tanggal_masuk;
-        $bm->jumlah_total  = $request->jumlah_total;
-        $bm->harga_beli    = $request->harga_beli;
-        $bm->status        = 'pending';
-        $bm->save();
+        // Ambil harga beli yang sudah ada di database dari proses pemesanan
+        $hargaBeli = $bm->harga_beli; 
 
-        // 2. Update Data Bahan Baku
-        $bahan = \App\Models\BahanBaku::find($request->bahan_baku_id);
-        $bahan->harga_satuan = $hargaSatuan;
-        $bahan->harga_updated_at = now();
-        $bahan->save();
+        // Hitung harga satuan berdasarkan harga beli lama dan jumlah yang baru datang
+        $hargaSatuan = $hargaBeli / $request->jumlah_total;
 
-        return redirect()->back()->with('success', 'Data masuk & harga berhasil diperbarui!');
+        // Update data BahanMasuk
+        $bm->update([
+            'tanggal_masuk'    => $request->tanggal_masuk,
+            'jumlah_total'     => $request->jumlah_total,
+            'proses_pemesanan' => 'selesai_dicatat',
+            'status'           => 'pending'
+        ]);
+
+        // Update stok dan harga di BahanBaku
+        $bahan = BahanBaku::find($bm->bahan_baku_id);
+        if ($bahan) {
+            $bahan->increment('stok', $request->jumlah_total);
+            $bahan->update([
+                'harga_satuan'     => $hargaSatuan,
+                'harga_updated_at' => now()
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Barang dicatat, harga satuan otomatis terupdate!');
     }
-
+        
     public function destroy($id)
     {
-        $bm = BahanMasuk::findOrFail($id);
-        $bm->delete();
-
-        return redirect()->back()->with('success', 'Catatan kedatangan berhasil dihapus.');
+        BahanMasuk::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Catatan berhasil dihapus.');
     }
 }

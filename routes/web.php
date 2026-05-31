@@ -18,6 +18,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PanduanKerjaController;
 use App\Http\Controllers\RekomendasiProdController;
 use App\Http\Controllers\BahanMasukController;
+use App\Http\Controllers\LaporanPembelianController;
 use App\Http\Controllers\LaporanPenjualanController;
 use App\Http\Controllers\ManajemenPembayaranController;
 use App\Http\Controllers\ManajemenPembayaranOwner;
@@ -28,11 +29,13 @@ use App\Http\Controllers\SupplierController;
 use app\Http\Controllers\Pelanggan;
 use App\Http\Controllers\Pelanggan as ControllersPelanggan;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\PenjualanMitraController;
 use App\Http\Controllers\PenjualanMtrOwnerController;
 use App\Http\Controllers\PenjualanPelangganController;
 use App\Http\Controllers\PenjualanPlgOwnerController;
 use App\Http\Controllers\StokController;
+use App\Http\Controllers\SupplierOwnerController;
 use App\Models\Mitra;
 
 Route::get('/', function () {
@@ -90,9 +93,6 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::post('/owner/inventory/bahan-baku/{id}/hitung-ulang', [BahanBakuController::class, 'hitungUlang'])
      ->name('owner.inventory.bahan_baku.hitung-ulang');
     Route::resource('/owner/inventory/qc', QcController::class)->names('owner.inventory.qc');
-
-    Route::resource('/owner/partner/supplier', SupplierController::class)->names('owner.partner.supplier');
-
     Route::get('/owner/laporan', [LaporanController::class, 'index'])->name('owner.laporan');
 
     Route::get('/laporan-produksi/export-excel', [LaporanController::class, 'exportExcel'])->name('owner.laporan.export.excel');
@@ -100,7 +100,10 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     
     Route::get('/owner/laporan/penjualan', [LaporanPenjualanController::class, 'index'])->name('owner.laporan.penjualan');
     Route::get('/owner/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('owner.laporan.penjualan.export');
-    Route::resource('/owner/partner/pelanggan', PelangganController::class)->names('owner.partner.pelanggan');
+    Route::get('/owner/laporan/pembelian', [LaporanPembelianController::class, 'index'])->name('owner.laporan.pembelian');
+    Route::get('owner/laporan/pembelian/export-excel', [LaporanPembelianController::class, 'exportExcel'])->name('owner.laporan.pembelian.export.excel');
+    Route::get('owner/laporan/pembelian/export-pdf', [LaporanPembelianController::class, 'exportPdf'])->name('owner.laporan.pembelian.export.pdf');    
+    Route::resource('/owner/partner/supplier', SupplierOwnerController::class)->names('owner.partner.supplier');
     Route::resource('/owner/partner/mitra', MitraController::class)->names('owner.partner.mitra');
     Route::get('/owner/penjualan/pelanggan', [PenjualanPlgOwnerController::class, 'index'])->name('owner.penjualan.pelanggan.index');
     Route::get('/owner/penjualan/mitra', [PenjualanMtrOwnerController::class, 'index'])->name('owner.penjualan.mitra.index');
@@ -141,6 +144,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/manajemenpembayaran', [ManajemenPembayaranController::class, 'index'])->name('admin.penjualan.manajemenpembayaran.index');
     Route::put('/admin/manajemenpembayaran/{id}/lunasi', [ManajemenPembayaranController::class, 'lunasi'])->name('admin.penjualan.manajemenpembayaran.lunasi');
     Route::resource('/admin/inventory/bahan-masuk', BahanMasukController::class)->names('admin.inventory.bahan_masuk');
+    Route::resource('/admin/inventory/pemesanan', PemesananController::class)->names('admin.inventory.pemesanan');
+    Route::put('/admin/inventory/{id}/terima', [PemesananController::class, 'terima'])->name('admin.inventory.pemesanan.terima');
+    Route::resource('/admin/partner/supplier', SupplierController::class)->names('admin.partner.supplier');
+    Route::resource('/admin/partner/pelanggan', PelangganController::class)->names('admin.partner.pelanggan');
+    Route::resource('/admin/partner/mitra', MitraController::class)->names('admin.partner.mitra');
 });
 
 Route::middleware('auth')->group(function () {

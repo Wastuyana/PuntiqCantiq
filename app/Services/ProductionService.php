@@ -316,8 +316,8 @@ class ProductionService
         $rop = ($d * $avgLeadTime) + $safetyStock;
 
         return $bahanBaku->update([
-            'safety_stock' => max(0, ceil($safetyStock)),
-            'rop' => ceil($rop)
+            'ss_bahan' => max(0, ceil($safetyStock)),
+            'rop_bahan' => ceil($rop)
         ]);
     }
 }

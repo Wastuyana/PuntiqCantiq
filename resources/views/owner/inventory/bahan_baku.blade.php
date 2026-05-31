@@ -32,7 +32,7 @@
                                 <div>Rp {{ number_format($bb->harga_satuan, 0, ',', '.') }}</div>
                                 <div class="text-[10px] text-gray-400 italic">Update: {{ $bb->harga_updated_at ? \Carbon\Carbon::parse($bb->harga_updated_at)->diffForHumans() : '-' }}</div>
                             </td>
-                            <td><span class="font-semibold text-lg">{{ $bb->stok }} {{ $bb->satuan }}</span></td>
+                            <td>{{ $bb->stok }} {{ $bb->satuan }}</td>
                             
                             <td>
                                 <div class="text-xs">SS: <span class="font-bold">{{ $bb->ss_bahan }}</span></div>

@@ -64,8 +64,8 @@ class BahanBakuController extends Controller
             'satuan' => $request->satuan,
             'harga_satuan' => $request->harga_satuan,
             'stok' => $request->stok,
-            'safety_stock' => 0, // Default awal
-            'rop' => 0,          // Default awal
+            'ss_bahan' => 0, // Default awal
+            'rop_bahan' => 0,          // Default awal
             'harga_updated_at' => now(),
         ]);
 
@@ -79,8 +79,8 @@ class BahanBakuController extends Controller
             'satuan' => 'required',
             'harga_satuan' => 'required|numeric',
             'stok' => 'required|numeric',
-            'safety_stock' => 'nullable|numeric', // Validasi baru
-            'rop' => 'nullable|numeric',          // Validasi baru
+            'ss_bahan' => 'nullable|numeric', // Validasi baru
+            'rop_bahan' => 'nullable|numeric',          // Validasi baru
         ]);
 
         $bb = BahanBaku::findOrFail($id);
@@ -90,8 +90,8 @@ class BahanBakuController extends Controller
             'satuan' => $request->satuan,
             'harga_satuan' => $request->harga_satuan,
             'stok' => $request->stok,
-            'safety_stock' => $request->safety_stock ?? $bb->safety_stock,
-            'rop' => $request->rop ?? $bb->rop,
+            'ss_bahan' => $request->safety_stock ?? $bb->safety_stock,
+            'rop_bahan' => $request->rop ?? $bb->rop,
             'harga_updated_at' => now(),
         ]);
 

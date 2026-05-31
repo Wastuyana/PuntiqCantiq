@@ -10,7 +10,7 @@ class PelangganController extends Controller
     public function index()
     {
         $pelanggan = Pelanggan::orderBy('id', 'desc')->get();
-        return view('owner.partner.pelanggan', compact('pelanggan'));
+        return view('admin.partner.pelanggan', compact('pelanggan'));
     }
 
     public function store(Request $request)
