@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             MitraSeeder::class,
             PelangganSeeder::class,
+            PenjualanSeeder::class,
             BatchProduksiSeeder::class,
         ]);
     }

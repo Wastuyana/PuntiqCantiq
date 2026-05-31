@@ -18,42 +18,57 @@ class BatchProduksiSeeder extends Seeder
 
         $produkMap = DB::table('produk')->pluck('id', 'kode_produk')->toArray();
         $userId = DB::table('users')->first()->id ?? 1;
-
         $hargaBahanMap = DB::table('bahan_baku')->pluck('harga_satuan', 'id')->toArray();
 
+        // Mengelompokkan seluruh 21 varian ke dalam 3 kluster produksi agar sebaran logis 
+        // Kluster 1: Produk Reguler Utama & Mini Pack
+        $klusterA = ['PCR-OR', 'PCR-CK', 'PCR-MB', 'PCR-GR', 'PCR-TL', 'PCM-CK', 'PCM-MB'];
+        // Kluster 2: Big Pack (Kemasan Oleh-Oleh Besar)
+        $klusterB = ['BP-OR500', 'BP-CK500', 'BP-MB500', 'BP-GR500', 'BP-TL500', 'BP-OR250', 'BP-CK250'];
+        // Kluster 3: Sisa Big Pack, Toples Flakes, dan Crispy Jar
+        $klusterC = ['BP-MB250', 'BP-GR250', 'BP-TL250', 'CBF-TPL', 'CBF-BIG', 'BCJ-CK', 'BCJ-TR'];
+
+        // Gabungan semua produk untuk sesi produksi massal (misal saat persiapan lebaran)
+        $semuaProduk = array_keys($produkMap);
+
         $jadwalProduksi = [
-            ['tanggal' => '2026-02-02', 'nomor' => 'B-20260202-01', 'tk' => 350000, 'varian' => ['PCR-CK', 'PCR-GR'], 'qty' => 80],
-            ['tanggal' => '2026-02-06', 'nomor' => 'B-20260206-01', 'tk' => 400000, 'varian' => ['PCR-CK', 'PCR-MB'], 'qty' => 95],
-            ['tanggal' => '2026-02-09', 'nomor' => 'B-20260209-01', 'tk' => 300000, 'varian' => ['PCR-CK', 'PCM-CK', 'CBF-TPL'], 'qty' => 90],
-            ['tanggal' => '2026-02-13', 'nomor' => 'B-20260213-01', 'tk' => 380000, 'varian' => ['PCR-MB', 'PCR-GR'], 'qty' => 85],
-            ['tanggal' => '2026-02-17', 'nomor' => 'B-20260217-01', 'tk' => 420000, 'varian' => ['PCR-CK', 'BCJ-CK'], 'qty' => 100],
-            ['tanggal' => '2026-02-20', 'nomor' => 'B-20260220-01', 'tk' => 320000, 'varian' => ['PCR-CK', 'PCM-MB', 'CBF-BIG'], 'qty' => 85],
-            ['tanggal' => '2026-02-24', 'nomor' => 'B-20260224-01', 'tk' => 390000, 'varian' => ['PCR-MB', 'PCR-TL'], 'qty' => 90],
+            // --- BULAN FEBRUARI (Aktivitas Normal) ---
+            ['tanggal' => '2026-02-02', 'nomor' => 'B-20260202-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 350],
+            ['tanggal' => '2026-02-06', 'nomor' => 'B-20260206-01', 'tk' => 400000, 'varian' => $klusterB, 'qty' => 280],
+            ['tanggal' => '2026-02-09', 'nomor' => 'B-20260209-01', 'tk' => 420000, 'varian' => $klusterC, 'qty' => 250],
+            ['tanggal' => '2026-02-13', 'nomor' => 'B-20260213-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 320],
+            ['tanggal' => '2026-02-17', 'nomor' => 'B-20260217-01', 'tk' => 390000, 'varian' => $klusterB, 'qty' => 240],
+            ['tanggal' => '2026-02-20', 'nomor' => 'B-20260220-01', 'tk' => 410000, 'varian' => $klusterC, 'qty' => 260],
+            ['tanggal' => '2026-02-24', 'nomor' => 'B-20260224-01', 'tk' => 500000, 'varian' => $klusterA, 'qty' => 360],
 
-            ['tanggal' => '2026-03-02', 'nomor' => 'B-20260302-01', 'tk' => 500000, 'varian' => ['PCR-CK', 'PCR-MB'], 'qty' => 120],
-            ['tanggal' => '2026-03-05', 'nomor' => 'B-20260305-01', 'tk' => 550000, 'varian' => ['PCR-CK', 'BP-OR500'], 'qty' => 130],
-            ['tanggal' => '2026-03-09', 'nomor' => 'B-20260309-01', 'tk' => 480000, 'varian' => ['PCR-MB', 'BCJ-TR'], 'qty' => 110],
-            ['tanggal' => '2026-03-12', 'nomor' => 'B-20260312-01', 'tk' => 600000, 'varian' => ['PCR-CK', 'PCR-TL'], 'qty' => 140],
-            ['tanggal' => '2026-03-16', 'nomor' => 'B-20260316-01', 'tk' => 520000, 'varian' => ['PCR-MB', 'BP-CK500'], 'qty' => 115],
-            ['tanggal' => '2026-03-19', 'nomor' => 'B-20260319-01', 'tk' => 580000, 'varian' => ['PCR-CK', 'PCR-GR'], 'qty' => 135],
-            ['tanggal' => '2026-03-23', 'nomor' => 'B-20260323-01', 'tk' => 490000, 'varian' => ['PCR-CK', 'PCM-CK', 'CBF-TPL'], 'qty' => 150],
-            ['tanggal' => '2026-03-27', 'nomor' => 'B-20260327-01', 'tk' => 510000, 'varian' => ['PCR-MB', 'BCJ-CK', 'CBF-BIG'], 'qty' => 135],
+            // --- BULAN MARET (Persiapan Ramadhan/Lebaran - Qty Dinaikkan Drastis) ---
+            ['tanggal' => '2026-03-02', 'nomor' => 'B-20260302-01', 'tk' => 850000, 'varian' => $semuaProduk, 'qty' => 650],
+            ['tanggal' => '2026-03-05', 'nomor' => 'B-20260305-01', 'tk' => 550000, 'varian' => $klusterB, 'qty' => 400],
+            ['tanggal' => '2026-03-09', 'nomor' => 'B-20260309-01', 'tk' => 580000, 'varian' => $klusterC, 'qty' => 380],
+            ['tanggal' => '2026-03-12', 'nomor' => 'B-20260312-01', 'tk' => 900000, 'varian' => $semuaProduk, 'qty' => 700],
+            ['tanggal' => '2026-03-16', 'nomor' => 'B-20260316-01', 'tk' => 600000, 'varian' => $klusterA, 'qty' => 450],
+            ['tanggal' => '2026-03-19', 'nomor' => 'B-20260319-01', 'tk' => 550000, 'varian' => $klusterB, 'qty' => 420],
+            ['tanggal' => '2026-03-23', 'nomor' => 'B-20260323-01', 'tk' => 880000, 'varian' => $semuaProduk, 'qty' => 680],
+            ['tanggal' => '2026-03-27', 'nomor' => 'B-20260327-01', 'tk' => 620000, 'varian' => $klusterC, 'qty' => 430],
 
-            ['tanggal' => '2026-04-02', 'nomor' => 'B-20260402-01', 'tk' => 405000, 'varian' => ['PCR-CK', 'PCR-GR'], 'qty' => 104],
-            ['tanggal' => '2026-04-06', 'nomor' => 'B-20260406-01', 'tk' => 380000, 'varian' => ['PCR-MB', 'PCM-CK', 'CBF-TPL'], 'qty' => 100],
-            ['tanggal' => '2026-04-09', 'nomor' => 'B-20260409-01', 'tk' => 485000, 'varian' => ['PCR-CK', 'PCR-MB'], 'qty' => 132],
-            ['tanggal' => '2026-04-13', 'nomor' => 'B-20260413-01', 'tk' => 390000, 'varian' => ['PCR-GR', 'PCM-MB', 'CBF-BIG'], 'qty' => 95],
-            ['tanggal' => '2026-04-16', 'nomor' => 'B-20260416-01', 'tk' => 410000, 'varian' => ['PCR-CK', 'PCR-TL'], 'qty' => 95],
-            ['tanggal' => '2026-04-20', 'nomor' => 'B-20260420-01', 'tk' => 430000, 'varian' => ['PCR-MB', 'BCJ-TR'], 'qty' => 100],
-            ['tanggal' => '2026-04-24', 'nomor' => 'B-20260424-01', 'tk' => 855000, 'varian' => ['PCR-CK', 'PCR-MB'], 'qty' => 212],
-            ['tanggal' => '2026-04-28', 'nomor' => 'B-20260428-01', 'tk' => 400000, 'varian' => ['PCR-CK', 'BP-OR250'], 'qty' => 90],
+            // --- BULAN APRIL (Pasca Lebaran / Stabil Berkelanjutan) ---
+            ['tanggal' => '2026-04-02', 'nomor' => 'B-20260402-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 340],
+            ['tanggal' => '2026-04-06', 'nomor' => 'B-20260406-01', 'tk' => 400000, 'varian' => $klusterB, 'qty' => 290],
+            ['tanggal' => '2026-04-09', 'nomor' => 'B-20260409-01', 'tk' => 420000, 'varian' => $klusterC, 'qty' => 280],
+            ['tanggal' => '2026-04-13', 'nomor' => 'B-20260413-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 310],
+            ['tanggal' => '2026-04-16', 'nomor' => 'B-20260416-01', 'tk' => 410000, 'varian' => $klusterB, 'qty' => 270],
+            ['tanggal' => '2026-04-20', 'nomor' => 'B-20260420-01', 'tk' => 430000, 'varian' => $klusterC, 'qty' => 290],
+            ['tanggal' => '2026-04-24', 'nomor' => 'B-20260424-01', 'tk' => 800000, 'varian' => $semuaProduk, 'qty' => 600],
+            ['tanggal' => '2026-04-28', 'nomor' => 'B-20260428-01', 'tk' => 400000, 'varian' => $klusterA, 'qty' => 300],
 
-            ['tanggal' => '2026-05-06', 'nomor' => 'B-20260506-01', 'tk' => 380000, 'varian' => ['PCR-MB', 'PCM-CK', 'CBF-TPL'], 'qty' => 100],
-            ['tanggal' => '2026-05-13', 'nomor' => 'B-20260513-01', 'tk' => 390000, 'varian' => ['PCR-GR', 'PCM-MB', 'CBF-BIG'], 'qty' => 95],
-            ['tanggal' => '2026-05-16', 'nomor' => 'B-20260516-01', 'tk' => 410000, 'varian' => ['PCR-CK', 'PCR-TL'], 'qty' => 95],
-            ['tanggal' => '2026-05-20', 'nomor' => 'B-20260520-01', 'tk' => 430000, 'varian' => ['PCR-MB', 'BCJ-TR'], 'qty' => 100],
-            ['tanggal' => '2026-05-24', 'nomor' => 'B-20260524-01', 'tk' => 855000, 'varian' => ['PCR-CK', 'PCR-MB'], 'qty' => 212],
-            ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-01', 'tk' => 400000, 'varian' => ['PCR-CK', 'BP-OR250'], 'qty' => 90],
+            // --- BULAN MEI (Bulan Berjalan - Stok Siap Masuk Menu Inventori) ---
+            ['tanggal' => '2026-05-06', 'nomor' => 'B-20260506-01', 'tk' => 520000, 'varian' => $klusterA, 'qty' => 380],
+            ['tanggal' => '2026-05-13', 'nomor' => 'B-20260513-01', 'tk' => 480000, 'varian' => $klusterB, 'qty' => 310],
+            ['tanggal' => '2026-05-16', 'nomor' => 'B-20260516-01', 'tk' => 490000, 'varian' => $klusterC, 'qty' => 300],
+            ['tanggal' => '2026-05-20', 'nomor' => 'B-20260520-01', 'tk' => 550000, 'varian' => $klusterA, 'qty' => 400],
+            ['tanggal' => '2026-05-24', 'nomor' => 'B-20260524-01', 'tk' => 950000, 'varian' => $semuaProduk, 'qty' => 750], 
+            ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-01', 'tk' => 500000, 'varian' => $klusterB, 'qty' => 250],
+            ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-02', 'tk' => 500000, 'varian' => $klusterA, 'qty' => 150],
         ];
 
         foreach ($jadwalProduksi as $j) {
@@ -85,7 +100,7 @@ class BatchProduksiSeeder extends Seeder
                 $idProd = $produkMap[$kodeProduk] ?? null;
                 if (!$idProd) continue;
 
-                $persentaseHasilAktual = rand(95, 101) / 100;
+                $persentaseHasilAktual = rand(96, 102) / 100;
                 $qtyPerVarianAktual = round($qtyPerVarianTarget * $persentaseHasilAktual);
                 if ($qtyPerVarianAktual < 1) $qtyPerVarianAktual = 1;
 
@@ -94,12 +109,10 @@ class BatchProduksiSeeder extends Seeder
 
                 foreach ($bomItems as $item) {
                     $qtyBahanTarget = $item->jumlah_kebutuhan * $qtyPerVarianTarget;
-
                     $persentaseBahanAktual = rand(97, 104) / 100;
                     $qtyBahanAktual = round($qtyBahanTarget * $persentaseBahanAktual);
 
                     $hargaBahanSatuan = $hargaBahanMap[$item->bahan_baku_id] ?? 0;
-
                     $qtyBahanAktualDalamKg = $qtyBahanAktual / 1000;
                     $totalBiayaBahanVarian += ($qtyBahanAktualDalamKg * $hargaBahanSatuan);
 
@@ -135,15 +148,18 @@ class BatchProduksiSeeder extends Seeder
                     'updated_at'               => Carbon::parse($j['tanggal']),
                 ]);
 
-                DB::table('produk')->where('id', $idProd)->increment('stok', $qtyPerVarianAktual);
+                $bulanProduksi = Carbon::parse($j['tanggal'])->month;
+                if ($bulanProduksi === 5) {
+                    DB::table('produk')->where('id', $idProd)->increment('stok', $qtyPerVarianAktual);
+                }
             }
 
             foreach ($kebutuhanBahanBatch as $bahanBakuId => $dataBahan) {
                 DB::table('batch_bahan')->insert([
                     'batch_id'      => $batchId,
                     'bahan_baku_id' => $bahanBakuId,
-                    'bahan_target'  => $dataBahan['target'], // Tetap simpan dalam gram sesuai struktur tabel historis
-                    'bahan_aktual'  => $dataBahan['aktual'], // Tetap simpan dalam gram
+                    'bahan_target'  => $dataBahan['target'],
+                    'bahan_aktual'  => $dataBahan['aktual'],
                     'created_at'    => Carbon::parse($j['tanggal']),
                     'updated_at'    => Carbon::parse($j['tanggal']),
                 ]);

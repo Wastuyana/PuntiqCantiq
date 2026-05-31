@@ -26,49 +26,122 @@ class PenjualanSeeder extends Seeder
 
         $rekapBulananMitra = [
             2 => [
-                'total_target' => 473,
+                'total_target' => 700,
                 'tanggal_pilihan' => ['2026-02-05', '2026-02-12', '2026-02-19', '2026-02-26'],
                 'produk_distribusi' => [
-                    'PCR-CK' => 0.50,
-                    'PCR-MB' => 0.20,
-                    'PCR-GR' => 0.15,
-                    'PCM-CK' => 0.10,
-                    'BCJ-CK' => 0.05
+                    'PCR-OR' => 0.15,
+                    'PCR-CK' => 0.20,
+                    'PCR-MB' => 0.15,
+                    'PCR-GR' => 0.10,
+                    'PCR-TL' => 0.05,
+                    'PCM-CK' => 0.05,
+                    'PCM-MB' => 0.05,
+                    'CBF-TPL' => 0.03,
+                    'CBF-BIG' => 0.02,
+                    'BP-OR500' => 0.02,
+                    'BP-CK500' => 0.02,
+                    'BP-MB500' => 0.02,
+                    'BP-GR500' => 0.02,
+                    'BP-TL500' => 0.02,
+                    'BP-OR250' => 0.03,
+                    'BP-CK250' => 0.03,
+                    'BP-MB250' => 0.03,
+                    'BP-GR250' => 0.02,
+                    'BP-TL250' => 0.02,
+                    'BCJ-CK' => 0.03,
+                    'BCJ-TR' => 0.02
                 ]
             ],
             3 => [
-                'total_target' => 763,
+                'total_target' => 980, 
                 'tanggal_pilihan' => ['2026-03-04', '2026-03-11', '2026-03-18', '2026-03-25', '2026-03-30'],
                 'produk_distribusi' => [
-                    'PCR-CK' => 0.45,
-                    'PCR-MB' => 0.25, // Varian manis naik pas lebaran
-                    'PCR-TL' => 0.10, // Ayam Taliwang
-                    'BP-OR500' => 0.10, // Big Pack buat parsel/oleh-oleh kue lebaran
-                    'BCJ-TR' => 0.10   // Crispy Jar Tiramisu
+                    'PCR-OR' => 0.12,
+                    'PCR-CK' => 0.18,
+                    'PCR-MB' => 0.15,
+                    'PCR-GR' => 0.08,
+                    'PCR-TL' => 0.05,
+                    'PCM-CK' => 0.05,
+                    'PCM-MB' => 0.05,
+                    'CBF-TPL' => 0.05,
+                    'CBF-BIG' => 0.03,
+                    'BP-OR500' => 0.04,
+                    'BP-CK500' => 0.04,
+                    'BP-MB500' => 0.04,
+                    'BP-GR500' => 0.02,
+                    'BP-TL500' => 0.02,
+                    'BP-OR250' => 0.03,
+                    'BP-CK250' => 0.03,
+                    'BP-MB250' => 0.03,
+                    'BP-GR250' => 0.02,
+                    'BP-TL250' => 0.02,
+                    'BCJ-CK' => 0.04,
+                    'BCJ-TR' => 0.03
                 ]
             ],
             4 => [
-                'total_target' => 689,
+                'total_target' => 951,
                 'tanggal_pilihan' => ['2026-04-03', '2026-04-10', '2026-04-17', '2026-04-24'],
                 'produk_distribusi' => [
-                    'PCR-CK' => 0.48,
-                    'PCR-MB' => 0.22,
-                    'PCR-GR' => 0.15,
-                    'PCM-MB' => 0.10,
-                    'BP-CK250' => 0.05
+                    'PCR-OR' => 0.14,
+                    'PCR-CK' => 0.20,
+                    'PCR-MB' => 0.14,
+                    'PCR-GR' => 0.10,
+                    'PCR-TL' => 0.05,
+                    'PCM-CK' => 0.05,
+                    'PCM-MB' => 0.05,
+                    'CBF-TPL' => 0.03,
+                    'CBF-BIG' => 0.02,
+                    'BP-OR500' => 0.02,
+                    'BP-CK500' => 0.02,
+                    'BP-MB500' => 0.02,
+                    'BP-GR500' => 0.02,
+                    'BP-TL500' => 0.02,
+                    'BP-OR250' => 0.03,
+                    'BP-CK250' => 0.03,
+                    'BP-MB250' => 0.03,
+                    'BP-GR250' => 0.02,
+                    'BP-TL250' => 0.02,
+                    'BCJ-CK' => 0.03,
+                    'BCJ-TR' => 0.02
+                ]
+            ],
+            5 => [
+                'total_target' => 950,
+                'tanggal_pilihan' => ['2026-05-04', '2026-05-11', '2026-05-18', '2026-05-25'],
+                'produk_distribusi' => [
+                    'PCR-OR' => 0.15,
+                    'PCR-CK' => 0.18,
+                    'PCR-MB' => 0.15,
+                    'PCR-GR' => 0.09,
+                    'PCR-TL' => 0.05,
+                    'PCM-CK' => 0.05,
+                    'PCM-MB' => 0.05,
+                    'CBF-TPL' => 0.04,
+                    'CBF-BIG' => 0.02,
+                    'BP-OR500' => 0.02,
+                    'BP-CK500' => 0.02,
+                    'BP-MB500' => 0.02,
+                    'BP-GR500' => 0.02,
+                    'BP-TL500' => 0.02,
+                    'BP-OR250' => 0.03,
+                    'BP-CK250' => 0.03,
+                    'BP-MB250' => 0.03,
+                    'BP-GR250' => 0.02,
+                    'BP-TL250' => 0.02,
+                    'BCJ-CK' => 0.03,
+                    'BCJ-TR' => 0.02
                 ]
             ]
         ];
 
         foreach ($rekapBulananMitra as $bulan => $config) {
             $jumlahTanggal = count($config['tanggal_pilihan']);
-
             $targetPerTransaksi = floor($config['total_target'] / $jumlahTanggal);
             $sisaBungkus = $config['total_target'] % $jumlahTanggal;
 
             foreach ($config['tanggal_pilihan'] as $index => $tanggal) {
                 $qtyTransaksiIni = $targetPerTransaksi + ($index === 0 ? $sisaBungkus : 0);
-
                 $mitraIdTerpilih = $mitraIds[array_rand($mitraIds)];
 
                 $penjualanId = DB::table('penjualan')->insertGetId([
@@ -87,7 +160,7 @@ class PenjualanSeeder extends Seeder
                 $subtotalHargaTransaksi = 0;
 
                 foreach ($config['produk_distribusi'] as $kodeProduk => $persentase) {
-                    $faktorAcak = rand(70, 130) / 100;
+                    $faktorAcak = rand(65, 135) / 100;
                     $qtyProduk = round(($qtyTransaksiIni * $persentase) * $faktorAcak);
 
                     if ($qtyProduk > 0) {
@@ -105,11 +178,16 @@ class PenjualanSeeder extends Seeder
                                 'updated_at'    => Carbon::parse($tanggal),
                             ]);
 
+                            if ($bulan === 5) {
+                                DB::table('produk')->where('id', $idProduk)->decrement('stok', $qtyProduk);
+                            }
+
                             $totalProdTransaksi += $qtyProduk;
                             $subtotalHargaTransaksi += $totalHargaDetail;
                         }
                     }
                 }
+
                 DB::table('penjualan')->where('id', $penjualanId)->update([
                     'total_prod'     => $totalProdTransaksi,
                     'subtotal_harga' => $subtotalHargaTransaksi
@@ -120,8 +198,8 @@ class PenjualanSeeder extends Seeder
         $metodePembayaran = ['cash', 'qris', 'cash'];
         $produkKodes = array_keys($produkMap);
 
-        for ($i = 1; $i <= 30; $i++) {
-            $bulanAcak = rand(2, 4);
+        for ($i = 1; $i <= 200; $i++) {
+            $bulanAcak = rand(2, 5);
             $hariAcak = rand(1, 28);
             $tanggalAcak = "2026-0" . $bulanAcak . "-" . sprintf("%02d", $hariAcak);
             $pelangganId = !empty($pelangganIds) ? $pelangganIds[array_rand($pelangganIds)] : null;
@@ -138,7 +216,7 @@ class PenjualanSeeder extends Seeder
                 'updated_at'        => Carbon::parse($tanggalAcak),
             ]);
 
-            $qtyBeliEceran = rand(1, 3);
+            $qtyBeliEceran = rand(1, 5);
             $kodeTerpilih = $produkKodes[array_rand($produkKodes)];
             $idProduk = $produkMap[$kodeTerpilih];
 

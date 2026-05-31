@@ -179,7 +179,7 @@ class ProductionService
         // 1. Ambil data penjualan 30 hari terakhir
         $dataPenjualan = \App\Models\DetailPenjualan::where('produk_id', $produk->id)
             ->whereHas('penjualan', function ($q) {
-                $q->where('tanggal_penj', '>=', now()->subDays(90));
+                $q->where('tanggal_penj', '>=', now()->subDays(30));
             })
             ->join('penjualan', 'detail_penjualan.penjualan_id', '=', 'penjualan.id')
             ->selectRaw('DATE(penjualan.tanggal_penj) as tanggal, SUM(detail_penjualan.jumlah_produk) as total')
