@@ -188,12 +188,6 @@
                                         Bahan Baku
                                     </a>
                                 </li>
-                                {{-- <li>
-                                    <a href="{{ route('owner.inventory.bahan_masuk.index') }}"
-                                        class="{{ request()->routeIs('owner.inventory.bahan_masuk.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
-                                        Pencatatan Bahan Masuk
-                                    </a>
-                                </li>--}}
                                 <li>
                                     <a href="{{ route('owner.inventory.qc.index') }}"
                                         class="{{ request()->routeIs('owner.inventory.qc.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
@@ -214,30 +208,24 @@
                                     </svg>
                                     Partner
                                 </div>
+                                <ul class="mt-2 space-y-1">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 9l-7 7-7-7" />
                                 </svg>
                             </summary>
-
                             <ul class="mt-2 space-y-1">
                                 <li>
-                                    <a href="{{ route('owner.partner.pelanggan.index') }}"
-                                        class="{{ request()->routeIs('owner.partner.pelanggan.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
-                                        Pelanggan
+                                    <a href="{{ route('owner.partner.supplier.index') }}"
+                                        class="{{ request()->routeIs('owner.partner.supplier.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Supplier
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('owner.partner.mitra.index') }}"
                                         class="{{ request()->routeIs('owner.partner.mitra.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Mitra Toko
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('owner.partner.supplier.index') }}"
-                                        class="{{ request()->routeIs('owner.partner.supplier.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
-                                        Supplier
                                     </a>
                                 </li>
                             </ul>
@@ -254,7 +242,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
-
                                     Penjualan
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -263,7 +250,6 @@
                                         d="M19 9l-7 7-7-7" />
                                 </svg>
                             </summary>
-
                             <ul class="mt-2 space-y-1">
                                 <li>
                                     <a href="{{ route('owner.penjualan.pelanggan.index') }}"
@@ -332,6 +318,14 @@
                                     <a href="{{ route('owner.laporan.penjualan') }}"
                                         class="{{ request()->routeIs('owner.laporan.penjualan') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Laporan Penjualan
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('owner.laporan.pembelian') }}"
+                                        class="{{ request()->routeIs('owner.laporan.pembelian') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Laporan Pembelian
                                     </a>
                                 </li>
                             </ul>
@@ -422,6 +416,72 @@
                             </ul>
                         </details>
                     </li>
+                    <li>
+                        <details class="group"
+                            {{ request()->routeIs('admin.inventory.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->routeIs('admin.inventory.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                    Inventory
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('admin.inventory.pemesanan.index') }}"
+                                        class="{{ request()->routeIs('admin.inventory.pemesanan.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Pemesanan Bahan Baku
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('admin.inventory.bahan_masuk.index') }}"
+                                        class="{{ request()->routeIs('admin.inventory.bahan_masuk.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Pencatatan Bahan Masuk
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li>
+                    <details class="group"
+                            {{ request()->routeIs('admin.partner.*') || request()->routeIs('admin.dashboard') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->routeIs('admin.partner.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                    </svg>
+                                    Partner
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </summary>
+
+                            <ul class="mt-2 space-y-1">
+                                <li>
+                                    <a href="{{ route('admin.partner.pelanggan.index') }}"
+                                        class="{{ request()->routeIs('admin.partner.pelanggan.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Pelanggan
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li>
                     <details class="group"
                             {{ request()->routeIs('admin.penjualan.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
                             <summary
@@ -456,35 +516,6 @@
                                     <a href="{{ route('admin.penjualan.manajemenpembayaran.index') }}"
                                         class="{{ request()->routeIs('admin.penjualan..index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Manajemen Pembayaran
-                                    </a>
-                                </li>
-                            </ul>
-                        </details>
-                    </li>
-                    <li>
-                        <details class="group"
-                            {{ request()->routeIs('admin.inventory.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
-                            <summary
-                                class="{{ request()->routeIs('admin.inventory.*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                    </svg>
-                                    Inventory
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-4 w-4 transition-transform group-open:rotate-180" fill="none">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </summary>
-                            <ul class="mt-2 space-y-1">
-                                <li>
-                                    <a href="{{ route('admin.inventory.bahan_masuk.index') }}"
-                                        class="{{ request()->routeIs('admin.inventory.bahan_masuk.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
-                                        Pencatatan Bahan Masuk
                                     </a>
                                 </li>
                             </ul>

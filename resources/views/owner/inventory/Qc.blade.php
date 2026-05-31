@@ -43,10 +43,14 @@
                                 </div>
                                 <h3 class="text-2xl font-extrabold text-gray-700 mt-2">{{ $item->bahan_baku->nama }}</h3>
                                 <div class="mt-4 p-3 bg-base-200 rounded-lg text-sm space-y-2">
-                                    <p class="flex justify-between"><span>📦 Total:</span> <b>{{ $item->jumlah_total }}
+                                    <p class="flex justify-between"><span>Total:</span> <b>{{ $item->jumlah_total }}
                                             unit</b></p>
-                                    <p class="flex justify-between"><span>🏢 Supplier:</span> <b
+                                    <p class="flex justify-between"><span>Supplier:</span> <b
                                             class="truncate ml-2">{{ $item->supplier->nama_supplier }}</b></p>
+                                    <p class="flex justify-between">
+                                    <span>Kode:</span> 
+                                    <b class="truncate ml-2">{{ $item->kode_pesanan }}</b>
+                                </p>
                                 </div>
                                 <div class="card-actions mt-6">
                                     <button
@@ -126,9 +130,9 @@
                                     <td class="text-xs">{{ \Carbon\Carbon::parse($h->tanggal_qc)->format('d M Y') }}
                                     </td>
                                     <td><span
-                                            class="font-bold text-primary">{{ $h->bahan_masuk->bahan_baku->nama }}</span>
+                                            class="font-bold text-primary">{{ $h->bahan_baku->nama ?? 'Bahan tidak ditemukan' }}</span>
                                     </td>
-                                    <td class="text-xs">{{ $h->bahan_masuk->supplier->nama_supplier }}</td>
+                                    <td class="text-xs">{{ $h->bahan_masuk->supplier->nama_supplier ?? 'Supplier Tidak Ditemukan' }}</td>
                                     <td class="text-center">
                                         <div class="badge badge-success text-white font-bold">{{ $h->jumlah_bagus }}
                                         </div>

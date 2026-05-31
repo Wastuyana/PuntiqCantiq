@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
-class SupplierController extends Controller
+class SupplierOwnerController extends Controller
 {
     public function index()
     {
         $suppliers = Supplier::all();
-        return view('admin.partner.supplier', compact('suppliers'));
+        return view('owner.partner.supplier', compact('suppliers'));
     }
 
     public function store(Request $request)
@@ -38,10 +38,10 @@ class SupplierController extends Controller
             'no_hp' => $request->no_hp,
         ]);
 
-        return redirect()->route('admin.partner.supplier.index')->with('success', 'Supplier berhasil ditambah!');
+        return redirect()->route('owner.partner.supplier.index')->with('success', 'Supplier berhasil ditambah!');
     }
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, $id)
     {
         // 1. Validasi Unik (Kecuali ID sendiri)
         $request->validate([
@@ -56,7 +56,7 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
         $supplier->update($request->all());
 
-        return redirect()->route('admin.supplier.index')->with('success', 'Data diperbarui!');
+        return redirect()->route('owner.supplier.index')->with('success', 'Data diperbarui!');
     }
 
     public function destroy($id)

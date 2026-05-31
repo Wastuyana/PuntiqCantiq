@@ -9,8 +9,12 @@ class BahanMasuk extends Model
     protected $table = 'bahan_masuk';
 
     protected $fillable = [
+        'kode_pesanan',
+        'jumlah_pesan',
+        'proses_pemesanan',
         'supplier_id',
         'bahan_baku_id',
+        'tanggal_pesan',
         'tanggal_masuk',
         'jumlah_total',
         'harga_beli',
