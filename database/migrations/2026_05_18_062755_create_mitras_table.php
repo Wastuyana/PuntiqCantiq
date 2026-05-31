@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('mitra', function (Blueprint $table) {
             $table->id();
             $table->string('kode_mitra', 20)->unique();
-            $table->string('nama_mitra', 20)->unique();
+            $table->string('nama_mitra', 99)->unique();
             $table->string('alamat_mitra', 500)->nullable();
             $table->string('no_hp', 20)->nullable();
             $table->timestamps();

@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="p-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Buat Batch Produksi Baru</h2>
+            <h2 class="text-2xl font-bold">Buat Rencana Batch Produksi Baru</h2>
             <a href="{{ route('owner.produksi.batch.index') }}" class="btn btn-ghost"> Kembali</a>
         </div>
 
@@ -26,14 +26,6 @@
                                         class="input input-bordered focus:border-primary" required>
                                 </div>
                             </div>
-
-                            <div class="form-control mt-4">
-                                <label class="label"><span class="label-text font-semibold">Status</span></label>
-                                <select name="status" class="select select-bordered w-full">
-                                    <option value="draft">Draft</option>
-                                    <option value="selesai">Selesai</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
 
@@ -57,7 +49,8 @@
                                             data-resep="{{ json_encode($p->bom) }}" onchange="updateEstimasi()">
 
                                         <div class="flex-1">
-                                            <span class="font-bold text-sm block">{{ $p->kategori }} - {{ $p->varian }} - {{ $p->ukuran }}</span>
+                                            <span class="font-bold text-sm block">{{ $p->kategori }} -
+                                                {{ $p->varian }} - {{ $p->ukuran }}</span>
                                             @if ($isRecommended)
                                                 <span class="badge badge-primary badge-xs ml-1">Rekomendasi</span>
                                             @endif
@@ -91,23 +84,25 @@
                             </div>
 
                             <div id="preview_resep" class="hidden space-y-4">
-                                <div class="bg-primary-focus/30 p-4 rounded-lg">
-                                    <p class="text-[10px] font-bold mb-2 tracking-widest">Total
-                                        Bahan Baku:</p>
+                                <div class="bg-primary-focus/10 p-4 rounded-lg">
+                                    <p class="text-[10px] font-bold mb-2 tracking-widest text-primary">TOTAL KEBUTUHAN
+                                        BAHAN:</p>
                                     <ul id="daftar_bahan" class="text-sm space-y-2"></ul>
                                 </div>
 
-                                <div class="alert alert-warning bg-warning text-secondary-content border-none text-xs">
+                                <div
+                                    class="alert alert-warning bg-warning/20 text-warning-content border border-warning/30 text-xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-4 w-4"
                                         fill="none" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
-                                    <span>Pastikan stok di gudang cukup sebelum memulai.</span>
+                                    <span>Pastikan persediaan bumbu dan pisang mencukupi sebelum memulai proses produksi
+                                        di dapur.</span>
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-white w-full mt-6 shadow-lg">Konfirmasi & Mulai
+                            <button type="submit" class="btn btn-primary w-full mt-6 shadow-lg">Simpan Rencana
                                 Batch</button>
                         </div>
                     </div>
@@ -130,6 +125,7 @@
 
             const totalKebutuhan = {};
             const satuanBahan = {};
+            const stokGudang = {}; // Tempat menampung stok riil dari database
             let adaYangDipilih = false;
 
             checkboxes.forEach(cb => {
@@ -142,18 +138,27 @@
                     inputTarget.classList.add('border-primary');
 
                     const targetValue = parseFloat(inputTarget.value) || 0;
-
-                    // Tambahkan pengecekan dataResep agar tidak error jika null
                     const rawResep = cb.getAttribute('data-resep');
                     const dataResep = rawResep ? JSON.parse(rawResep) : [];
 
                     dataResep.forEach(item => {
                         const nama = item.bahan_baku.nama;
-                        const takaran = parseFloat(item.jumlah_kebutuhan || 0);
-                        const satuan = item.bahan_baku.satuan;
+                        const takaranGramMl = parseFloat(item.jumlah_kebutuhan || 0);
+                        const satuanMaster = item.bahan_baku.satuan;
 
-                        totalKebutuhan[nama] = (totalKebutuhan[nama] || 0) + (takaran * targetValue);
-                        satuanBahan[nama] = satuan;
+                        // Ambil data stok gudang asli (stok di DB sudah dalam skala besar seperti kg/liter)
+                        const stokAsliGudang = parseFloat(item.bahan_baku.stok || 0);
+
+                        // Kalkulasi kebutuhan kotor awal (masih skala gram/ml)
+                        const kebutuhanKotor = takaranGramMl * targetValue;
+
+                        if (!totalKebutuhan[nama]) {
+                            totalKebutuhan[nama] = 0;
+                            satuanBahan[nama] = satuanMaster;
+                            stokGudang[nama] = stokAsliGudang;
+                        }
+
+                        totalKebutuhan[nama] += kebutuhanKotor;
                     });
                 } else {
                     inputTarget.disabled = true;
@@ -166,16 +171,61 @@
                 emptyState.classList.add('hidden');
                 listBahan.innerHTML = '';
 
-                for (const [nama, total] of Object.entries(totalKebutuhan)) {
-                    if (total > 0) {
+                let adaBahanTercetak = false;
+
+                for (const [nama, totalGramMl] of Object.entries(totalKebutuhan)) {
+                    if (totalGramMl > 0) {
+                        adaBahanTercetak = true;
+                        const satuan = satuanBahan[nama];
+                        const satuanLower = satuan.toLowerCase();
+                        const stokTersedia = stokGudang[nama]; // Satuan Kg/Liter/Pcs asli gudang
+
+                        let totalKebutuhanTampil = totalGramMl;
+
+                        // Konversi kebutuhan dari gram/ml ke Kg/Liter jika tipe satuannya besar
+                        if (['kg', 'liter', 'l'].includes(satuanLower)) {
+                            totalKebutuhanTampil = totalGramMl / 1000;
+                        }
+
+                        // VALIDASI: Apakah stok gudang kurang dari kebutuhan produksi?
+                        // Menggunakan batasan toleransi desimal halus (0.00001) agar terhindar dari bug floating-point JavaScript
+                        const apakahStokKurang = (stokTersedia - totalKebutuhanTampil) < -0.00001;
+
+                        // Format angka desimal Indonesia
+                        const totalFormatted = Number(totalKebutuhanTampil.toFixed(2)).toLocaleString('id-ID');
+                        const stokFormatted = Number(stokTersedia.toFixed(2)).toLocaleString('id-ID');
+
                         const li = document.createElement('li');
-                        li.className = "flex justify-between items-center py-1 border-b border-primary-focus/20";
-                        li.innerHTML = `
-                        <span>${nama}</span>
-                        <span class="font-black">${total.toLocaleString('id-ID')} ${satuanBahan[nama]}</span>
-                    `;
+
+                        if (apakahStokKurang) {
+                            li.className =
+                                "flex flex-col py-2 border-b border-error/20 text-error font-medium";
+                            li.innerHTML = `
+                            <div class="flex justify-between items-center w-full">
+                                <span>${nama}</span>
+                                <span class="font-black text-sm">${totalFormatted} <span class="text-xs font-normal">${satuan}</span></span>
+                            </div>
+                            <div class="text-[11px] text-right text-error/80 mt-0.5">
+                                Stok kurang! (Tersedia: ${stokFormatted} ${satuan})
+                            </div>
+                        `;
+                        } else {
+                            li.className = "flex justify-between items-center py-2 border-b border-base-200 opacity-90";
+                            li.innerHTML = `
+                            <span>${nama}</span>
+                            <span class="font-bold text-sm">${totalFormatted} <span class="text-xs font-normal opacity-60">${satuan}</span></span>
+                        `;
+                        }
+
                         listBahan.appendChild(li);
                     }
+                }
+
+                if (!adaBahanTercetak) {
+                    const li = document.createElement('li');
+                    li.className = "text-center text-xs italic opacity-60 py-2";
+                    li.innerText = "Masukkan jumlah target untuk melihat kalkulasi bahan.";
+                    listBahan.appendChild(li);
                 }
             } else {
                 boxPreview.classList.add('hidden');

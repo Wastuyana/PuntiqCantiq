@@ -18,7 +18,17 @@ class ProductionService
     public function hitungHppStandar(Produk $produk)
     {
         $totalBahan = $produk->bom->sum(function ($item) {
-            return $item->jumlah_kebutuhan * $item->bahan_baku->harga_satuan;
+            $jumlahBoM = $item->jumlah_kebutuhan;
+            $satuanMaster = strtolower($item->bahan_baku->satuan);
+            $hargaMaster = $item->bahan_baku->harga_satuan;
+
+            if (in_array($satuanMaster, ['kg', 'liter', 'l'])) {
+                $jumlahKebutuhanKonversi = $jumlahBoM / 1000;
+            } else {
+                $jumlahKebutuhanKonversi = $jumlahBoM;
+            }
+
+            return $jumlahKebutuhanKonversi * $hargaMaster;
         });
         $overhead = $totalBahan * ($produk->est_biaya_overhead / 100);
         $totalHpp = $totalBahan + $overhead + $produk->est_biaya_tenaga;
@@ -42,14 +52,20 @@ class ProductionService
 
             foreach ($batch->batch_bahan as $item) {
                 $totalKebutuhanBom = 0;
+                $satuanMaster = strtolower($item->bahan_baku->satuan);
 
                 // 1. Hitung total kebutuhan teori untuk porsi alokasi
                 foreach ($batch->batch_hasil as $hasil) {
                     $bom = BoM::where('produk_id', $hasil->produk_id)
                         ->where('bahan_baku_id', $item->bahan_baku_id)
                         ->first();
+
                     if ($bom) {
-                        $totalKebutuhanBom += $bom->jumlah_kebutuhan * $hasil->hasil_aktual;
+                        $kebutuhanPerUnit = in_array($satuanMaster, ['kg', 'liter', 'l'])
+                            ? ($bom->jumlah_kebutuhan / 1000)
+                            : $bom->jumlah_kebutuhan;
+
+                        $totalKebutuhanBom += $kebutuhanPerUnit * $hasil->hasil_aktual;
                     }
                 }
 
@@ -62,7 +78,13 @@ class ProductionService
                         ->first();
 
                     if ($bom && $totalKebutuhanBom > 0) {
-                        $porsiBiaya = (($bom->jumlah_kebutuhan * $hasil->hasil_aktual) / $totalKebutuhanBom) * $hargaTotalBahanAktual;
+                        $kebutuhanPerUnit = in_array($satuanMaster, ['kg', 'liter', 'l'])
+                            ? ($bom->jumlah_kebutuhan / 1000)
+                            : $bom->jumlah_kebutuhan;
+
+                        // Hitung porsi biaya berdasarkan bobot teori yang sudah sama-sama berskala kg/liter
+                        $porsiBiaya = (($kebutuhanPerUnit * $hasil->hasil_aktual) / $totalKebutuhanBom) * $hargaTotalBahanAktual;
+
                         $biayaPerProduk[$hasil->produk_id] = ($biayaPerProduk[$hasil->produk_id] ?? 0) + $porsiBiaya;
                     }
                 }
@@ -152,14 +174,15 @@ class ProductionService
 
     public function updateSafetyStockProduk($produk)
     {
-        $leadTime = Setting::where('key', 'lead_time')->value('value') ?? 2;
+        $leadTime = Setting::where('key', 'lead_time')->value('value') ?? 7;
 
         // 1. Ambil data penjualan 30 hari terakhir
         $dataPenjualan = \App\Models\DetailPenjualan::where('produk_id', $produk->id)
             ->whereHas('penjualan', function ($q) {
-                $q->where('tanggal_penj', '>=', now()->subDays(30));
+                $q->where('tanggal_penj', '>=', now()->subDays(90));
             })
-            ->selectRaw('DATE(created_at) as tanggal, SUM(jumlah_produk) as total')
+            ->join('penjualan', 'detail_penjualan.penjualan_id', '=', 'penjualan.id')
+            ->selectRaw('DATE(penjualan.tanggal_penj) as tanggal, SUM(detail_penjualan.jumlah_produk) as total')
             ->groupBy('tanggal')
             ->get();
 
@@ -177,7 +200,8 @@ class ProductionService
 
         // 4. Update data ke database
         return $produk->update([
-            'safety_stok' => ceil($batasMinimal)
+            'ss_produk' => ceil($safetyStock),
+            'rop_produk' => ceil($batasMinimal)
         ]);
     }
 
@@ -187,7 +211,7 @@ class ProductionService
     public function cekStokKritis($produk)
     {
         $stokSekarang = (int) $produk->stok;
-        $stokMinimal = (int) $produk->safety_stok;
+        $stokMinimal = (int) $produk->ss_produk;
 
         if ($stokSekarang <= $stokMinimal) {
             $users = User::all();
@@ -225,7 +249,7 @@ class ProductionService
 
         foreach ($produks as $p) {
             $dAvg = $this->getDailyAverageSales($p, 30);
-            $sMax = ($dAvg * $tInterval) + $p->safety_stok;
+            $sMax = ($dAvg * $tInterval) + $p->ss_produk;
             $qRec = ceil($sMax) - $p->stok;
             $prioritas = $dAvg > 0 ? ($p->stok / $dAvg) : 999;
 
@@ -233,7 +257,7 @@ class ProductionService
                 'id' => $p->id,
                 'nama' => $p->kategori . ' - ' . $p->varian,
                 'stok_aktual' => $p->stok,
-                'safety_stock' => $p->safety_stok,
+                'ss_produk' => $p->ss_produk,
                 'd_avg' => round($dAvg, 2),
                 'q_rec' => max($qRec, 0),
                 'prioritas' => $prioritas,
@@ -246,6 +270,7 @@ class ProductionService
         $daftarFinal = [];
         $totalKebutuhanBahan = [];
         $satuanBahan = [];
+        $stokBahan = []; 
 
         foreach ($daftarSorted as $item) {
             if ($kapasitasTersisa >= $item['q_rec']) {
@@ -262,15 +287,23 @@ class ProductionService
                 if ($produkWithBom && $produkWithBom->bom) {
                     foreach ($produkWithBom->bom as $bom) {
                         $namaBahan = $bom->bahan_baku->nama;
-                        $satuan = $bom->bahan_baku->satuan;
-                        $kebutuhan = $bom->jumlah_kebutuhan * $item['jumlah_acc'];
+                        $satuan = strtolower($bom->bahan_baku->satuan); // Ambil satuan dari master bahan (kg/liter/pcs)
                         $stokBahanAktual = $bom->bahan_baku->stok;
+
+                        $kebutuhanTeori = $bom->jumlah_kebutuhan * $item['jumlah_acc'];
+
+                        if (in_array($satuan, ['kg', 'liter', 'l'])) {
+                            $kebutuhan = $kebutuhanTeori / 1000;
+                        } else {
+                            $kebutuhan = $kebutuhanTeori; 
+                        }
 
                         if (!isset($totalKebutuhanBahan[$namaBahan])) {
                             $totalKebutuhanBahan[$namaBahan] = 0;
-                            $satuanBahan[$namaBahan] = $satuan;
+                            $satuanBahan[$namaBahan] = $bom->bahan_baku->satuan; 
                             $stokBahan[$namaBahan] = $stokBahanAktual;
                         }
+
                         $totalKebutuhanBahan[$namaBahan] += $kebutuhan;
                     }
                 }
@@ -280,9 +313,9 @@ class ProductionService
         return [
             'batchAktif' => collect($daftarFinal)->where('jumlah_acc', '>', 0),
             'daftarTunggu' => collect($daftarFinal)->where('jumlah_acc', '==', 0)->where('q_rec', '>', 0),
-            'totalKebutuhanBahan' => $totalKebutuhanBahan,
+            'totalKebutuhanBahan' => collect($totalKebutuhanBahan)->map(fn($v) => round($v, 2))->toArray(), // Dibulatkan 2 desimal agar rapi di UI
             'satuanBahan' => $satuanBahan,
-            'stokBahan' => $stokBahan ?? [],
+            'stokBahan' => $stokBahan,
             'kapasitasMax' => $kapasitasMax
         ];
     }
@@ -320,8 +353,8 @@ class ProductionService
         $rop = ($d * $avgLeadTime) + $safetyStock;
 
         return $bahanBaku->update([
-            'safety_stock' => max(0, ceil($safetyStock)),
-            'rop' => ceil($rop)
+            'ss_bahan' => max(0, ceil($safetyStock)),
+            'rop_bahan' => ceil($rop)
         ]);
     }
 }

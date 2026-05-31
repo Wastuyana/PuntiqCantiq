@@ -17,8 +17,7 @@ return new class extends Migration
                 ->constrained('batch')
                 ->onDelete('cascade');
             $table->foreignId('bahan_baku_id')
-                ->constrained('bahan_baku')
-                ->onDelete('cascade');
+                ->constrained('bahan_baku');
             $table->decimal('bahan_target', 15, 2);
             $table->decimal('bahan_aktual', 15, 2)->default(0);
             $table->timestamps();

@@ -24,8 +24,7 @@ return new class extends Migration
             $table->decimal('biaya_overhead', 15, 2)->default(0);
             $table->decimal('total_biaya', 15, 2)->default(0);
             $table->foreignId('user_id')
-                ->constrained('users')
-                ->onDelete('cascade');
+                ->constrained('users');
             $table->timestamps();
         });
     }

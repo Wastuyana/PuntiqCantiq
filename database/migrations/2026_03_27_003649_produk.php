@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('produk', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_produk')->unique();
             $table->string('kategori');
             $table->string('varian');
             $table->string('ukuran');
             $table->integer('stok');
-            $table->integer('safety_stok');
+            $table->integer('ss_produk')->default(0);
+            $table->integer('rop_produk')->default(0);
             $table->decimal('est_biaya_tenaga', 15, 2);
             $table->decimal('est_biaya_overhead', 15, 2);
             $table->decimal('hpp_standar', 15, 2);

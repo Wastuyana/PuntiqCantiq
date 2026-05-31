@@ -31,9 +31,9 @@ class BatchController extends Controller
             ->whereYear('tanggal_produksi', $tahun)
             ->latest()->get();
 
-        // $produks = Produk::has('bom')
-        //     ->with('bom.bahan_baku')
-        //     ->get();
+        $produks = Produk::has('bom')
+            ->with('bom.bahan_baku')
+            ->get();
 
         $generatedNoBatch = $this->productionService->generateNoBatch();
 
@@ -64,22 +64,24 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
+        // Hilangkan status 'selesai' dari validasi karena batch baru WAJIB berstatus 'draft'
         $request->validate([
             'produk_ids' => 'required|array',
             'hasil_target' => 'required|array',
-            'status' => 'required|in:draft,selesai',
             'tanggal_produksi' => 'required|date',
         ]);
 
         return DB::transaction(function () use ($request) {
             $generatedNoBatch = $this->productionService->generateNoBatch();
+
+            // Buat data induk batch dengan nilai default 0 (Draft Perencanaan)
             $batch = Batch::create([
-                'nomor_batch'      => $generatedNoBatch,
-                'user_id'          => \Illuminate\Support\Facades\Auth::id(),
-                'tanggal_produksi' => $request->tanggal_produksi,
-                'status'           => $request->status,
-                'checklist_sop'    => 0,
-                'sop_details'      => null,
+                'nomor_batch'       => $generatedNoBatch,
+                'user_id'           => \Illuminate\Support\Facades\Auth::id(),
+                'tanggal_produksi'  => $request->tanggal_produksi,
+                'status'            => 'draft', // Dikunci langsung ke draft
+                'checklist_sop'     => 0,
+                'sop_details'       => null,
                 'biaya_tenagakerja' => 0,
                 'biaya_bahan'       => 0,
                 'biaya_overhead'    => 0,
@@ -93,15 +95,15 @@ class BatchController extends Controller
 
                 $produk = Produk::with('bom.bahan_baku')->findOrFail($produkId);
 
-
+                // Buat draft rencana hasil produksi
                 $batch->batch_hasil()->create([
-                    'produk_id'             => $produkId,
-                    'hasil_target'          => $target,
-                    'hasil_aktual'          => 0,
-                    'detail_biaya_bahan'    => 0,
-                    'detail_biaya_tenagakerja' => 0,
-                    'detail_biaya_overhead' => 0,
-                    'hpp_aktual'            => 0,
+                    'produk_id'                => $produkId,
+                    'hasil_target'             => $target,
+                    'hasil_aktual'             => 0, 
+                    'detail_biaya_bahan'       => 0, 
+                    'detail_biaya_tenagakerja' => 0, 
+                    'detail_biaya_overhead'    => 0, 
+                    'hpp_aktual'               => 0, 
                 ]);
 
                 foreach ($produk->bom as $item) {
@@ -114,14 +116,10 @@ class BatchController extends Controller
                     $batchBahan->bahan_target = ($batchBahan->bahan_target ?? 0) + $totalButuh;
                     $batchBahan->bahan_aktual = 0;
                     $batchBahan->save();
-
-                    if ($request->status == 'selesai') {
-                        $item->bahan_baku->decrement('stok', $totalButuh);
-                    }
                 }
             }
 
-            return redirect()->route('owner.produksi.batch.index')->with('success', 'Data Batch berhasil disimpan!');
+            return redirect()->route('owner.produksi.batch.index')->with('success', 'Rencana Batch Produksi berhasil disimpan sebagai Draft!');
         });
     }
 

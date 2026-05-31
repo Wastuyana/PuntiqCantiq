@@ -13,12 +13,14 @@ class Produk extends Model
     protected $table = 'produk';
 
     protected $fillable = [
+        'kode_produk',
         'kategori',
         'varian',
         'ukuran',
         'stok',
         'stok_mitra',
-        'safety_stok',
+        'ss_produk',
+        'rop_produk',
         'est_biaya_tenaga',
         'est_biaya_overhead',
         'hpp_standar',
@@ -38,5 +40,5 @@ class Produk extends Model
     public function detail_penjualan()
     {
         return $this->hasMany(DetailPenjualan::class, 'produk_id');
-    }   
+    }
 }

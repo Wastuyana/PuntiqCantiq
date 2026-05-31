@@ -3,68 +3,186 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Bom;
-use App\Models\Produk;
-use App\Models\BahanBaku;
+use Illuminate\Support\Facades\DB;
 
 class BomSeeder extends Seeder
 {
     public function run()
     {
-        // Ambil data bahan baku untuk mendapatkan ID-nya
-        $pisang = BahanBaku::where('nama', 'Pisang')->first()->id;
-        $minyak = BahanBaku::where('nama', 'Minyak Goreng')->first()->id;
-        $coklat = BahanBaku::where('nama', 'Cokelat Bubuk')->first()->id;
-        $garam = BahanBaku::where('nama', 'Garam')->first()->id;
-        $kemasan = BahanBaku::where('nama', 'Kemasan')->first()->id;
+        $boms = [
+            // 1. PC Original 90g 
+            ['produk_id' => 1, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 130],  // Pisang (gram)
+            ['produk_id' => 1, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 40],   // Minyak (ml)
+            ['produk_id' => 1, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 1.80], // Gula (gram)
+            ['produk_id' => 1, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15], // Garam (gram)
+            ['produk_id' => 1, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],   // Kemasan (pcs)
 
-        $semuaProduk = Produk::all();
+            // 2. PC Coklat 85g 
+            ['produk_id' => 2, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 118],
+            ['produk_id' => 2, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 36],
+            ['produk_id' => 2, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 1.68],
+            ['produk_id' => 2, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.14],
+            ['produk_id' => 2, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 10.40], // Bumbu Coklat M (gram)
+            ['produk_id' => 2, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 2.60],  // Bumbu Coklat G (gram)
+            ['produk_id' => 2, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-        foreach ($semuaProduk as $produk) {
-            // 1. Ambil angka berat dari ukuran (misal "250gr" -> 250)
-            $berat = (int) filter_var($produk->ukuran, FILTER_SANITIZE_NUMBER_INT);
+            // 3. PC Milky Butter 85g
+            ['produk_id' => 3, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 125],
+            ['produk_id' => 3, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 38],
+            ['produk_id' => 3, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 1.80],
+            ['produk_id' => 3, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15],
+            ['produk_id' => 3, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 4.25],  // Bumbu Mentega (gram)
+            ['produk_id' => 3, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 4.25],  // Bumbu Susu (gram)
+            ['produk_id' => 3, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            // Rasio kebutuhan pisang (asumsi: 1 sisir pisang = 500gr keripik)
-            $kebutuhanPisang = $berat / 500;
+            // 4. PC Garlic 90g
+            ['produk_id' => 4, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 140],
+            ['produk_id' => 4, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 43],
+            ['produk_id' => 4, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 2.04],
+            ['produk_id' => 4, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.17],
+            ['produk_id' => 4, 'bahan_baku_id' => 9, 'jumlah_kebutuhan' => 2.70],  // Bumbu Garlic (gram)
+            ['produk_id' => 4, 'bahan_baku_id' => 10, 'jumlah_kebutuhan' => 1.80], // Bumbu Garlic non msg
+            ['produk_id' => 4, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            // Rasio minyak (asumsi: 0.1 liter per 250gr keripik)
-            $kebutuhanMinyak = ($berat / 250) * 0.1;
+            // 5. PC Taliwang 65g
+            ['produk_id' => 5, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 90],
+            ['produk_id' => 5, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 28],
+            ['produk_id' => 5, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 1.30],
+            ['produk_id' => 5, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.10],
+            ['produk_id' => 5, 'bahan_baku_id' => 11, 'jumlah_kebutuhan' => 4.50], // Bumbu Taliwang
+            ['produk_id' => 5, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            // --- Bahan Dasar (Wajib untuk semua) ---
+            // 6. PC Coklat 40g
+            ['produk_id' => 6, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 56],
+            ['produk_id' => 6, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 17],
+            ['produk_id' => 6, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 0.84],
+            ['produk_id' => 6, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.07],
+            ['produk_id' => 6, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 4.80],
+            ['produk_id' => 6, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 1.20],
+            ['produk_id' => 6, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            // Pisang
-            Bom::create([
-                'produk_id' => $produk->id,
-                'bahan_baku_id' => $pisang,
-                'jumlah_kebutuhan' => $kebutuhanPisang
-            ]);
+            // 7. PC Milky Butter 40g
+            ['produk_id' => 7, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 59],
+            ['produk_id' => 7, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 18],
+            ['produk_id' => 7, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 0.84],
+            ['produk_id' => 7, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.07],
+            ['produk_id' => 7, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 2.00],
+            ['produk_id' => 7, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 2.00],
+            ['produk_id' => 7, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            // Minyak Goreng
-            Bom::create([
-                'produk_id' => $produk->id,
-                'bahan_baku_id' => $minyak,
-                'jumlah_kebutuhan' => $kebutuhanMinyak
-            ]);
+            // 8. Choco Banana Flakes (180g)
+            ['produk_id' => 8, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 240],
+            ['produk_id' => 8, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 75],
+            ['produk_id' => 8, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 3.50],
+            ['produk_id' => 8, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.25],
+            ['produk_id' => 8, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 22.00],
+            ['produk_id' => 8, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            Bom::create([
-                'produk_id' => $produk->id,
-                'bahan_baku_id' => $garam,
-                'jumlah_kebutuhan' => 0.005
-            ]);
+            // 9. BP 500g Ori
+            ['produk_id' => 9, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 720],
+            ['produk_id' => 9, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 220],
+            ['produk_id' => 9, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 10.00],
+            ['produk_id' => 9, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.80],
+            ['produk_id' => 9, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            Bom::create([
-                'produk_id' => $produk->id,
-                'bahan_baku_id' => $kemasan,
-                'jumlah_kebutuhan' => 1
-            ]);
+            // 10. BP 500g Coklat
+            ['produk_id' => 10, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 650],
+            ['produk_id' => 10, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 200],
+            ['produk_id' => 10, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 9.20],
+            ['produk_id' => 10, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.75],
+            ['produk_id' => 10, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 57.00],
+            ['produk_id' => 10, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 14.30],
+            ['produk_id' => 10, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
 
-            if (str_contains(strtolower($produk->varian), 'coklat') || str_contains(strtolower($produk->kategori), 'choco')) {
-                Bom::create([
-                    'produk_id' => $produk->id,
-                    'bahan_baku_id' => $coklat,
-                    'jumlah_kebutuhan' => ($berat / 250) * 0.05 // misal 0.05kg coklat per 250gr
-                ]);
-            }
+            // 11. BP 500g Milky
+            ['produk_id' => 11, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 680],
+            ['produk_id' => 11, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 210],
+            ['produk_id' => 11, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 10.00],
+            ['produk_id' => 11, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.80],
+            ['produk_id' => 11, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 23.40],
+            ['produk_id' => 11, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 23.40],
+            ['produk_id' => 11, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 12. BP 500g Garlic
+            ['produk_id' => 12, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 770],
+            ['produk_id' => 12, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 240],
+            ['produk_id' => 12, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 11.20],
+            ['produk_id' => 12, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.93],
+            ['produk_id' => 12, 'bahan_baku_id' => 9, 'jumlah_kebutuhan' => 15.00],
+            ['produk_id' => 12, 'bahan_baku_id' => 10, 'jumlah_kebutuhan' => 10.00],
+            ['produk_id' => 12, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 13. BP 500g Taliwang
+            ['produk_id' => 13, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 690],
+            ['produk_id' => 13, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 215],
+            ['produk_id' => 13, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 10.00],
+            ['produk_id' => 13, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.77],
+            ['produk_id' => 13, 'bahan_baku_id' => 11, 'jumlah_kebutuhan' => 34.60],
+            ['produk_id' => 13, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 14. BP 250g Ori
+            ['produk_id' => 14, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 360],
+            ['produk_id' => 14, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 110],
+            ['produk_id' => 14, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 5.00],
+            ['produk_id' => 14, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.40],
+            ['produk_id' => 14, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 15. BP 250g Coklat
+            ['produk_id' => 15, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 330],
+            ['produk_id' => 15, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 100],
+            ['produk_id' => 15, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 4.60],
+            ['produk_id' => 15, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.38],
+            ['produk_id' => 15, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 29.00],
+            ['produk_id' => 15, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 7.20],
+            ['produk_id' => 15, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 16. BP 250g Milky
+            ['produk_id' => 16, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 340],
+            ['produk_id' => 16, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 105],
+            ['produk_id' => 16, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 5.00],
+            ['produk_id' => 16, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.40],
+            ['produk_id' => 16, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 11.90],
+            ['produk_id' => 16, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 11.90],
+            ['produk_id' => 16, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 17. BP 250g Garlic
+            ['produk_id' => 17, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 390],
+            ['produk_id' => 17, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 120],
+            ['produk_id' => 17, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 5.60],
+            ['produk_id' => 17, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.47],
+            ['produk_id' => 17, 'bahan_baku_id' => 9, 'jumlah_kebutuhan' => 7.50],
+            ['produk_id' => 17, 'bahan_baku_id' => 10, 'jumlah_kebutuhan' => 5.00],
+            ['produk_id' => 17, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 18. BP 250g Taliwang
+            ['produk_id' => 18, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 345],
+            ['produk_id' => 18, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 108],
+            ['produk_id' => 18, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 5.00],
+            ['produk_id' => 18, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.38],
+            ['produk_id' => 18, 'bahan_baku_id' => 11, 'jumlah_kebutuhan' => 17.30],
+            ['produk_id' => 18, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 19. BCJ Coklat
+            ['produk_id' => 19, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 150],
+            ['produk_id' => 19, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 45],
+            ['produk_id' => 19, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 2.00],
+            ['produk_id' => 19, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15],
+            ['produk_id' => 19, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 15.00],
+            ['produk_id' => 19, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+
+            // 20. BCJ Tiramisu
+            ['produk_id' => 20, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 150],
+            ['produk_id' => 20, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 45],
+            ['produk_id' => 20, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 2.00],
+            ['produk_id' => 20, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15],
+            ['produk_id' => 20, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 15.00],
+            ['produk_id' => 20, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+        ];
+
+        foreach ($boms as $bom) {
+            $bom['created_at'] = now();
+            $bom['updated_at'] = now();
+            DB::table('bom')->insert($bom);
         }
     }
 }

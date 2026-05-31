@@ -42,7 +42,7 @@ class BomController extends Controller
         $produk = Produk::findOrFail($request->produk_id);
         $request->validate([
             'bahan_baku_id' => 'required|exists:bahan_baku,id',
-            'jumlah_kebutuhan' => 'required|numeric|min:0.001',
+            'jumlah_kebutuhan' => 'required|numeric|min:0.0001',
         ]);
 
         Bom::create([

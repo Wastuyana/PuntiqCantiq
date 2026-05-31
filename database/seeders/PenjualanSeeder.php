@@ -3,66 +3,161 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Penjualan;
-use App\Models\DetailPenjualan;
-use App\Models\Produk;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Faker\Factory as Faker;
 
 class PenjualanSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
-        $produks = Produk::all();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('penjualan')->truncate();
+        DB::table('detail_penjualan')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        if ($produks->isEmpty()) {
-            $this->command->info("Data produk kosong, isi produk dulu ya!");
+        $produkMap = DB::table('produk')->pluck('id', 'kode_produk')->toArray();
+        $mitraIds = DB::table('mitra')->pluck('id')->toArray();
+        $pelangganIds = DB::table('pelanggan')->pluck('id')->toArray();
+
+        if (empty($mitraIds)) {
+            $this->command->error("Tabel mitra masih kosong! Jalankan MitraSeeder terlebih dahulu.");
             return;
         }
 
-        // data 30 hari ke belakang
-        for ($i = 0; $i < 30; $i++) {
-            // Asumsi dalam 1 hari ada 1-3 transaksi
-            $jumlahTransaksiPerHari = rand(1, 3);
+        $rekapBulananMitra = [
+            2 => [
+                'total_target' => 473,
+                'tanggal_pilihan' => ['2026-02-05', '2026-02-12', '2026-02-19', '2026-02-26'],
+                'produk_distribusi' => [
+                    'PCR-CK' => 0.50,
+                    'PCR-MB' => 0.20,
+                    'PCR-GR' => 0.15,
+                    'PCM-CK' => 0.10,
+                    'BCJ-CK' => 0.05
+                ]
+            ],
+            3 => [
+                'total_target' => 763,
+                'tanggal_pilihan' => ['2026-03-04', '2026-03-11', '2026-03-18', '2026-03-25', '2026-03-30'],
+                'produk_distribusi' => [
+                    'PCR-CK' => 0.45,
+                    'PCR-MB' => 0.25, // Varian manis naik pas lebaran
+                    'PCR-TL' => 0.10, // Ayam Taliwang
+                    'BP-OR500' => 0.10, // Big Pack buat parsel/oleh-oleh kue lebaran
+                    'BCJ-TR' => 0.10   // Crispy Jar Tiramisu
+                ]
+            ],
+            4 => [
+                'total_target' => 689,
+                'tanggal_pilihan' => ['2026-04-03', '2026-04-10', '2026-04-17', '2026-04-24'],
+                'produk_distribusi' => [
+                    'PCR-CK' => 0.48,
+                    'PCR-MB' => 0.22,
+                    'PCR-GR' => 0.15,
+                    'PCM-MB' => 0.10,
+                    'BP-CK250' => 0.05
+                ]
+            ]
+        ];
 
-            for ($j = 0; $j < $jumlahTransaksiPerHari; $j++) {
-                $tanggal = Carbon::now()->subDays($i)->setHour(rand(8, 20));
-                
-                // 1. Simpan Header Penjualan
-                $penjualan = Penjualan::create([
-                    'tanggal_penj'   => $tanggal,
-                    'total_prod'     => 0, // Akan diupdate setelah detail masuk
-                    'subtotal_harga' => 0, // Akan diupdate setelah detail masuk
+        foreach ($rekapBulananMitra as $bulan => $config) {
+            $jumlahTanggal = count($config['tanggal_pilihan']);
+
+            $targetPerTransaksi = floor($config['total_target'] / $jumlahTanggal);
+            $sisaBungkus = $config['total_target'] % $jumlahTanggal;
+
+            foreach ($config['tanggal_pilihan'] as $index => $tanggal) {
+                $qtyTransaksiIni = $targetPerTransaksi + ($index === 0 ? $sisaBungkus : 0);
+
+                $mitraIdTerpilih = $mitraIds[array_rand($mitraIds)];
+
+                $penjualanId = DB::table('penjualan')->insertGetId([
+                    'tanggal_penj'      => $tanggal,
+                    'total_prod'        => 0,
+                    'subtotal_harga'    => 0,
+                    'status_customer'   => 'mitra',
+                    'pelanggan_id'      => null,
+                    'metode_pembayaran' => 'transfer',
+                    'mitra_id'          => $mitraIdTerpilih,
+                    'created_at'        => Carbon::parse($tanggal),
+                    'updated_at'        => Carbon::parse($tanggal),
                 ]);
 
-                $totalQtyTransaksi = 0;
-                $totalHargaTransaksi = 0;
+                $totalProdTransaksi = 0;
+                $subtotalHargaTransaksi = 0;
 
-                // 2. Simpan Detail (Satu transaksi beli 1-2 jenis produk)
-                $produkAcak = $produks->random(rand(1, 2));
+                foreach ($config['produk_distribusi'] as $kodeProduk => $persentase) {
+                    $faktorAcak = rand(70, 130) / 100;
+                    $qtyProduk = round(($qtyTransaksiIni * $persentase) * $faktorAcak);
 
-                foreach ($produkAcak as $produk) {
-                    $qty = rand(2, 10); // Random terjual 2-10 pcs per item
-                    $subtotal = $qty * $produk->harga_jual;
+                    if ($qtyProduk > 0) {
+                        $idProduk = $produkMap[$kodeProduk] ?? null;
+                        if ($idProduk) {
+                            $produk = DB::table('produk')->where('id', $idProduk)->first();
+                            $totalHargaDetail = $qtyProduk * $produk->harga_jual;
 
-                    DetailPenjualan::create([
-                        'penjualan_id'  => $penjualan->id,
-                        'produk_id'     => $produk->id,
-                        'jumlah_produk' => $qty,
-                        'total_harga'   => $subtotal,
-                    ]);
+                            DB::table('detail_penjualan')->insert([
+                                'penjualan_id'  => $penjualanId,
+                                'produk_id'     => $idProduk,
+                                'jumlah_produk' => $qtyProduk,
+                                'total_harga'   => $totalHargaDetail,
+                                'created_at'    => Carbon::parse($tanggal),
+                                'updated_at'    => Carbon::parse($tanggal),
+                            ]);
 
-                    $totalQtyTransaksi += $qty;
-                    $totalHargaTransaksi += $subtotal;
+                            $totalProdTransaksi += $qtyProduk;
+                            $subtotalHargaTransaksi += $totalHargaDetail;
+                        }
+                    }
                 }
-
-                // 3. Update kembali Header dengan total yang benar
-                $penjualan->update([
-                    'total_prod'     => $totalQtyTransaksi,
-                    'subtotal_harga' => $totalHargaTransaksi,
+                DB::table('penjualan')->where('id', $penjualanId)->update([
+                    'total_prod'     => $totalProdTransaksi,
+                    'subtotal_harga' => $subtotalHargaTransaksi
                 ]);
             }
+        }
+
+        $metodePembayaran = ['cash', 'qris', 'cash'];
+        $produkKodes = array_keys($produkMap);
+
+        for ($i = 1; $i <= 30; $i++) {
+            $bulanAcak = rand(2, 4);
+            $hariAcak = rand(1, 28);
+            $tanggalAcak = "2026-0" . $bulanAcak . "-" . sprintf("%02d", $hariAcak);
+            $pelangganId = !empty($pelangganIds) ? $pelangganIds[array_rand($pelangganIds)] : null;
+
+            $penjualanId = DB::table('penjualan')->insertGetId([
+                'tanggal_penj'      => $tanggalAcak,
+                'total_prod'        => 0,
+                'subtotal_harga'    => 0,
+                'status_customer'   => 'pelanggan',
+                'pelanggan_id'      => $pelangganId,
+                'metode_pembayaran' => $metodePembayaran[array_rand($metodePembayaran)],
+                'mitra_id'          => null,
+                'created_at'        => Carbon::parse($tanggalAcak),
+                'updated_at'        => Carbon::parse($tanggalAcak),
+            ]);
+
+            $qtyBeliEceran = rand(1, 3);
+            $kodeTerpilih = $produkKodes[array_rand($produkKodes)];
+            $idProduk = $produkMap[$kodeTerpilih];
+
+            $produk = DB::table('produk')->where('id', $idProduk)->first();
+            $totalHargaDetail = $qtyBeliEceran * $produk->harga_jual;
+
+            DB::table('detail_penjualan')->insert([
+                'penjualan_id'  => $penjualanId,
+                'produk_id'     => $idProduk,
+                'jumlah_produk' => $qtyBeliEceran,
+                'total_harga'   => $totalHargaDetail,
+                'created_at'    => Carbon::parse($tanggalAcak),
+                'updated_at'    => Carbon::parse($tanggalAcak),
+            ]);
+
+            DB::table('penjualan')->where('id', $penjualanId)->update([
+                'total_prod'     => $qtyBeliEceran,
+                'subtotal_harga' => $totalHargaDetail
+            ]);
         }
     }
 }

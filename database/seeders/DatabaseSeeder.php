@@ -34,9 +34,13 @@ class DatabaseSeeder extends Seeder
         $userStaff->assignRole($roleStaff);
 
         $this->call([
-        ProdukSeeder::class,
-        BahanBakuSeeder::class,
-        SettingSeeder::class,
-    ]);
+            ProdukSeeder::class,
+            BahanBakuSeeder::class,
+            BomSeeder::class,
+            SettingSeeder::class,
+            MitraSeeder::class,
+            PelangganSeeder::class,
+            BatchProduksiSeeder::class,
+        ]);
     }
 }

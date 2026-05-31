@@ -54,7 +54,7 @@ class ProdukController extends Controller
             'varian' => $request->varian,
             'ukuran' => $request->ukuran,
             'stok' => $request->stok,
-            'safety_stok' => $request->safety_stok ?? 0,
+            'ss_produk' => $request->ss_produk ?? 0,
             'est_biaya_tenaga' => $request->est_biaya_tenaga ?? 0,
             'est_biaya_overhead' => $request->est_biaya_overhead ?? 0,
             'hpp_standar' => 0,

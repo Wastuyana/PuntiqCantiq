@@ -19,7 +19,7 @@ class CekStokKritis extends Command
     {
         $this->info('Memulai pengecekan stok...');
 
-        $produks = Produk::whereRaw('stok <= safety_stok')->get();
+        $produks = Produk::whereRaw('stok <= ss_produk')->get();
 
         foreach ($produks as $produk) {
             $service->cekStokKritis($produk);

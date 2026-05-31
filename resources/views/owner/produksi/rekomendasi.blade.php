@@ -38,7 +38,7 @@
 
                                 <td class="text-center font-bold">
                                     <span
-                                        class="badge {{ $item['stok_aktual'] <= $item['safety_stock'] ? 'badge-error text-white' : 'badge-success text-white' }} px-3 py-2 text-xs">
+                                        class="badge {{ $item['stok_aktual'] <= $item['ss_produk'] ? 'badge-error text-white' : 'badge-success text-white' }} px-3 py-2 text-xs">
                                         {{ $item['stok_aktual'] }}
                                     </span>
                                 </td>

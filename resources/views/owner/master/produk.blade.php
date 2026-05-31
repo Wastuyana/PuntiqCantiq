@@ -56,13 +56,16 @@
 
                                 <td>
                                     <div class="flex flex-col">
-                                        @if ($produk->stok <= $produk->safety_stok)
+                                        @if ($produk->stok <= $produk->ss_produk)
                                             <span class="badge badge-error badge-sm badge-outline">Kritis</span>
+                                        @elseif ($produk->stok <= $produk->rop_produk)
+                                            <span class="badge badge-warning badge-sm badge-outline">Butuh
+                                                Produksi</span>
                                         @else
                                             <span class="badge badge-success badge-sm badge-outline">Aman</span>
                                         @endif
                                         <div class="flex items-center gap-1.5 opacity-60 text-xs mt-1">
-                                            Min: {{ $produk->safety_stok }}
+                                            Min: {{ $produk->ss_produk }}
                                         </div>
                                     </div>
                                 </td>
