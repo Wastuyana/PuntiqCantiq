@@ -11,6 +11,12 @@
             <h1 class="text-2xl font-bold text-base-content">Daftar Produk</h1>
         </div>
 
+        @if (session('success'))
+            <div class="alert alert-success mb-6 shadow-sm font-medium">
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         <div class="overflow-x-auto bg-base-200 rounded-xl shadow-sm border border-base-300">
             <table class="table table-zebra w-full">
                 <thead class="bg-base-200 text-base-content font-bold">

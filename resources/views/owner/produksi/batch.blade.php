@@ -8,14 +8,20 @@
                 </ul>
             </div>
 
-            <form action="{{ route('owner.produksi.batch.index') }}" method="GET" 
+            @if (session('success'))
+                <div class="alert alert-success mb-6 shadow-sm font-medium">
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <form action="{{ route('owner.produksi.batch.index') }}" method="GET"
                 class="flex items-center gap-2 mb-6 bg-white p-2 px-3 rounded-lg shadow-sm border border-slate-100 w-fit">
                 <div class="flex items-center gap-2">
                     <select name="bulan" class="select select-bordered select-sm text-xs focus:outline-none">
                         @for ($m = 1; $m <= 12; $m++)
                             <option value="{{ $m }}"
                                 {{ request('bulan', now()->month) == $m ? 'selected' : '' }}>
-                                {{ date('M', mktime(0, 0, 0, $m, 1)) }} 
+                                {{ date('M', mktime(0, 0, 0, $m, 1)) }}
                             </option>
                         @endfor
                     </select>

@@ -41,7 +41,7 @@ class SupplierController extends Controller
         return redirect()->route('admin.partner.supplier.index')->with('success', 'Supplier berhasil ditambah!');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         // 1. Validasi Unik (Kecuali ID sendiri)
         $request->validate([

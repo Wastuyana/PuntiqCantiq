@@ -61,7 +61,7 @@ class ProdukController extends Controller
             'harga_jual' => $request->harga_jual ?? 0,
         ]);
 
-        return redirect()->route('owner.master.produk.index')->with('success', 'Master Produk Berhasil Dicatat!');
+        return redirect()->route('owner.master.produk.index')->with('success', 'Data Produk Berhasil Dicatat!');
     }
 
     /**

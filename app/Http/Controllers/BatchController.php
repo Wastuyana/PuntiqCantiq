@@ -157,7 +157,7 @@ class BatchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id, ProductionService $productionService)
+    public function update(Request $request, int $id, ProductionService $productionService)
     {
         $batch = Batch::findOrFail($id);
 

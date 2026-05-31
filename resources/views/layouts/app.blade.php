@@ -284,7 +284,7 @@
                     </li>
                     <li>
                         <details class="group"
-                            {{ request()->routeIs('owner.produksi.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
+                            {{ request()->routeIs('owner.laporan.*') || request()->routeIs('owner.dashboard') ? 'open' : '' }}>
                             <summary
                                 class="{{ request()->routeIs('owner.laporan*') ? 'text-primary-content font-medium' : '' }} hover:bg-base-200 rounded-lg px-4 py-3 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -304,14 +304,17 @@
 
                             <ul class="mt-2 space-y-1">
                                 <li>
-                                    <a href="{{ route('owner.laporan') }}"
-                                        class="{{ request()->routeIs('owner.laporan') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                    <a href="{{ route('owner.laporan.produksi') }}"
+                                        class="{{ request()->routeIs('owner.laporan.produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Laporan Produksi
                                     </a>
                                 </li>
                             </ul>
                             <ul class="mt-2 space-y-1">
                                 <li>
+                                    <a href="{{ route('owner.laporan.hpp') }}"
+                                        class="{{ request()->routeIs('owner.laporan.hpp') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                        Laporan HPP
                                     <a href="{{ route('owner.laporan.penjualan') }}"
                                         class="{{ request()->routeIs('owner.laporan.penjualan') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Laporan Penjualan

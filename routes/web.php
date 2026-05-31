@@ -13,7 +13,7 @@ use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\BomController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanProdController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PanduanKerjaController;
 use App\Http\Controllers\RekomendasiProdController;
@@ -26,6 +26,7 @@ use App\Http\Controllers\ManajemenPembayaranOwnerController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\QcController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\LaporanHppController;
 use app\Http\Controllers\Pelanggan;
 use App\Http\Controllers\Pelanggan as ControllersPelanggan;
 use App\Http\Controllers\PelangganController;
@@ -93,10 +94,16 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::post('/owner/inventory/bahan-baku/{id}/hitung-ulang', [BahanBakuController::class, 'hitungUlang'])
      ->name('owner.inventory.bahan_baku.hitung-ulang');
     Route::resource('/owner/inventory/qc', QcController::class)->names('owner.inventory.qc');
-    Route::get('/owner/laporan', [LaporanController::class, 'index'])->name('owner.laporan');
+    Route::get('/owner/laporan', [LaporanHppController::class, 'index'])->name('owner.laporan');
+    Route::resource('/owner/partner/supplier', SupplierController::class)->names('owner.partner.supplier');
 
-    Route::get('/laporan-produksi/export-excel', [LaporanController::class, 'exportExcel'])->name('owner.laporan.export.excel');
-    Route::get('/laporan-produksi/export-pdf', [LaporanController::class, 'exportPdf'])->name('owner.laporan.export.pdf');
+    Route::get('/owner/laporan/produksi', [LaporanProdController::class, 'index'])->name('owner.laporan.produksi');
+    Route::get('/laporan-produksi/export-excel', [LaporanProdController::class, 'exportExcel'])->name('owner.laporan.export.excel');
+    Route::get('/laporan-produksi/export-pdf', [LaporanProdController::class, 'exportPdf'])->name('owner.laporan.export.pdf');
+
+    Route::get('/owner/laporan/hpp', [LaporanHppController::class, 'index'])->name('owner.laporan.hpp');
+    Route::get('/laporan-hpp/export-excel', [LaporanHppController::class, 'exportExcel'])->name('owner.laporan.hpp.excel');
+    Route::get('/laporan-hpp/export-pdf', [LaporanHppController::class, 'exportPdf'])->name('owner.laporan.hpp.pdf');
     
     Route::get('/owner/laporan/penjualan', [LaporanPenjualanController::class, 'index'])->name('owner.laporan.penjualan');
     Route::get('/owner/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('owner.laporan.penjualan.export');

@@ -7,6 +7,12 @@
             </ul>
         </div>
 
+        @if (session('success'))
+            <div class="alert alert-success mb-6 shadow-sm font-medium">
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         <div role="tablist" class="tabs tabs-lifted">
             <input type="radio" name="stndr_tabs" role="tab"
                 class="tab [--tab-bg:#fff] [--tab-border-color:#e5e7eb] text-xs font-bold text-base-200-content checked:text-primary-content"

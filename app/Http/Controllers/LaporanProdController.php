@@ -8,7 +8,7 @@ use App\Exports\LaporanProduksiExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class LaporanController extends Controller
+class LaporanProdController extends Controller
 {
     private function getLaporanData($startDate, $endDate)
     {
@@ -48,7 +48,7 @@ class LaporanController extends Controller
         $endDate = $request->get('end_date', now()->endOfMonth()->toDateString());
 
         $laporan = $this->getLaporanData($startDate, $endDate);
-        return view('owner.laporan_produksi', compact('laporan', 'startDate', 'endDate'));
+        return view('owner.laporan.produksi', compact('laporan', 'startDate', 'endDate'));
     }
 
     public function exportExcel(Request $request)
