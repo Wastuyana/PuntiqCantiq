@@ -46,7 +46,36 @@ class PelangganController extends Controller
 
         return back()->with('success', 'Pelanggan baru berhasil ditambahkan dengan kode ' . $kode_otomatis);
     }
+    public function storeAjax(Request $request)
+    {
+        $request->validate([
+            'nama_pelanggan' => 'required|string|max:255',
+            'no_hp'          => 'nullable|string|max:20',
+        ]);
 
+        // LOGIKA GENERATE KODE PELANGGAN
+        $latest = \App\Models\Pelanggan::latest('id')->first();
+        
+        if (!$latest) {
+            $kode_otomatis = 'PEL-0001';
+        } else {
+            // Mengambil angka dari kode terakhir, misal PEL-0001 diambil 0001
+            $string = preg_replace("/[^0-9]/", "", $latest->kode_pelanggan);
+            $angka_baru = (int)$string + 1;
+            
+            // Pad dengan angka 0 di depan agar formatnya tetap 4 digit
+            $kode_otomatis = 'PEL-' . str_pad($angka_baru, 4, '0', STR_PAD_LEFT);
+        }
+
+        // SIMPAN KE DATABASE
+        \App\Models\Pelanggan::create([
+            'nama_pelanggan' => $request->nama_pelanggan,
+            'no_hp'          => $request->no_hp,
+            'kode_pelanggan' => $kode_otomatis,
+        ]);
+
+        return back()->with('success', 'Pelanggan berhasil ditambahkan dengan kode: ' . $kode_otomatis);
+    }
     public function update(Request $request, $id)
     {
         // Validasi unik untuk update (abaikan nama milik data ini sendiri yang sedang di-edit)

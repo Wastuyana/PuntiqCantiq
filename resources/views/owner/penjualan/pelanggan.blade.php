@@ -59,7 +59,7 @@
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-4 text-xs bg-base-200 p-3 rounded-lg">
                                             <div><strong>Pelanggan:</strong> {{ $row->pelanggan->nama_pelanggan ?? 'Umum' }} ({{ $row->pelanggan->kode_pelanggan ?? '-' }})</div>
                                             <div><strong>Waktu Transaksi:</strong> {{ \Carbon\Carbon::parse($row->tanggal_penj)->translatedFormat('d F Y') }}</div>
-                                            <div><strong>Metode Bayar:</strong> <span class="uppercase font-bold text-neutral-content">{{ $row->metode_pembayaran }}</span></div>
+                                            <div><strong>Metode Bayar:</strong> <span class="uppercase font-bold text-succes">{{ $row->metode_pembayaran }}</span></div>
                                             <div><strong>Status Pembayaran:</strong> <span class="text-success font-bold">LUNAS</span></div>
                                         </div>
 
@@ -67,6 +67,7 @@
                                             <table class="table table-compact w-full text-xs">
                                                 <thead>
                                                     <tr class="bg-base-300">
+                                                        <th>Kode Penjualan</th>
                                                         <th>Nama Produk / Varian</th>
                                                         <th class="text-center">Qty Beli</th>
                                                         <th class="text-right">Harga Satuan</th>
@@ -77,6 +78,9 @@
                                                     @if($row->detail_penjualan)
                                                         @foreach($row->detail_penjualan as $detail)
                                                         <tr>
+                                                            <td class="font-semibold text-gray-800">
+                                                                {{ $detail->penjualan->kode_penjualan ?? '' }}
+                                                            </td>
                                                             <td class="font-semibold text-gray-800">
                                                                 {{ $detail->produk->kategori ?? 'Produk' }} - {{ $detail->produk->varian ?? 'Terhapus' }}
                                                             </td>
@@ -91,8 +95,8 @@
                                                         @endforeach
                                                     @endif
                                                     <tr class="bg-base-200 font-bold text-sm">
-                                                        <td colspan="2" class="text-right">TOTAL BELANJA:</td>
-                                                        <td colspan="2" class="text-right text-warning">
+                                                        <td colspan="3" class="text-right">TOTAL BELANJA:</td>
+                                                        <td colspan="3" class="text-right text-warning">
                                                             Rp {{ number_format($row->subtotal_harga, 0, ',', '.') }}
                                                         </td>
                                                     </tr>

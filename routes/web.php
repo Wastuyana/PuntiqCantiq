@@ -156,6 +156,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('/admin/partner/supplier', SupplierController::class)->names('admin.partner.supplier');
     Route::resource('/admin/partner/pelanggan', PelangganController::class)->names('admin.partner.pelanggan');
     Route::resource('/admin/partner/mitra', MitraController::class)->names('admin.partner.mitra');
+    Route::post('/pelanggan/store-ajax', [PelangganController::class, 'storeAjax'])->name('admin.pelanggan.store.ajax');
 });
 
 Route::middleware('auth')->group(function () {

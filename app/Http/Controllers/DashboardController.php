@@ -46,10 +46,23 @@ class DashboardController extends Controller
             SUM(biaya_bahan + biaya_tenagakerja + biaya_overhead) as total ')
             ->first();
 
+        $penjualanPerVarian = \App\Models\DetailPenjualan::with('produk')
+        ->join('penjualan', 'detail_penjualan.penjualan_id', '=', 'penjualan.id')
+        ->whereMonth('penjualan.tanggal_penj', $bulan)
+        ->whereYear('penjualan.tanggal_penj', $tahun)
+        ->get()
+        ->groupBy('produk.varian')
+        ->map(function ($group) {
+            return $group->sum('jumlah_produk');
+        });
+
+        $labels = $penjualanPerVarian->keys();
+        $dataSales = $penjualanPerVarian->values();
+
         return view('owner.dashboard', array_merge(
-            compact('efisiensiHasilProd', 'efisiensiBiayaProd', 'proporsiBiaya', 'categories', 'products', 'bulan', 'tahun'),
+            compact('efisiensiHasilProd', 'efisiensiBiayaProd', 'proporsiBiaya', 'categories', 'products', 'bulan', 'tahun', 'labels', 'dataSales'),
             ['totalAktual' => $totalAktual, 'totalTarget' => $totalTarget, 'selisihKumulatif' => $totalAktual - $totalTarget]
-        ));
+        )); 
     }
 
     public function getHppTrend(Request $request)

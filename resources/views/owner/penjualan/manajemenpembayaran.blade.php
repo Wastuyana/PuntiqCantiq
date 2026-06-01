@@ -8,10 +8,11 @@
         </div>
         <div x-show="tab === 'hutang'">
             <table class="table w-full text-xs">
-                <thead><tr class="bg-base-200"><th>Waktu</th><th>Pembeli</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead>
+                <thead><tr class="bg-base-200"><th>Kode Penjualan</th><th>Waktu</th><th>Pembeli</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead>
                 <tbody>
                     @forelse($pembayaran_hutang as $row)
                     <tr>
+                        <td class="font-bold">{{ $row->kode_penjualan}}</td>
                         <td>{{ \Carbon\Carbon::parse($row->tanggal_penj)->format('d M Y') }}</td>
                         <td class="font-bold">{{ $row->status_customer == 'mitra' ? ($row->mitra->nama_mitra ?? 'Mitra') : ($row->pelanggan->nama ?? 'Pelanggan') }}</td>
                         <td class="text-error font-bold">Rp {{ number_format($row->subtotal_harga, 0, ',', '.') }}</td>
@@ -29,10 +30,11 @@
         </div>
         <div x-show="tab === 'lunas'" x-cloak>
             <table class="table w-full text-xs">
-                <thead><tr class="bg-base-200"><th>Waktu</th><th>Pembeli</th><th>Total</th><th>Metode</th><th>Status</th></tr></thead>
+                <thead><tr class="bg-base-200"><th>Kode Penjualan</th><th>Waktu</th><th>Pembeli</th><th>Total</th><th>Metode</th><th>Status</th></tr></thead>
                 <tbody>
                     @forelse($riwayat_lunas as $row)
                     <tr>
+                        <td class="uppercase">{{$row->kode_penjualan}}</td>
                         <td>{{ \Carbon\Carbon::parse($row->tanggal_penj)->format('d M Y') }}</td>
                         <td class="font-bold">{{ $row->status_customer == 'mitra' ? ($row->mitra->nama_mitra ?? 'Mitra') : ($row->pelanggan->nama ?? 'Pelanggan') }}</td>
                         <td class="text-success font-bold">Rp {{ number_format($row->subtotal_harga, 0, ',', '.') }}</td>

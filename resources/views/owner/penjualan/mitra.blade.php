@@ -61,7 +61,7 @@
                     
                     <div>
                         <strong>Metode Bayar:</strong> 
-                        <span class="uppercase font-bold text-neutral-content">
+                        <span class="uppercase font-bold text-succes">
                             @if(in_array(strtolower($row->metode_pembayaran), ['hutang', 'tempo']))
                                 Bayar Nanti (Tempo)
                             @else
@@ -84,6 +84,7 @@
                         <table class="table table-compact w-full text-xs">
                             <thead>
                                 <tr class="bg-base-300">
+                                    <th>Kode Penjualan</th>
                                     <th>Nama Produk / Varian</th>
                                     <th class="text-center">Qty Beli</th>
                                     <th class="text-right">Harga Satuan</th>
@@ -94,6 +95,9 @@
                                 @if($row->detail_penjualan)
                                     @foreach($row->detail_penjualan as $detail)
                                     <tr>
+                                        <td class="font-semibold text-gray-800">
+                                            {{ $detail->penjualan->kode_penjualan ?? '' }}
+                                        </td>
                                         <td class="font-semibold text-gray-800">
                                             {{ $detail->produk->kategori ?? 'Produk' }} - {{ $detail->produk->varian ?? 'Terhapus' }}
                                         </td>
@@ -108,8 +112,8 @@
                                     @endforeach
                                 @endif
                                 <tr class="bg-base-200 font-bold text-sm">
-                                    <td colspan="2" class="text-right">TOTAL BELANJA:</td>
-                                    <td colspan="2" class="text-right text-warning">
+                                    <td colspan="3" class="text-right">TOTAL BELANJA:</td>
+                                    <td colspan="3" class="text-right text-warning">
                                         Rp {{ number_format($row->subtotal_harga, 0, ',', '.') }}
                                     </td>
                                 </tr>

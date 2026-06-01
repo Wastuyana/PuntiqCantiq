@@ -24,7 +24,7 @@ class PenjualanMitraController extends Controller
         return view('admin.penjualan.mitra', compact('mitra', 'produk', 'history'));
     }
 
-    // 2. Proses Simpan Transaksi
+        // 2. Proses Simpan Transaksi
     public function store(Request $request)
     {
         $request->validate([
@@ -36,6 +36,19 @@ class PenjualanMitraController extends Controller
 
         DB::beginTransaction();
         try {
+            // --- GENERATE KODE PENJUALAN OTOMATIS ---
+            // Format: INV-20260601-001
+            $today = date('Ymd');
+            $lastPenjualan = DB::table('penjualan')
+                ->whereDate('tanggal_penj', date('Y-m-d'))
+                ->latest('id')
+                ->first();
+
+            // Jika hari ini belum ada transaksi, mulai dari 001. Jika sudah ada, tambah 1.
+            $nextNumber = $lastPenjualan ? (intval(substr($lastPenjualan->kode_penjualan, -3)) + 1) : 1;
+            $kodePenjualan = 'INV-' . $today . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            // ----------------------------------------
+
             $total_harga = 0;
             $total_qty = 0;
             $detail_items = [];
@@ -46,19 +59,16 @@ class PenjualanMitraController extends Controller
 
                 $produk = Produk::findOrFail($prod_id);
                 
-                // Validasi stok gudang saja
                 if ($produk->stok < $qty) {
                     throw new \Exception("Stok gudang untuk produk {$produk->nama_produk} tidak mencukupi!");
                 }
 
-                // LOGIKA PINDAH STOK OTOMATIS
+                // Kurangi stok gudang
+                $produk->decrement('stok', $qty);
+
+                // Jika hutang, pindahkan ke stok_mitra
                 if ($request->metode_pembayaran === 'hutang') {
-                    // Jika hutang: Kurangi Gudang, Tambah ke Mitra
-                    $produk->decrement('stok', $qty);
                     $produk->increment('stok_mitra', $qty);
-                } else {
-                    // Jika lunas: Langsung kurangi stok gudang saja
-                    $produk->decrement('stok', $qty);
                 }
 
                 $subtotal = $produk->harga_jual * $qty;
@@ -68,12 +78,13 @@ class PenjualanMitraController extends Controller
                 $detail_items[] = [
                     'produk_id'     => $prod_id,
                     'jumlah_produk' => $qty,
-                    'subtotal_harga'=> $subtotal,
+                    'total_harga'   => $subtotal,
                 ];
             }
 
-            // ... (Simpan ke tabel penjualan dan detail_penjualan tetap sama)
+            // Simpan ke tabel penjualan
             $penjualan_id = DB::table('penjualan')->insertGetId([
+                'kode_penjualan'    => $kodePenjualan, // Kode disimpan di sini
                 'tanggal_penj'      => now(),
                 'total_prod'        => $total_qty,
                 'subtotal_harga'    => $total_harga,
@@ -83,21 +94,23 @@ class PenjualanMitraController extends Controller
                 'created_at'        => now(),
             ]);
 
+            // Simpan detail_penjualan
             foreach ($detail_items as $item) {
                 DB::table('detail_penjualan')->insert([
                     'penjualan_id'  => $penjualan_id,
                     'produk_id'     => $item['produk_id'],
                     'jumlah_produk' => $item['jumlah_produk'],
-                    'total_harga'   => $item['subtotal_harga'],
+                    'total_harga'   => $item['total_harga'],
                     'created_at'    => now(),
                 ]);
             }
 
             DB::commit();
-            return back()->with('success', 'Transaksi berhasil! Stok telah disesuaikan.');
+            return back()->with('success', "Transaksi berhasil! Kode: $kodePenjualan");
+            
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Gagal simpan: ' . $e->getMessage()])->withInput();
         }
     }
     // 3. Proses Pembatalan / Hapus Transaksi (Kembalikan Stok Otomatis)

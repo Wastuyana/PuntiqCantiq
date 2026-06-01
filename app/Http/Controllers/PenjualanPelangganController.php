@@ -38,6 +38,19 @@ class PenjualanPelangganController extends Controller
 
         DB::beginTransaction();
         try {
+            // --- GENERATE KODE PENJUALAN OTOMATIS ---
+            // Format: INV-20260601-001
+            $today = date('Ymd');
+            $lastPenjualan = DB::table('penjualan')
+                ->whereDate('tanggal_penj', date('Y-m-d'))
+                ->latest('id')
+                ->first();
+
+            // Jika hari ini belum ada transaksi, mulai dari 001. Jika sudah ada, tambah 1.
+            $nextNumber = $lastPenjualan ? (intval(substr($lastPenjualan->kode_penjualan, -3)) + 1) : 1;
+            $kodePenjualan = 'INV-' . $today . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            // ----------------------------------------
+
             $total_harga = 0;
             $total_qty = 0;
             $detail_items = [];
@@ -72,6 +85,7 @@ class PenjualanPelangganController extends Controller
 
             // Simpan data ke tabel penjualan utama
             $penjualan_id = DB::table('penjualan')->insertGetId([
+                'kode_penjualan'    => $kodePenjualan, // Kode disimpan di sini
                 'tanggal_penj'      => now(),
                 'total_prod'        => $total_qty,
                 'subtotal_harga'    => $total_harga,
@@ -95,7 +109,7 @@ class PenjualanPelangganController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', 'Transaksi penjualan pelanggan berhasil disimpan!');
+            return back()->with('success', "Transaksi berhasil! Kode: $kodePenjualan");
             
         } catch (\Exception $e) {
             DB::rollBack();

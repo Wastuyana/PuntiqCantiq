@@ -11,19 +11,26 @@ use Illuminate\Support\Facades\Log;
 
 class LaporanPenjualanController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $dari = $request->dari ?? now()->startOfMonth()->format('Y-m-d');
         $sampai = $request->sampai ?? now()->endOfMonth()->format('Y-m-d');
 
-        // Menggunakan with() agar tidak terjadi N+1 query yang membuat loading lambat
         $data = DetailPenjualan::with(['produk', 'penjualan'])
             ->whereHas('penjualan', function($q) use ($dari, $sampai) {
                 $q->whereBetween('tanggal_penj', [$dari, $sampai]);
             })
             ->get();
 
-        return view('owner.laporan_penjualan', compact('data', 'dari', 'sampai'));
+        $produkTerlaris = $data->groupBy('produk_id')->map(function ($group) {
+            return [
+                'nama' => ($group->first()->produk->kategori ?? 'N/A') . ' - ' . ($group->first()->produk->varian ?? 'N/A'),
+                'qty' => $group->sum('jumlah_produk'),
+                'total' => $group->sum(fn($i) => $i->jumlah_produk * ($i->produk->harga_jual ?? 0))
+            ];
+        })->sortByDesc('qty')->take(10);;
+
+        return view('owner.laporan_penjualan', compact('data', 'dari', 'sampai', 'produkTerlaris'));
     }
 
     public function export(Request $request)
