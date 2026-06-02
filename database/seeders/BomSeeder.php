@@ -19,7 +19,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 1, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 40],   // Minyak (ml)
             ['produk_id' => 1, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 1.80], // Gula (gram)
             ['produk_id' => 1, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15], // Garam (gram)
-            ['produk_id' => 1, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],   // Kemasan (pcs)
+            ['produk_id' => 1, 'bahan_baku_id' => 18, 'jumlah_kebutuhan' => 1],   // Kemasan (pcs)
 
             // 2. PC Coklat 85g 
             ['produk_id' => 2, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.118],
@@ -37,7 +37,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 3, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15],
             ['produk_id' => 3, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 4.25],  // Bumbu Mentega (gram)
             ['produk_id' => 3, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 4.25],  // Bumbu Susu (gram)
-            ['produk_id' => 3, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 3, 'bahan_baku_id' => 13, 'jumlah_kebutuhan' => 1],
 
             // 4. PC Garlic 90g
             ['produk_id' => 4, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.140],
@@ -46,7 +46,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 4, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.17],
             ['produk_id' => 4, 'bahan_baku_id' => 9, 'jumlah_kebutuhan' => 2.70],  // Bumbu Garlic (gram)
             ['produk_id' => 4, 'bahan_baku_id' => 10, 'jumlah_kebutuhan' => 1.80], // Bumbu Garlic non msg
-            ['produk_id' => 4, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 4, 'bahan_baku_id' => 14, 'jumlah_kebutuhan' => 1],
 
             // 5. PC Taliwang 65g
             ['produk_id' => 5, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.090],
@@ -54,7 +54,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 5, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 1.30],
             ['produk_id' => 5, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.10],
             ['produk_id' => 5, 'bahan_baku_id' => 11, 'jumlah_kebutuhan' => 4.50], // Bumbu Taliwang
-            ['produk_id' => 5, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 5, 'bahan_baku_id' => 15, 'jumlah_kebutuhan' => 1],
 
             // 6. PC Coklat 40g
             ['produk_id' => 6, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.056],
@@ -63,7 +63,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 6, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.07],
             ['produk_id' => 6, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 4.80],
             ['produk_id' => 6, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 1.20],
-            ['produk_id' => 6, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 6, 'bahan_baku_id' => 16, 'jumlah_kebutuhan' => 1],
 
             // 7. PC Milky Butter 40g
             ['produk_id' => 7, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.059],
@@ -72,7 +72,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 7, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.07],
             ['produk_id' => 7, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 2.00],
             ['produk_id' => 7, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 2.00],
-            ['produk_id' => 7, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 7, 'bahan_baku_id' => 17, 'jumlah_kebutuhan' => 1],
 
             // 8. Choco Banana Flakes (180g)
             ['produk_id' => 8, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.240],
@@ -80,14 +80,14 @@ class BomSeeder extends Seeder
             ['produk_id' => 8, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 3.50],
             ['produk_id' => 8, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.25],
             ['produk_id' => 8, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 22.00],
-            ['produk_id' => 8, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 8, 'bahan_baku_id' => 19, 'jumlah_kebutuhan' => 1],
 
             // 9. BP 500g Ori
             ['produk_id' => 9, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.720],
             ['produk_id' => 9, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 220],
             ['produk_id' => 9, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 10.00],
             ['produk_id' => 9, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.80],
-            ['produk_id' => 9, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 9, 'bahan_baku_id' => 20, 'jumlah_kebutuhan' => 1],
 
             // 10. BP 500g Coklat
             ['produk_id' => 10, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.650],
@@ -96,7 +96,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 10, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.75],
             ['produk_id' => 10, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 57.00],
             ['produk_id' => 10, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 14.30],
-            ['produk_id' => 10, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 10, 'bahan_baku_id' => 21, 'jumlah_kebutuhan' => 1],
 
             // 11. BP 500g Milky
             ['produk_id' => 11, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.680],
@@ -105,7 +105,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 11, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.80],
             ['produk_id' => 11, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 23.40],
             ['produk_id' => 11, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 23.40],
-            ['produk_id' => 11, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 11, 'bahan_baku_id' => 22, 'jumlah_kebutuhan' => 1],
 
             // 12. BP 500g Garlic
             ['produk_id' => 12, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.770],
@@ -114,7 +114,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 12, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.93],
             ['produk_id' => 12, 'bahan_baku_id' => 9, 'jumlah_kebutuhan' => 15.00],
             ['produk_id' => 12, 'bahan_baku_id' => 10, 'jumlah_kebutuhan' => 10.00],
-            ['produk_id' => 12, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 12, 'bahan_baku_id' => 23, 'jumlah_kebutuhan' => 1],
 
             // 13. BP 500g Taliwang
             ['produk_id' => 13, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.690],
@@ -122,14 +122,14 @@ class BomSeeder extends Seeder
             ['produk_id' => 13, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 10.00],
             ['produk_id' => 13, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.77],
             ['produk_id' => 13, 'bahan_baku_id' => 11, 'jumlah_kebutuhan' => 34.60],
-            ['produk_id' => 13, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 13, 'bahan_baku_id' => 24, 'jumlah_kebutuhan' => 1],
 
             // 14. BP 250g Ori
             ['produk_id' => 14, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.360],
             ['produk_id' => 14, 'bahan_baku_id' => 2, 'jumlah_kebutuhan' => 110],
             ['produk_id' => 14, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 5.00],
             ['produk_id' => 14, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.40],
-            ['produk_id' => 14, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 14, 'bahan_baku_id' => 25, 'jumlah_kebutuhan' => 1],
 
             // 15. BP 250g Coklat
             ['produk_id' => 15, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.330],
@@ -138,7 +138,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 15, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.38],
             ['produk_id' => 15, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 29.00],
             ['produk_id' => 15, 'bahan_baku_id' => 6, 'jumlah_kebutuhan' => 7.20],
-            ['produk_id' => 15, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 15, 'bahan_baku_id' => 26, 'jumlah_kebutuhan' => 1],
 
             // 16. BP 250g Milky
             ['produk_id' => 16, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.340],
@@ -147,7 +147,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 16, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.40],
             ['produk_id' => 16, 'bahan_baku_id' => 7, 'jumlah_kebutuhan' => 11.90],
             ['produk_id' => 16, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 11.90],
-            ['produk_id' => 16, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 16, 'bahan_baku_id' => 27, 'jumlah_kebutuhan' => 1],
 
             // 17. BP 250g Garlic
             ['produk_id' => 17, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.390],
@@ -156,7 +156,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 17, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.47],
             ['produk_id' => 17, 'bahan_baku_id' => 9, 'jumlah_kebutuhan' => 7.50],
             ['produk_id' => 17, 'bahan_baku_id' => 10, 'jumlah_kebutuhan' => 5.00],
-            ['produk_id' => 17, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 17, 'bahan_baku_id' => 28, 'jumlah_kebutuhan' => 1],
 
             // 18. BP 250g Taliwang
             ['produk_id' => 18, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.345],
@@ -164,7 +164,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 18, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 5.00],
             ['produk_id' => 18, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.38],
             ['produk_id' => 18, 'bahan_baku_id' => 11, 'jumlah_kebutuhan' => 17.30],
-            ['produk_id' => 18, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 18, 'bahan_baku_id' => 29, 'jumlah_kebutuhan' => 1],
 
             // 19. BCJ Coklat
             ['produk_id' => 19, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.150],
@@ -172,7 +172,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 19, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 2.00],
             ['produk_id' => 19, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15],
             ['produk_id' => 19, 'bahan_baku_id' => 5, 'jumlah_kebutuhan' => 15.00],
-            ['produk_id' => 19, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 19, 'bahan_baku_id' => 30, 'jumlah_kebutuhan' => 1],
 
             // 20. BCJ Tiramisu
             ['produk_id' => 20, 'bahan_baku_id' => 1, 'jumlah_kebutuhan' => 0.150],
@@ -180,7 +180,7 @@ class BomSeeder extends Seeder
             ['produk_id' => 20, 'bahan_baku_id' => 3, 'jumlah_kebutuhan' => 2.00],
             ['produk_id' => 20, 'bahan_baku_id' => 4, 'jumlah_kebutuhan' => 0.15],
             ['produk_id' => 20, 'bahan_baku_id' => 8, 'jumlah_kebutuhan' => 15.00],
-            ['produk_id' => 20, 'bahan_baku_id' => 12, 'jumlah_kebutuhan' => 1],
+            ['produk_id' => 20, 'bahan_baku_id' => 31, 'jumlah_kebutuhan' => 1],
         ];
 
         foreach ($boms as $bom) {

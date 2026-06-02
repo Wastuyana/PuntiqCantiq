@@ -338,7 +338,7 @@ class ProductionService
         // 2. Data Pemakaian (dari tabel batch_bahan)
         $dataPemakaian = \App\Models\BatchBahan::join('batch', 'batch_bahan.batch_id', '=', 'batch.id')
             ->where('batch_bahan.bahan_baku_id', $bahanBaku->id)
-            ->where('batch.tanggal_produksi', '>=', now()->subDays(90)) // Menggunakan tanggal dari tabel batch
+            ->where('batch.tanggal_produksi', '>=', now()->subDays(30)) // Menggunakan tanggal dari tabel batch
             ->selectRaw('DATE(batch.tanggal_produksi) as tanggal, SUM(batch_bahan.bahan_aktual) as total')
             ->groupBy('tanggal')
             ->get();
