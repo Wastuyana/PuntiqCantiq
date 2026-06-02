@@ -56,28 +56,54 @@
                     </thead>
                     <tbody>
                         @foreach ($produk->bom as $item)
+                            @php
+                                $isGramAtauMl = in_array(strtolower($item->bahan_baku->satuan), ['kg', 'liter', 'l']);
+                            @endphp
+
                             <tr class="hover:bg-warning/5 transition-all group row-bahan">
                                 <td class="font-semibold text-base-content text-sm">{{ $item->bahan_baku->nama }}</td>
                                 <td>
                                     <form action="{{ route('owner.master.bom.update', $item->id) }}" method="POST">
                                         @csrf @method('PUT')
                                         <div class="flex items-center gap-2">
-                                            <input type="number" step="0.001" name="jumlah_kebutuhan"
-                                                value="{{ $item->jumlah_kebutuhan }}" {{-- Tambahkan class & data untuk JS --}}
+                                            {{-- Input menampilkan angka dari database apa adanya (misal: 5 atau 2) --}}
+                                            <input type="number" step="0.01" name="jumlah_kebutuhan"
+                                                value="{{ $item->jumlah_kebutuhan }}"
                                                 class="input-qty input input-sm input-ghost w-24 text-center font-mono focus:bg-white focus:border-warning p-0"
                                                 data-harga="{{ $item->bahan_baku->harga_satuan }}"
+                                                data-konversi="{{ $isGramAtauMl ? 'true' : 'false' }}"
                                                 onchange="this.form.submit()" />
-                                            <span
-                                                class="opacity-50 font-bold text-xs">{{ $item->bahan_baku->satuan }}</span>
+
+                                            <span class="opacity-50 font-bold text-xs">
+                                                @if (strtolower($item->bahan_baku->satuan) == 'kg')
+                                                    gram
+                                                @elseif(in_array(strtolower($item->bahan_baku->satuan), ['liter', 'l']))
+                                                    ml
+                                                @else
+                                                    {{ $item->bahan_baku->satuan }}
+                                                @endif
+                                            </span>
                                         </div>
                                     </form>
                                 </td>
-                                <td class="text-sm">Rp
-                                    {{ number_format($item->bahan_baku->harga_satuan, 0, ',', '.') }}</td>
-                                <td class="text-sm font-mono subtotal-text">
-                                    Rp
-                                    {{ number_format($item->jumlah_kebutuhan * $item->bahan_baku->harga_satuan, 0, ',', '.') }}
+                                <td class="text-sm">
+                                    Rp {{ number_format($item->bahan_baku->harga_satuan, 0, ',', '.') }} /
+                                    {{ $item->bahan_baku->satuan }}
                                 </td>
+
+                                {{-- ✨ PERBAIKAN SUBTOTAL BLADE: Jika KG/Liter, nilai kebutuhan dibagi 1000 dulu baru dikali harga --}}
+                                <td class="text-sm font-mono subtotal-text">
+                                    @php
+                                        $subtotalAsli = $item->jumlah_kebutuhan * $item->bahan_baku->harga_satuan;
+                                        if ($isGramAtauMl) {
+                                            $subtotalAsli =
+                                                ($item->jumlah_kebutuhan / 1000) * $item->bahan_baku->harga_satuan;
+                                        }
+                                    @endphp
+                                    Rp {{ number_format($subtotalAsli, 0, ',', '.') }}
+                                </td>
+
+                                {{-- Kolom aksi hapus tetap sama --}}
                                 <td class="text-center">
                                     <form action="{{ route('owner.master.bom.destroy', $item->id) }}" method="POST">
                                         @csrf @method('DELETE')
@@ -169,8 +195,15 @@
                 rows.forEach(row => {
                     const qtyInput = row.querySelector('.input-qty');
                     const subtotalCell = row.querySelector('.subtotal-text');
+
                     const hargaSatuan = parseFloat(qtyInput.getAttribute('data-harga')) || 0;
-                    const qty = parseFloat(qtyInput.value) || 0;
+                    const harusKonversi = qtyInput.getAttribute('data-konversi') === 'true';
+                    let qty = parseFloat(qtyInput.value) || 0;
+
+                    // ✨ PERBAIKAN JAVASCRIPT: Konversi input gram/ml ke Kg/Liter sebelum dikali harga master
+                    if (harusKonversi) {
+                        qty = qty / 1000;
+                    }
 
                     const subtotal = qty * hargaSatuan;
                     totalBahan += subtotal;
@@ -184,7 +217,7 @@
                 const tenaga = {{ $produk->est_biaya_tenaga ?? 0 }};
                 const overheadPersen = {{ $produk->est_biaya_overhead ?? 0 }};
 
-                // Rumus sesuai FinanceService
+                // Hitung total HPP Standar akhir
                 const totalHpp = totalBahan + (totalBahan * (overheadPersen / 100)) + tenaga;
 
                 // Update total di footer

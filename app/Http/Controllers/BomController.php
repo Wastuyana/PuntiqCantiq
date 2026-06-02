@@ -90,6 +90,10 @@ class BomController extends Controller
             'jumlah_kebutuhan' => $request->jumlah_kebutuhan
         ]);
 
+        $produk = $bom->produk;
+        $hppTerbaru = $this->productionService->hitungHppStandar($produk->fresh());
+        $produk->update(['hpp_standar' => $hppTerbaru]);
+
         return redirect()->back()->with('success', 'Komposisi berhasil diperbarui');
     }
 

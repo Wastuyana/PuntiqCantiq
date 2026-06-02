@@ -99,15 +99,19 @@ class BatchController extends Controller
                 $batch->batch_hasil()->create([
                     'produk_id'                => $produkId,
                     'hasil_target'             => $target,
-                    'hasil_aktual'             => 0, 
-                    'detail_biaya_bahan'       => 0, 
-                    'detail_biaya_tenagakerja' => 0, 
-                    'detail_biaya_overhead'    => 0, 
-                    'hpp_aktual'               => 0, 
+                    'hasil_aktual'             => 0,
+                    'detail_biaya_bahan'       => 0,
+                    'detail_biaya_tenagakerja' => 0,
+                    'detail_biaya_overhead'    => 0,
+                    'hpp_aktual'               => 0,
                 ]);
 
                 foreach ($produk->bom as $item) {
                     $totalButuh = $item->jumlah_kebutuhan * $target;
+                    $satuanMaster = strtolower($item->bahan_baku->satuan);
+                    if (in_array($satuanMaster, ['kg', 'liter', 'l'])) {
+                        $totalButuh = $totalButuh / 1000; 
+                    }
 
                     $batchBahan = $batch->batch_bahan()->firstOrNew([
                         'bahan_baku_id' => $item->bahan_baku_id

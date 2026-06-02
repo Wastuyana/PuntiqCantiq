@@ -18,17 +18,15 @@ class BatchProduksiSeeder extends Seeder
 
         $produkMap = DB::table('produk')->pluck('id', 'kode_produk')->toArray();
         $userId = DB::table('users')->first()->id ?? 1;
-        $hargaBahanMap = DB::table('bahan_baku')->pluck('harga_satuan', 'id')->toArray();
+
+        // Ambil data harga sekaligus satuan master untuk pengkondisian skala
+        $bahanBakuMaster = DB::table('bahan_baku')->get(['id', 'harga_satuan', 'satuan'])->keyBy('id')->toArray();
 
         // Mengelompokkan seluruh 21 varian ke dalam 3 kluster produksi agar sebaran logis 
-        // Kluster 1: Produk Reguler Utama & Mini Pack
         $klusterA = ['PCR-OR', 'PCR-CK', 'PCR-MB', 'PCR-GR', 'PCR-TL', 'PCM-CK', 'PCM-MB'];
-        // Kluster 2: Big Pack (Kemasan Oleh-Oleh Besar)
         $klusterB = ['BP-OR500', 'BP-CK500', 'BP-MB500', 'BP-GR500', 'BP-TL500', 'BP-OR250', 'BP-CK250'];
-        // Kluster 3: Sisa Big Pack, Toples Flakes, dan Crispy Jar
         $klusterC = ['BP-MB250', 'BP-GR250', 'BP-TL250', 'CBF-TPL', 'CBF-BIG', 'BCJ-CK', 'BCJ-TR'];
 
-        // Gabungan semua produk untuk sesi produksi massal (misal saat persiapan lebaran)
         $semuaProduk = array_keys($produkMap);
 
         $jadwalProduksi = [
@@ -66,7 +64,7 @@ class BatchProduksiSeeder extends Seeder
             ['tanggal' => '2026-05-13', 'nomor' => 'B-20260513-01', 'tk' => 480000, 'varian' => $klusterB, 'qty' => 310],
             ['tanggal' => '2026-05-16', 'nomor' => 'B-20260516-01', 'tk' => 490000, 'varian' => $klusterC, 'qty' => 300],
             ['tanggal' => '2026-05-20', 'nomor' => 'B-20260520-01', 'tk' => 550000, 'varian' => $klusterA, 'qty' => 400],
-            ['tanggal' => '2026-05-24', 'nomor' => 'B-20260524-01', 'tk' => 950000, 'varian' => $semuaProduk, 'qty' => 750], 
+            ['tanggal' => '2026-05-24', 'nomor' => 'B-20260524-01', 'tk' => 950000, 'varian' => $semuaProduk, 'qty' => 750],
             ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-01', 'tk' => 500000, 'varian' => $klusterB, 'qty' => 250],
             ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-02', 'tk' => 500000, 'varian' => $klusterA, 'qty' => 150],
         ];
@@ -112,9 +110,24 @@ class BatchProduksiSeeder extends Seeder
                     $persentaseBahanAktual = rand(97, 104) / 100;
                     $qtyBahanAktual = round($qtyBahanTarget * $persentaseBahanAktual);
 
-                    $hargaBahanSatuan = $hargaBahanMap[$item->bahan_baku_id] ?? 0;
-                    $qtyBahanAktualDalamKg = $qtyBahanAktual / 1000;
-                    $totalBiayaBahanVarian += ($qtyBahanAktualDalamKg * $hargaBahanSatuan);
+                    // Ambil detail master bahan baku untuk cek satuan
+                    $masterBahan = $bahanBakuMaster[$item->bahan_baku_id] ?? null;
+                    $hargaBahanSatuan = $masterBahan ? $masterBahan->harga_satuan : 0;
+                    $satuanLower = $masterBahan ? strtolower($masterBahan->satuan) : 'gram';
+
+                    // --- JEMBATAN KONVERSI SEEDER ---
+                    // Jika satuannya Kg/Liter, ubah angka kebutuhan gram ke desimal Kg
+                    if (in_array($satuanLower, ['kg', 'liter', 'l'])) {
+                        $qtyBahanTargetKonversi = $qtyBahanTarget / 1000;
+                        $qtyBahanAktualKonversi = $qtyBahanAktual / 1000;
+                    } else {
+                        // Jika satuannya pcs/sisir/pack, biarkan normal
+                        $qtyBahanTargetKonversi = $qtyBahanTarget;
+                        $qtyBahanAktualKonversi = $qtyBahanAktual;
+                    }
+
+                    // Biaya bahan varian langsung mengalikan nilai desimal dengan harga per Kg/Liter
+                    $totalBiayaBahanVarian += ($qtyBahanAktualKonversi * $hargaBahanSatuan);
 
                     if (!isset($kebutuhanBahanBatch[$item->bahan_baku_id])) {
                         $kebutuhanBahanBatch[$item->bahan_baku_id] = [
@@ -122,8 +135,9 @@ class BatchProduksiSeeder extends Seeder
                             'aktual' => 0
                         ];
                     }
-                    $kebutuhanBahanBatch[$item->bahan_baku_id]['target'] += $qtyBahanTarget;
-                    $kebutuhanBahanBatch[$item->bahan_baku_id]['aktual'] += $qtyBahanAktual;
+                    // Menampung hasil konversi (desimal) agar tabel batch_bahan bersih dari angka ribuan
+                    $kebutuhanBahanBatch[$item->bahan_baku_id]['target'] += $qtyBahanTargetKonversi;
+                    $kebutuhanBahanBatch[$item->bahan_baku_id]['aktual'] += $qtyBahanAktualKonversi;
                 }
 
                 $totalBiayaBahanBatch += $totalBiayaBahanVarian;
@@ -155,17 +169,23 @@ class BatchProduksiSeeder extends Seeder
             }
 
             foreach ($kebutuhanBahanBatch as $bahanBakuId => $dataBahan) {
+
+                // Gunakan number_format untuk mengunci desimal menjadi 3 angka di belakang koma 
+                // agar dibaca sempurna sebagai desimal oleh MySQL driver
+                $targetFix = number_format($dataBahan['target'], 3, '.', '');
+                $aktualFix = number_format($dataBahan['aktual'], 3, '.', '');
+
                 DB::table('batch_bahan')->insert([
                     'batch_id'      => $batchId,
                     'bahan_baku_id' => $bahanBakuId,
-                    'bahan_target'  => $dataBahan['target'],
-                    'bahan_aktual'  => $dataBahan['aktual'],
+                    'bahan_target'  => $targetFix,
+                    'bahan_aktual'  => $aktualFix,
                     'created_at'    => Carbon::parse($j['tanggal']),
                     'updated_at'    => Carbon::parse($j['tanggal']),
                 ]);
 
-                $penguranganStokKg = $dataBahan['aktual'] / 1000;
-                DB::table('bahan_baku')->where('id', $bahanBakuId)->decrement('stok', $penguranganStokKg);
+                // Mengurangi stok master dengan angka desimal yang sudah terformat aman
+                DB::table('bahan_baku')->where('id', $bahanBakuId)->decrement('stok', $aktualFix);
             }
 
             $totalBiayaSemua = $totalBiayaBahanBatch + $j['tk'] + $overhead;

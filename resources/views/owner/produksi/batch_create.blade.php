@@ -43,10 +43,24 @@
                                     @endphp
                                     <div
                                         class="flex items-center gap-4 bg-base-50 p-4 rounded-xl border {{ $isRecommended ? 'border-primary bg-primary/5' : 'border-base-200' }} hover:border-primary transition-all">
+
+                                        {{-- 🌟 PERBAIKAN: Memetakan (mapping) data resep & relasi bahan baku secara eksplisit agar aman di JavaScript --}}
                                         <input type="checkbox" name="produk_ids[]" value="{{ $p->id }}"
                                             class="checkbox checkbox-primary product-check"
                                             {{ $isRecommended ? 'checked' : '' }}
-                                            data-resep="{{ json_encode($p->bom) }}" onchange="updateEstimasi()">
+                                            data-resep="{{ json_encode(
+                                                $p->bom->map(function ($b) {
+                                                    return [
+                                                        'jumlah_kebutuhan' => $b->jumlah_kebutuhan,
+                                                        'bahan_baku' => [
+                                                            'nama' => $b->bahan_baku->nama,
+                                                            'satuan' => $b->bahan_baku->satuan,
+                                                            'stok' => $b->bahan_baku->stok,
+                                                        ],
+                                                    ];
+                                                }),
+                                            ) }}"
+                                            onchange="updateEstimasi()">
 
                                         <div class="flex-1">
                                             <span class="font-bold text-sm block">{{ $p->kategori }} -
@@ -112,6 +126,7 @@
         </form>
     </div>
 
+    {{-- 🌟 PERBAIKAN LOGIKA JAVASCRIPT: Real-time Sinkronisasi Satuan Gram/Ml --}}
     <script>
         window.onload = function() {
             updateEstimasi();
@@ -125,7 +140,7 @@
 
             const totalKebutuhan = {};
             const satuanBahan = {};
-            const stokGudang = {}; // Tempat menampung stok riil dari database
+            const stokGudang = {};
             let adaYangDipilih = false;
 
             checkboxes.forEach(cb => {
@@ -142,15 +157,15 @@
                     const dataResep = rawResep ? JSON.parse(rawResep) : [];
 
                     dataResep.forEach(item => {
+                        if (!item.bahan_baku) return;
+
                         const nama = item.bahan_baku.nama;
-                        const takaranGramMl = parseFloat(item.jumlah_kebutuhan || 0);
+                        const takaranDb = parseFloat(item.jumlah_kebutuhan || 0); // Gram/ml murni dari BoM
                         const satuanMaster = item.bahan_baku.satuan;
+                        const stokAsliGudang = parseFloat(item.bahan_baku.stok ||
+                        0); // Masih skala besar (Kg/L) dari DB
 
-                        // Ambil data stok gudang asli (stok di DB sudah dalam skala besar seperti kg/liter)
-                        const stokAsliGudang = parseFloat(item.bahan_baku.stok || 0);
-
-                        // Kalkulasi kebutuhan kotor awal (masih skala gram/ml)
-                        const kebutuhanKotor = takaranGramMl * targetValue;
+                        const kebutuhanKotor = takaranDb * targetValue;
 
                         if (!totalKebutuhan[nama]) {
                             totalKebutuhan[nama] = 0;
@@ -173,48 +188,61 @@
 
                 let adaBahanTercetak = false;
 
-                for (const [nama, totalGramMl] of Object.entries(totalKebutuhan)) {
-                    if (totalGramMl > 0) {
+                for (const [nama, totalNilaiGramMl] of Object.entries(totalKebutuhan)) {
+                    if (totalNilaiGramMl > 0) {
                         adaBahanTercetak = true;
-                        const satuan = satuanBahan[nama];
-                        const satuanLower = satuan.toLowerCase();
-                        const stokTersedia = stokGudang[nama]; // Satuan Kg/Liter/Pcs asli gudang
+                        const satuanMaster = satuanBahan[nama];
+                        const satuanLower = satuanMaster.toLowerCase();
+                        const stokAsliGudang = stokGudang[nama];
 
-                        let totalKebutuhanTampil = totalGramMl;
+                        let nilaiKebutuhanTampil = totalNilaiGramMl;
+                        let nilaiStokTampil = stokAsliGudang; // Default basis Kg/L dari DB
+                        let unitTampil = satuanMaster;
 
-                        // Konversi kebutuhan dari gram/ml ke Kg/Liter jika tipe satuannya besar
+                        // 🌟 LOGIKA BARU: Konversi Dinamis Tergantung Batas Volume 1000 🌟
                         if (['kg', 'liter', 'l'].includes(satuanLower)) {
-                            totalKebutuhanTampil = totalGramMl / 1000;
+                            // Jadikan stok gudang ke skala gram/ml dulu untuk perbandingan internal
+                            const stokDalamGramMl = stokAsliGudang * 1000;
+
+                            if (totalNilaiGramMl >= 1000) {
+                                // Kebutuhan besar -> Tampilkan dalam skala KG / LITER
+                                nilaiKebutuhanTampil = totalNilaiGramMl / 1000;
+                                nilaiStokTampil = stokAsliGudang;
+                                unitTampil = satuanMaster; // Tetap Kg/Liter sesuai master
+                            } else {
+                                // Kebutuhan kecil -> Tampilkan dalam skala GRAM / ML
+                                nilaiKebutuhanTampil = totalNilaiGramMl;
+                                nilaiStokTampil = stokDalamGramMl;
+                                unitTampil = (satuanLower === 'kg') ? 'gram' : 'ml';
+                            }
                         }
 
-                        // VALIDASI: Apakah stok gudang kurang dari kebutuhan produksi?
-                        // Menggunakan batasan toleransi desimal halus (0.00001) agar terhindar dari bug floating-point JavaScript
-                        const apakahStokKurang = (stokTersedia - totalKebutuhanTampil) < -0.00001;
+                        // VALIDASI STOK: Selalu bandingkan nilai riil (Kebutuhan vs Stok) yang skalanya sudah disamakan di atas
+                        const apakahStokKurang = (nilaiStokTampil - nilaiKebutuhanTampil) < -0.00001;
 
-                        // Format angka desimal Indonesia
-                        const totalFormatted = Number(totalKebutuhanTampil.toFixed(2)).toLocaleString('id-ID');
-                        const stokFormatted = Number(stokTersedia.toFixed(2)).toLocaleString('id-ID');
+                        // Format angka desimal Indonesia (Maksimal 2 angka di belakang koma)
+                        const totalFormatted = Number(nilaiKebutuhanTampil.toFixed(2)).toLocaleString('id-ID');
+                        const stokFormatted = Number(nilaiStokTampil.toFixed(2)).toLocaleString('id-ID');
 
                         const li = document.createElement('li');
 
                         if (apakahStokKurang) {
-                            li.className =
-                                "flex flex-col py-2 border-b border-error/20 text-error font-medium";
+                            li.className = "flex flex-col py-2 border-b border-error/20 text-error font-medium";
                             li.innerHTML = `
-                            <div class="flex justify-between items-center w-full">
-                                <span>${nama}</span>
-                                <span class="font-black text-sm">${totalFormatted} <span class="text-xs font-normal">${satuan}</span></span>
-                            </div>
-                            <div class="text-[11px] text-right text-error/80 mt-0.5">
-                                Stok kurang! (Tersedia: ${stokFormatted} ${satuan})
-                            </div>
-                        `;
+                        <div class="flex justify-between items-center w-full">
+                            <span>${nama}</span>
+                            <span class="font-black text-sm">${totalFormatted} <span class="text-xs font-normal">${unitTampil}</span></span>
+                        </div>
+                        <div class="text-[11px] text-right text-error/80 mt-0.5">
+                            Stok kurang! (Tersedia: ${stokFormatted} ${unitTampil})
+                        </div>
+                    `;
                         } else {
                             li.className = "flex justify-between items-center py-2 border-b border-base-200 opacity-90";
                             li.innerHTML = `
-                            <span>${nama}</span>
-                            <span class="font-bold text-sm">${totalFormatted} <span class="text-xs font-normal opacity-60">${satuan}</span></span>
-                        `;
+                        <span>${nama}</span>
+                        <span class="font-bold text-sm">${totalFormatted} <span class="text-xs font-normal opacity-60">${unitTampil}</span></span>
+                    `;
                         }
 
                         listBahan.appendChild(li);
