@@ -336,11 +336,14 @@ class ProductionService
         $avgLeadTime = $leadTimes->isEmpty() ? 2 : $leadTimes->avg();
 
         // 2. Data Pemakaian (dari tabel batch_bahan)
-        $dataPemakaian = \App\Models\BatchBahan::where('bahan_baku_id', $bahanBaku->id)
-            ->where('created_at', '>=', now()->subDays(90))
-            ->selectRaw('DATE(created_at) as tanggal, SUM(bahan_aktual) as total')
+        $dataPemakaian = \App\Models\BatchBahan::join('batch', 'batch_bahan.batch_id', '=', 'batch.id')
+            ->where('batch_bahan.bahan_baku_id', $bahanBaku->id)
+            ->where('batch.tanggal_produksi', '>=', now()->subDays(90)) // Menggunakan tanggal dari tabel batch
+            ->selectRaw('DATE(batch.tanggal_produksi) as tanggal, SUM(batch_bahan.bahan_aktual) as total')
             ->groupBy('tanggal')
             ->get();
+
+        if ($dataPemakaian->isEmpty()) return false;
 
         if ($dataPemakaian->isEmpty()) return false;
 

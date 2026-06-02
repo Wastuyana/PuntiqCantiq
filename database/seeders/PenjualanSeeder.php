@@ -19,10 +19,20 @@ class PenjualanSeeder extends Seeder
         $mitraIds = DB::table('mitra')->pluck('id')->toArray();
         $pelangganIds = DB::table('pelanggan')->pluck('id')->toArray();
 
-        if (empty($mitraIds)) {
-            $this->command->error("Tabel mitra masih kosong! Jalankan MitraSeeder terlebih dahulu.");
-            return;
-        }
+        // Helper function untuk generate kode
+        $generateKode = function ($tanggal) {
+            $formattedDate = Carbon::parse($tanggal)->format('Ymd');
+            $lastPenjualan = DB::table('penjualan')
+                ->whereDate('tanggal_penj', Carbon::parse($tanggal)->format('Y-m-d'))
+                ->latest('id')
+                ->first();
+
+            $nextNumber = $lastPenjualan && preg_match('/-(\d{3})$/', $lastPenjualan->kode_penjualan, $matches) 
+                ? (intval($matches[1]) + 1) 
+                : 1;
+
+            return 'INV-' . $formattedDate . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        };
 
         $rekapBulananMitra = [
             2 => [
@@ -145,13 +155,13 @@ class PenjualanSeeder extends Seeder
                 $mitraIdTerpilih = $mitraIds[array_rand($mitraIds)];
 
                 $penjualanId = DB::table('penjualan')->insertGetId([
+                    'kode_penjualan'    => $generateKode($tanggal),
                     'tanggal_penj'      => $tanggal,
                     'total_prod'        => 0,
                     'subtotal_harga'    => 0,
                     'status_customer'   => 'mitra',
-                    'pelanggan_id'      => null,
                     'metode_pembayaran' => 'transfer',
-                    'mitra_id'          => $mitraIdTerpilih,
+                    'mitra_id'          => $mitraIds[array_rand($mitraIds)],
                     'created_at'        => Carbon::parse($tanggal),
                     'updated_at'        => Carbon::parse($tanggal),
                 ]);
@@ -199,17 +209,15 @@ class PenjualanSeeder extends Seeder
         $produkKodes = array_keys($produkMap);
 
         for ($i = 1; $i <= 200; $i++) {
-            $bulanAcak = rand(2, 5);
-            $hariAcak = rand(1, 28);
-            $tanggalAcak = "2026-0" . $bulanAcak . "-" . sprintf("%02d", $hariAcak);
-            $pelangganId = !empty($pelangganIds) ? $pelangganIds[array_rand($pelangganIds)] : null;
+            $tanggalAcak = "2026-" . sprintf("%02d", rand(2, 5)) . "-" . sprintf("%02d", rand(1, 28));
 
             $penjualanId = DB::table('penjualan')->insertGetId([
+                'kode_penjualan'    => $generateKode($tanggalAcak),
                 'tanggal_penj'      => $tanggalAcak,
                 'total_prod'        => 0,
                 'subtotal_harga'    => 0,
                 'status_customer'   => 'pelanggan',
-                'pelanggan_id'      => $pelangganId,
+                'pelanggan_id'      => !empty($pelangganIds) ? $pelangganIds[array_rand($pelangganIds)] : null,
                 'metode_pembayaran' => $metodePembayaran[array_rand($metodePembayaran)],
                 'mitra_id'          => null,
                 'created_at'        => Carbon::parse($tanggalAcak),
