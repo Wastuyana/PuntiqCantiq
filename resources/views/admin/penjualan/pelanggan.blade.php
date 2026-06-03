@@ -207,9 +207,17 @@
                         <input type="text" name="nama_pelanggan" class="input input-bordered w-full" required>
                     </div>
                     <div class="form-control">
-                        <label class="label-text">Nomor HP / WA</label>
-                        <input type="text" name="no_hp" class="input input-bordered w-full">
-                    </div>
+                            <label class="label"><span class="label-text font-semibold">No. HP</span></label>
+                            <input type="tel" name="no_hp" 
+                                value="{{ old('no_hp') }}" 
+                                placeholder="0812..." 
+                                class="input input-bordered w-full input-sm" 
+                                pattern="\d{11,13}" 
+                                title="Masukkan angka saja, minimal 11 digit dan maksimal 13 digit"
+                                minlength="11" maxlength="13" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                required>
+                        </div>
                     <div class="form-control">
                         <label class="label-text">Alamat</label>
                         <input type="text" name="alamat_pelanggan" class="input input-bordered w-full">

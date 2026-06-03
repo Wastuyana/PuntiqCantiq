@@ -21,8 +21,12 @@
                             <label class="label"><span class="label-text font-semibold">Bahan Baku</span></label>
                             <select name="bahan_baku_id" class="select select-bordered w-full" required>
                                 <option disabled selected>Pilih Bahan...</option>
-                                @foreach($bahan as $b) <option value="{{ $b->id }}">{{ $b->nama }}</option> @endforeach
+                                @foreach($bahan as $b) <option value="{{ $b->id }}">{{ $b->nama }} ( {{ $b->satuan}} )</option> @endforeach
                             </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-semibold">Jumlah Pesan</span></label>
+                            <input type="number" name="jumlah_pesan" class="input input-bordered w-full" placeholder="0" required />
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Supplier</span></label>
@@ -30,10 +34,6 @@
                                 <option disabled selected>Pilih Supplier...</option>
                                 @foreach($suppliers as $s) <option value="{{ $s->id }}">{{ $s->nama_supplier }}</option> @endforeach
                             </select>
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-semibold">Jumlah Pesan</span></label>
-                            <input type="number" name="jumlah_pesan" class="input input-bordered w-full" placeholder="0" required />
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Harga Pesan (Rp)</span></label>

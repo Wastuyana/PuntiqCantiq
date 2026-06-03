@@ -20,7 +20,8 @@
                         <th>Nama Bahan</th>
                         <th>Harga Satuan</th>
                         <th>Stok</th>
-                        <th>SS & ROP</th> <th class="text-center">Aksi</th>
+                        <th>Status</th> 
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,8 +36,19 @@
                             <td>{{ $bb->stok }} {{ $bb->satuan }}</td>
                             
                             <td>
-                                <div class="text-xs">SS: <span class="font-bold">{{ $bb->ss_bahan }}</span></div>
-                                <div class="text-xs text-info">ROP: <span class="font-bold">{{ $bb->rop_bahan }}</span></div>
+                                <div class="flex flex-col">
+                                    @if ($bb->stok <= $bb->ss_bahan)
+                                        <span class="badge badge-error badge-sm badge-outline">Kritis</span>
+                                    @elseif ($bb->stok <= $bb->rop_bahan)
+                                        <span class="badge badge-warning badge-sm badge-outline">Butuh
+                                            Restock</span>
+                                    @else
+                                        <span class="badge badge-success badge-sm badge-outline">Aman</span>
+                                    @endif
+                                    <div class="flex items-center gap-1.5 opacity-60 text-xs mt-1">
+                                            Min: {{ $bb->rop_bahan }}
+                                        </div>
+                                    </div>
                             </td>
 
                             <td class="flex justify-center gap-2">

@@ -95,7 +95,6 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
      ->name('owner.inventory.bahan_baku.hitung-ulang');
     Route::resource('/owner/inventory/qc', QcController::class)->names('owner.inventory.qc');
     Route::get('/owner/laporan', [LaporanHppController::class, 'index'])->name('owner.laporan');
-    Route::resource('/owner/partner/supplier', SupplierController::class)->names('owner.partner.supplier');
 
     Route::get('/owner/laporan/produksi', [LaporanProdController::class, 'index'])->name('owner.laporan.produksi');
     Route::get('/laporan-produksi/export-excel', [LaporanProdController::class, 'exportExcel'])->name('owner.laporan.export.excel');
@@ -119,9 +118,7 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [App\Http\Controllers\DashboardAdminController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('admin/produk/produk', AdminProdukController::class)->names('admin.produk');
 
@@ -153,9 +150,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('/admin/inventory/bahan-masuk', BahanMasukController::class)->names('admin.inventory.bahan_masuk');
     Route::resource('/admin/inventory/pemesanan', PemesananController::class)->names('admin.inventory.pemesanan');
     Route::put('/admin/inventory/{id}/terima', [PemesananController::class, 'terima'])->name('admin.inventory.pemesanan.terima');
-    Route::resource('/admin/partner/supplier', SupplierController::class)->names('admin.partner.supplier');
     Route::resource('/admin/partner/pelanggan', PelangganController::class)->names('admin.partner.pelanggan');
-    Route::resource('/admin/partner/mitra', MitraController::class)->names('admin.partner.mitra');
     Route::post('/pelanggan/store-ajax', [PelangganController::class, 'storeAjax'])->name('admin.pelanggan.store.ajax');
 });
 

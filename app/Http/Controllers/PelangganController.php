@@ -15,7 +15,6 @@ class PelangganController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi: nama_pelanggan harus unik di tabel pelanggans
         $request->validate([
             'nama_pelanggan' => 'required|unique:pelanggan,nama_pelanggan',
             'alamat_pelanggan' => 'required',
@@ -24,19 +23,15 @@ class PelangganController extends Controller
             'nama_pelanggan.unique' => 'Nama pelanggan ini sudah terdaftar, gunakan nama lain!'
         ]);
 
-        // --- PROSES AUTO GENERATE KODE PELANGGAN (PEL-0001) ---
         $latest = Pelanggan::latest('id')->first();
         if (!$latest) {
             $kode_otomatis = 'PEL-0001';
         } else {
-            // Mengambil angka dari kode terakhir, misal PEL-0001 diambil 1
             $string = preg_replace("/[^0-9]/", "", $latest->kode_pelanggan);
             $angka_baru = (int)$string + 1;
-            // Pad dengan angka 0 di depan agar formatnya tetap 4 digit (0002)
             $kode_otomatis = 'PEL-' . str_pad($angka_baru, 4, '0', STR_PAD_LEFT);
         }
 
-        // Simpan ke database
         Pelanggan::create([
             'kode_pelanggan' => $kode_otomatis,
             'nama_pelanggan' => $request->nama_pelanggan,
@@ -48,24 +43,18 @@ class PelangganController extends Controller
     }
     public function storeAjax(Request $request)
     {
+        // Tambahkan 'unique:pelanggan,nama_pelanggan' di sini
         $request->validate([
-            'nama_pelanggan' => 'required|string|max:255',
+            'nama_pelanggan' => 'required|string|max:255|unique:pelanggan,nama_pelanggan',
             'no_hp'          => 'nullable|string|max:20',
+        ], [
+            // Pesan khusus jika nama sudah ada
+            'nama_pelanggan.unique' => 'Nama pelanggan "' . $request->nama_pelanggan . '" sudah terdaftar di database!',
         ]);
 
-        // LOGIKA GENERATE KODE PELANGGAN
+        // LOGIKA GENERATE KODE PELANGGAN (sama seperti sebelumnya)
         $latest = \App\Models\Pelanggan::latest('id')->first();
-        
-        if (!$latest) {
-            $kode_otomatis = 'PEL-0001';
-        } else {
-            // Mengambil angka dari kode terakhir, misal PEL-0001 diambil 0001
-            $string = preg_replace("/[^0-9]/", "", $latest->kode_pelanggan);
-            $angka_baru = (int)$string + 1;
-            
-            // Pad dengan angka 0 di depan agar formatnya tetap 4 digit
-            $kode_otomatis = 'PEL-' . str_pad($angka_baru, 4, '0', STR_PAD_LEFT);
-        }
+        $kode_otomatis = !$latest ? 'PEL-0001' : 'PEL-' . str_pad((int)preg_replace("/[^0-9]/", "", $latest->kode_pelanggan) + 1, 4, '0', STR_PAD_LEFT);
 
         // SIMPAN KE DATABASE
         \App\Models\Pelanggan::create([
@@ -78,7 +67,6 @@ class PelangganController extends Controller
     }
     public function update(Request $request, $id)
     {
-        // Validasi unik untuk update (abaikan nama milik data ini sendiri yang sedang di-edit)
         $request->validate([
             'nama_pelanggan' => 'required|unique:pelanggan,nama_pelanggan,' . $id,
             'alamat_pelanggan'         => 'required',

@@ -36,34 +36,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             @include('owner.partials._proporsi_biaya_prod')
         </div>
-        <div class="bg-white p-6 shadow-sm sm:rounded-lg border border-base-200 mt-6">
-        <h3 class="font-bold text-lg mb-4 text-gray-700">Grafik Penjualan per Varian (Bulan {{ $bulan }})</h3>
-        <div style="height: 300px;">
-            <canvas id="salesChart"></canvas>
-        </div>
-    </div>
+    @include('owner.partials._sales_chart')
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($labels) !!},
-                datasets: [{
-                    label: 'Total Terjual (Produk)',
-                    data: {!! json_encode($dataSales) !!},
-                    backgroundColor: '#3B82F6',
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-    </script>
 </x-app-layout>

@@ -15,7 +15,7 @@ class PelangganSeeder extends Seeder
     {
         $pelanggans = [
             [
-                'kode_pelanggan' => 'PLG-001',
+                'kode_pelanggan' => 'PEG-0001',
                 'nama_pelanggan' => 'Baiq Laila',
                 'alamat_pelanggan' => 'Eceran Langsung',
                 'no_hp' => '081234567890',
@@ -23,7 +23,7 @@ class PelangganSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'kode_pelanggan' => 'PLG-002',
+                'kode_pelanggan' => 'PEL-0002',
                 'nama_pelanggan' => 'Nanda Salma',
                 'alamat_pelanggan' => 'Kota Mataram',
                 'no_hp' => '081987654321',
@@ -31,7 +31,7 @@ class PelangganSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'kode_pelanggan' => 'PLG-003',
+                'kode_pelanggan' => 'PEL-0003',
                 'nama_pelanggan' => 'Siti Aminah',
                 'alamat_pelanggan' => 'Senggigi',
                 'no_hp' => '087765432109',

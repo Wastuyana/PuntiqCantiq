@@ -19,7 +19,7 @@ class MitraController extends Controller
         $request->validate([
             'nama_mitra' => 'required|unique:mitra,nama_mitra',
             'alamat_mitra' => 'required',
-            'no_hp'          => 'required',
+            'no_hp'          => 'required|digits_between:11,13',
         ], [
             'nama_mitra.unique' => 'Nama mitra ini sudah terdaftar, gunakan nama lain!'
         ]);

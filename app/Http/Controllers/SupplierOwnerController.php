@@ -24,12 +24,10 @@ class SupplierOwnerController extends Controller
             'no_hp.unique' => 'Gagal! Nomor HP ini sudah digunakan supplier lain.',
         ]);
 
-        // 2. Buat Kode Unik SPL-XXX
         $lastSupplier = Supplier::orderBy('id', 'desc')->first();
         $number = $lastSupplier ? ((int) substr($lastSupplier->kode_supplier, 4)) + 1 : 1;
         $kode = 'SPL-' . str_pad($number, 3, '0', STR_PAD_LEFT);
 
-        // 3. Simpan
         Supplier::create([
             'kode_supplier' => $kode,
             'nama_supplier' => $request->nama_supplier,
