@@ -118,7 +118,7 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [App\Http\Controllers\DashboardAdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/dashboard', [App\Http\Controllers\Admin\DashboardAdminController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('admin/produk/produk', AdminProdukController::class)->names('admin.produk');
 

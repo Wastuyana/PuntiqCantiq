@@ -139,6 +139,6 @@ class ProdukController extends Controller
             return back()->with('error', 'Data penjualan 30 hari terakhir tidak ditemukan.');
         }
 
-        return back()->with('success', 'Batas stok minimal berhasil diperbarui berdasarkan tren 30 hari terakhir!');
+        return back()->with('success', "Batas stok minimal {$produk->kategori}-{$produk->varian}-{$produk->ukuran} berhasil diperbarui!");
     }
 }

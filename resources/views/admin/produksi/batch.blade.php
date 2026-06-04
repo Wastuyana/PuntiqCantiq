@@ -7,12 +7,41 @@
             </ul>
         </div>
 
+
         @if (session('success'))
             <div class="alert alert-success mb-6 shadow-sm font-medium">
                 <span>{{ session('success') }}</span>
             </div>
         @endif
-        
+
+        <form action="{{ route('admin.produksi.batch.index') }}" method="GET"
+            class="flex items-center gap-2 mb-6 bg-white p-2 px-3 rounded-lg shadow-sm border border-slate-100 w-fit">
+            <div class="flex items-center gap-2">
+                <select name="bulan" class="select select-bordered select-sm text-xs focus:outline-none">
+                    @for ($m = 1; $m <= 12; $m++)
+                        <option value="{{ $m }}"
+                            {{ request('bulan', now()->month) == $m ? 'selected' : '' }}>
+                            {{ date('M', mktime(0, 0, 0, $m, 1)) }}
+                        </option>
+                    @endfor
+                </select>
+
+                <select name="tahun" class="select select-bordered select-sm text-xs focus:outline-none">
+                    @for ($y = now()->year; $y >= now()->year - 2; $y--)
+                        <option value="{{ $y }}" {{ request('tahun', now()->year) == $y ? 'selected' : '' }}>
+                            {{ $y }}
+                        </option>
+                    @endfor
+                </select>
+            </div>
+
+            <div class="flex gap-1 border-l pl-2 border-slate-200">
+                <button type="submit" class="btn btn-primary btn-sm px-3 normal-case h-8 min-h-0">
+                    Filter
+                </button>
+            </div>
+        </form>
+
         <div class="overflow-x-auto bg-base-200 rounded-xl shadow-sm border border-base-300">
             <table class="table table-zebra w-full">
                 <thead class="bg-base-200 text-base-content">

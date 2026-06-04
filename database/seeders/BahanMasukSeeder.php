@@ -39,11 +39,11 @@ class BahanMasukSeeder extends Seeder
             ['nama' => 'Kemasan PCR Garlic', 'lead_time' => 14, 'min_order' => 2000, 'max_order' => 5000],
             ['nama' => 'Kemasan PCR Taliwang', 'lead_time' => 14, 'min_order' => 2000, 'max_order' => 5000],
             ['nama' => 'Kemasan PCR Original', 'lead_time' => 14, 'min_order' => 2000, 'max_order' => 5000],
-            
+
             // Kemasan PCM Series
             ['nama' => 'Kemasan pcm Coklat', 'lead_time' => 14, 'min_order' => 1000, 'max_order' => 3000],
             ['nama' => 'Kemasan pcm Milky', 'lead_time' => 14, 'min_order' => 1000, 'max_order' => 3000],
-            
+
             // Utility Packaging
             ['nama' => 'Toples CBF', 'lead_time' => 7, 'min_order' => 500, 'max_order' => 1500],
 
@@ -71,28 +71,37 @@ class BahanMasukSeeder extends Seeder
             $supplier = DB::table('supplier')->inRandomOrder()->first();
 
             if ($bahan && $supplier) {
-                // Buat 5 data transaksi masuk acak sepanjang rentang waktu Februari - Mei 2026
+                // Biarkan perulangan membuat tanggal acak
                 for ($i = 0; $i < 5; $i++) {
+
+                    // Contoh jika kamu menggunakan range hari acak (misal rand(15, 90)) seperti kode awalmu:
                     $tanggalPesan = Carbon::now()->subDays(rand(15, 90));
                     $jumlah = rand($data['min_order'], $data['max_order']);
 
-                    DB::table('bahan_masuk')->insert([
-                        'kode_pesanan'     => 'PO-' . $tanggalPesan->format('ymd') . '-' . rand(100, 999),
-                        'jumlah_pesan'     => $jumlah,
-                        'proses_pemesanan' => 'selesai_dicatat',
-                        'supplier_id'      => $supplier->id,
-                        'bahan_baku_id'    => $bahan->id,
-                        'tanggal_masuk'    => $tanggalPesan->copy()->addDays($data['lead_time'])->format('Y-m-d'),
-                        'tanggal_pesan'    => $tanggalPesan->format('Y-m-d'),
-                        'jumlah_total'     => $jumlah,
-                        'harga_beli'       => $bahan->harga_satuan * 0.95, // Angka asumsi harga grosir
-                        'status'           => 'completed',
-                        'created_at'       => $tanggalPesan,
-                        'updated_at'       => $tanggalPesan,
-                    ]);
+                    // PANDUAN UTAMA: Ambil bulan dari tanggal_pesan
+                    $bulanPesanan = Carbon::parse($tanggalPesan)->month;
 
-                    // Tambahkan hasil order ke stok master real-time agar menyeimbangkan konsumsi BatchProduksiSeeder
-                    DB::table('bahan_baku')->where('id', $bahan->id)->increment('stok', $jumlah);
+                    // Penerapan LOGIC IF seperti di seeder batch: Hanya proses jika bulannya adalah Mei (5)
+                    if ($bulanPesanan === 5) {
+
+                        DB::table('bahan_masuk')->insert([
+                            'kode_pesanan'     => 'PO-' . $tanggalPesan->format('ymd') . '-' . rand(100, 999),
+                            'jumlah_pesan'     => $jumlah,
+                            'proses_pemesanan' => 'selesai_dicatat',
+                            'supplier_id'      => $supplier->id,
+                            'bahan_baku_id'    => $bahan->id,
+                            'tanggal_masuk'    => $tanggalPesan->copy()->addDays($data['lead_time'])->format('Y-m-d'),
+                            'tanggal_pesan'    => $tanggalPesan->format('Y-m-d'),
+                            'jumlah_total'     => $jumlah,
+                            'harga_beli'       => ($bahan->harga_satuan ?? 1000) * 0.95,
+                            'status'           => 'completed',
+                            'created_at'       => $tanggalPesan,
+                            'updated_at'       => $tanggalPesan,
+                        ]);
+
+                        // Increment stok master juga ikut dikurung di dalam IF agar sinkron dengan transaksi masuk
+                        DB::table('bahan_baku')->where('id', $bahan->id)->increment('stok', $jumlah);
+                    }
                 }
             }
         }

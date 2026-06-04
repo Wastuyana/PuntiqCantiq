@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class DashboardAdminController extends Controller
@@ -18,19 +19,31 @@ class DashboardAdminController extends Controller
             ->first();
 
         // 2. Riwayat Penjualan
-        // Sesuaikan 'nama_mitra' dan 'nama_pelanggan' dengan nama kolom asli di tabel mitra/pelanggan Anda
         $riwayatPenjualan = DB::table('penjualan')
             ->leftJoin('mitra', 'penjualan.mitra_id', '=', 'mitra.id')
             ->leftJoin('pelanggan', 'penjualan.pelanggan_id', '=', 'pelanggan.id')
             ->select(
-                'penjualan.*', 
-                'mitra.nama_mitra as nama_mitra',     // Ganti 'nama_mitra' jika nama kolom di DB berbeda
-                'pelanggan.nama_pelanggan as nama_pelanggan' // Ganti 'nama_pelanggan' jika nama kolom di DB berbeda
+                'penjualan.*',
+                'mitra.nama_mitra as nama_mitra',     
+                'pelanggan.nama_pelanggan as nama_pelanggan' 
             )
             ->latest()
             ->take(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'riwayatPenjualan'));
+        $batchAktif = DB::table('batch')
+            ->where('status', 'draft')
+            ->orderBy('tanggal_produksi', 'asc')
+            ->get();
+
+        $riwayatBatch = DB::table('batch')
+            ->where('status', 'selesai')
+            ->orderBy('tanggal_produksi', 'desc')
+            ->take(5)
+            ->get();
+
+        $semuaBatch = $batchAktif->concat($riwayatBatch);
+
+        return view('admin.dashboard', compact('stats', 'riwayatPenjualan', 'semuaBatch'));
     }
 }

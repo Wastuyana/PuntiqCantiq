@@ -36,6 +36,7 @@
                 <thead>
                     <tr>
                         <th>Tanggal/No. Batch</th>
+                        <th class="text-center">Produk Jadi</th>
                         <th class="text-center">Efisiensi Hasil</th>
                         <th class="text-right">Biaya Aktual</th>
                         <th class="text-right">Biaya Standar</th>
@@ -55,6 +56,7 @@
                                         {{ $row->nomor_batch }} </a>
                                 </div>
                             </td>
+                            <td class="text-center">{{ number_format($row->total_target) }}
                             <td class="text-center">
                                 <div class="flex flex-col items-center">
                                     <span

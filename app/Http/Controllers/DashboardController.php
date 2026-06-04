@@ -54,24 +54,29 @@ class DashboardController extends Controller
             ->groupBy('produk_id')
             ->map(function ($group) {
                 $produk = $group->first()->produk;
-                $namaGabungan = ($produk->kategori ?? '-') . ' - ' . 
-                                ($produk->varian ?? '-') . ' - ' . 
-                                ($produk->ukuran ?? '-');
-                
+                $namaGabungan = ($produk->kategori ?? '-') . ' - ' .
+                    ($produk->varian ?? '-') . ' - ' .
+                    ($produk->ukuran ?? '-');
+
                 return [
                     'nama_lengkap' => $namaGabungan,
                     'total_jumlah' => $group->sum('jumlah_produk')
                 ];
             })
-            ->sortByDesc('total_jumlah') 
+            ->sortByDesc('total_jumlah')
             ->take(5);
 
-        $dataFinal = $penjualanPerVarian->values(); 
-        $labels = $dataFinal->pluck('nama_lengkap'); 
-        $dataSales = $dataFinal->pluck('total_jumlah'); 
+        $dataFinal = $penjualanPerVarian->values();
+        $labels = $dataFinal->pluck('nama_lengkap');
+        $dataSales = $dataFinal->pluck('total_jumlah');
+
+        $produkKritis = DB::table('produk')
+            ->whereRaw('stok <= rop_produk') 
+            ->orderBy('stok', 'asc')
+            ->get();
 
         return view('owner.dashboard', array_merge(
-            compact('efisiensiHasilProd', 'efisiensiBiayaProd', 'proporsiBiaya', 'categories', 'products', 'bulan', 'tahun', 'labels', 'dataSales'),
+            compact('efisiensiHasilProd', 'efisiensiBiayaProd', 'proporsiBiaya', 'categories', 'products', 'bulan', 'tahun', 'labels', 'dataSales', 'produkKritis'),
             ['totalAktual' => $totalAktual, 'totalTarget' => $totalTarget, 'selisihKumulatif' => $totalAktual - $totalTarget]
         ));
     }

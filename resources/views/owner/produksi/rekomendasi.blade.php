@@ -36,15 +36,13 @@
                                     <input type="hidden" name="produk_ids[]" value="{{ $item['id'] }}">
                                 </td>
 
-                                <td class="text-center font-bold">
-                                    <span
-                                        class="badge {{ $item['stok_aktual'] <= $item['ss_produk'] ? 'badge-error text-white' : 'badge-success text-white' }} px-3 py-2 text-xs">
-                                        {{ $item['stok_aktual'] }}
-                                    </span>
+                                <td class="text-center">
+                                    {{ $item['stok_aktual'] }} <span class="text-xs font-normal opacity-60">pack</span>
                                 </td>
 
                                 <td class="text-center font-bold">
-                                    {{ $item['jumlah_acc'] }}
+                                    {{ $item['jumlah_acc'] }} <span
+                                        class="text-xs font-normal text-base-content opacity-60">pack</span>
                                     <input type="hidden" name="hasil_target[{{ $item['id'] }}]"
                                         value="{{ $item['jumlah_acc'] }}">
                                 </td>

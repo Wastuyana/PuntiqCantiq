@@ -29,7 +29,7 @@
             @elseif($variance > 0)
                 <span class="text-red-500 font-medium text-[9px]">Terjadi pemborosan biaya</span>
             @else
-                <span class="text-green-600 font-medium text-[9px]">✅ Biaya lebih hemat dari standar</span>
+                <span class="text-green-600 font-medium text-[9px]">Biaya lebih hemat dari standar</span>
             @endif
         </div>
     </div>

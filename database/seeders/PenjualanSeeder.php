@@ -142,6 +142,23 @@ class PenjualanSeeder extends Seeder
                     'BCJ-CK' => 0.03,
                     'BCJ-TR' => 0.02
                 ]
+            ],
+
+            6 => [
+                'total_target' => 90,
+                'tanggal_pilihan' => ['2026-05-04', '2026-05-6'],
+                'produk_distribusi' => [
+                    'PCR-OR' => 0.15,
+                    'PCR-CK' => 0.18,
+                    'PCR-MB' => 0.15,
+                    'PCR-GR' => 0.09,
+                    'PCR-TL' => 0.05,
+                    'PCM-CK' => 0.05,
+                    'PCM-MB' => 0.05,
+                    'CBF-TPL' => 0.04,
+                    'BCJ-CK' => 0.03,
+                    'BCJ-TR' => 0.02
+                ]
             ]
         ];
 
@@ -188,7 +205,7 @@ class PenjualanSeeder extends Seeder
                                 'updated_at'    => Carbon::parse($tanggal),
                             ]);
 
-                            if ($bulan === 5) {
+                            if ($bulan === 5 && $bulan === 6) {
                                 DB::table('produk')->where('id', $idProduk)->decrement('stok', $qtyProduk);
                             }
 

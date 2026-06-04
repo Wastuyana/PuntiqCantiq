@@ -11,6 +11,7 @@ use App\Services\ProductionService;
 
 class BatchController extends Controller
 {
+
     protected $productionService;
 
     public function __construct(ProductionService $productionService)
@@ -21,9 +22,13 @@ class BatchController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $batches = Batch::with(['batch_hasil'])
+        $bulan = $request->get('bulan', now()->month);
+        $tahun = $request->get('tahun', now()->year);
+        $batches = Batch::with(['batch_hasil'])->orderBy('tanggal_produksi', 'desc')
+            ->whereMonth('tanggal_produksi', $bulan)
+            ->whereYear('tanggal_produksi', $tahun)
             ->latest()->get();
 
         $produks = Produk::has('bom')

@@ -192,6 +192,7 @@ class ProductionService
 
         // 2. Hitung d (rata-rata) dan dmax (maksimal harian)
         $d = $dataPenjualan->avg('total');
+
         $dmax = $dataPenjualan->max('total');
 
         // 3. Hitung rumus Safety Stock & Reorder Point
@@ -211,7 +212,7 @@ class ProductionService
     public function cekStokKritis($produk)
     {
         $stokSekarang = (int) $produk->stok;
-        $stokMinimal = (int) $produk->ss_produk;
+        $stokMinimal = (int) $produk->rop_produk;
 
         if ($stokSekarang <= $stokMinimal) {
             $users = User::all();
@@ -230,10 +231,23 @@ class ProductionService
 
     public function getDailyAverageSales($produk, $hari = 30)
     {
-        // Memanggil fungsi static dari model DetailPenjualan
-        $total = DetailPenjualan::getTotalPenjualan($produk->id, $hari);
+        // Ambil data penjualan per tanggal yang ada transaksinya dalam rentang waktu x hari terakhir
+        $dataPenjualan = \App\Models\DetailPenjualan::where('produk_id', $produk->id)
+            ->whereHas('penjualan', function ($q) use ($hari) {
+                $q->where('tanggal_penj', '>=', now()->subDays($hari));
+            })
+            ->join('penjualan', 'detail_penjualan.penjualan_id', '=', 'penjualan.id')
+            ->selectRaw('DATE(penjualan.tanggal_penj) as tanggal, SUM(detail_penjualan.jumlah_produk) as total')
+            ->groupBy('tanggal')
+            ->get();
 
-        return $total > 0 ? $total / $hari : 0;
+        // Jika dalam x hari terakhir sama sekali tidak pernah terjual, return 0 (bukan false)
+        if ($dataPenjualan->isEmpty()) {
+            return 0;
+        }
+
+        // Mengambil nilai rata-rata dari total penjualan harian yang aktif
+        return $dataPenjualan->avg('total');
     }
 
     /**
@@ -249,58 +263,67 @@ class ProductionService
 
         foreach ($produks as $p) {
             $dAvg = $this->getDailyAverageSales($p, 30);
-            $sMax = ($dAvg * $tInterval) + $p->ss_produk;
-            $qRec = ceil($sMax) - $p->stok;
-            $prioritas = $dAvg > 0 ? ($p->stok / $dAvg) : 999;
+            $rop = $p->rop_produk;
 
-            $daftarRekomendasi[] = [
-                'id' => $p->id,
-                'nama' => $p->kategori . ' - ' . $p->varian,
-                'stok_aktual' => $p->stok,
-                'ss_produk' => $p->ss_produk,
-                'd_avg' => round($dAvg, 2),
-                'q_rec' => max($qRec, 0),
-                'prioritas' => $prioritas,
-            ];
+            // 1. Filter: Hanya ambil produk yang menyentuh atau di bawah ROP
+            if ($p->stok < $rop) {
+                $sMax = ($dAvg * $tInterval) + $p->ss_produk;
+                $qRec = ceil($sMax) - $p->stok;
+                $prioritas = $dAvg > 0 ? ($p->stok / $dAvg) : 999;
+
+                if ($qRec > 0) {
+                    $daftarRekomendasi[] = [
+                        'id' => $p->id,
+                        'nama' => $p->kategori . ' - ' . $p->varian,
+                        'stok_aktual' => $p->stok,
+                        'ss_produk' => $p->ss_produk,
+                        'rop_produk' => $rop,
+                        'd_avg' => round($dAvg, 2),
+                        'q_rec' => $qRec,
+                        'prioritas' => $prioritas,
+                    ];
+                }
+            }
         }
 
+        // Urutkan dari yang paling mendesak/kritis (stok terkecil dibanding penjualan harian)
         $daftarSorted = collect($daftarRekomendasi)->sortBy('prioritas');
 
         $kapasitasTersisa = $kapasitasMax;
-        $daftarFinal = [];
+        $batchAktif = [];
+        $daftarTunggu = [];
         $totalKebutuhanBahan = [];
         $satuanBahan = [];
-        $stokBahan = []; 
+        $stokBahan = [];
 
         foreach ($daftarSorted as $item) {
+            // JIKA MASIH ADA KAPASITAS UTUH UNTUK MEMENUHI KEBUTUHAN PRODUK INI
             if ($kapasitasTersisa >= $item['q_rec']) {
                 $item['jumlah_acc'] = $item['q_rec'];
                 $kapasitasTersisa -= $item['q_rec'];
-            } else {
-                $item['jumlah_acc'] = $kapasitasTersisa;
-                $kapasitasTersisa = 0;
+                $batchAktif[] = $item;
             }
-            $daftarFinal[] = $item;
+            // JIKA KAPASITAS TIDAK CUKUP LAGI, LEMPAR KE DAFTAR TUNGGU SECARA UTUH
+            else {
+                $item['jumlah_acc'] = 0;
+                $daftarTunggu[] = $item;
+            }
 
+            // Hitung bahan baku HANYA untuk barang yang berhasil masuk ke Batch Aktif
             if ($item['jumlah_acc'] > 0) {
                 $produkWithBom = Produk::with('bom.bahan_baku')->find($item['id']);
                 if ($produkWithBom && $produkWithBom->bom) {
                     foreach ($produkWithBom->bom as $bom) {
                         $namaBahan = $bom->bahan_baku->nama;
-                        $satuan = strtolower($bom->bahan_baku->satuan); // Ambil satuan dari master bahan (kg/liter/pcs)
+                        $satuan = strtolower($bom->bahan_baku->satuan);
                         $stokBahanAktual = $bom->bahan_baku->stok;
 
                         $kebutuhanTeori = $bom->jumlah_kebutuhan * $item['jumlah_acc'];
-
-                        if (in_array($satuan, ['kg', 'liter', 'l'])) {
-                            $kebutuhan = $kebutuhanTeori / 1000;
-                        } else {
-                            $kebutuhan = $kebutuhanTeori; 
-                        }
+                        $kebutuhan = in_array($satuan, ['kg', 'liter', 'l']) ? ($kebutuhanTeori / 1000) : $kebutuhanTeori;
 
                         if (!isset($totalKebutuhanBahan[$namaBahan])) {
                             $totalKebutuhanBahan[$namaBahan] = 0;
-                            $satuanBahan[$namaBahan] = $bom->bahan_baku->satuan; 
+                            $satuanBahan[$namaBahan] = $bom->bahan_baku->satuan;
                             $stokBahan[$namaBahan] = $stokBahanAktual;
                         }
 
@@ -311,12 +334,13 @@ class ProductionService
         }
 
         return [
-            'batchAktif' => collect($daftarFinal)->where('jumlah_acc', '>', 0),
-            'daftarTunggu' => collect($daftarFinal)->where('jumlah_acc', '==', 0)->where('q_rec', '>', 0),
-            'totalKebutuhanBahan' => collect($totalKebutuhanBahan)->map(fn($v) => round($v, 2))->toArray(), // Dibulatkan 2 desimal agar rapi di UI
-            'satuanBahan' => $satuanBahan,
-            'stokBahan' => $stokBahan,
-            'kapasitasMax' => $kapasitasMax
+            // Dipastikan dibungkus collect() agar fungsi ->count() di Blade berjalan mulus
+            'batchAktif'          => collect($batchAktif),
+            'daftarTunggu'        => collect($daftarTunggu),
+            'totalKebutuhanBahan' => collect($totalKebutuhanBahan)->map(fn($v) => round($v, 2))->toArray(),
+            'satuanBahan'         => $satuanBahan,
+            'stokBahan'           => $stokBahan,
+            'kapasitasMax'        => $kapasitasMax
         ];
     }
 

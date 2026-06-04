@@ -9,5 +9,7 @@
         @include('admin.partials._stats')
 
         @include('admin.partials._sales_history', ['riwayatPenjualan' => $riwayatPenjualan])
+
+        @include('admin.partials._batch_history', ['semuaBatch' => $semuaBatch])
     </div>
 </x-app-layout>

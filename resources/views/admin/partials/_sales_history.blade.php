@@ -13,7 +13,7 @@
             <tbody>
                 {{-- Gunakan @forelse agar tetap rapi jika data kosong --}}
                 @forelse($riwayatPenjualan as $row)
-                <tr class="border-b hover:bg-gray-50 transition">
+                <tr class="border-b hover:bg-gray-50 transition text-sm">
                     <td class="py-3 font-medium text-gray-800">#{{ $row->id }}</td>
                     <td class="py-3 text-gray-600">
                         {{ $row->nama_mitra ?? $row->nama_pelanggan ?? 'Umum' }}

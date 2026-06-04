@@ -30,6 +30,14 @@ class BatchProduksiSeeder extends Seeder
         $semuaProduk = array_keys($produkMap);
 
         $jadwalProduksi = [
+            ['tanggal' => '2026-01-02', 'nomor' => 'B-20260102-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 150],
+            ['tanggal' => '2026-01-06', 'nomor' => 'B-20260106-01', 'tk' => 400000, 'varian' => $klusterB, 'qty' => 180],
+            ['tanggal' => '2026-01-09', 'nomor' => 'B-20260109-01', 'tk' => 420000, 'varian' => $klusterC, 'qty' => 150],
+            ['tanggal' => '2026-01-13', 'nomor' => 'B-20260113-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 120],
+            ['tanggal' => '2026-01-17', 'nomor' => 'B-20260117-01', 'tk' => 390000, 'varian' => $klusterB, 'qty' => 140],
+            ['tanggal' => '2026-01-20', 'nomor' => 'B-20260120-01', 'tk' => 410000, 'varian' => $klusterC, 'qty' => 260],
+            ['tanggal' => '2026-01-24', 'nomor' => 'B-20260124-01', 'tk' => 500000, 'varian' => $klusterA, 'qty' => 160],
+
             // --- BULAN FEBRUARI (Aktivitas Normal) ---
             ['tanggal' => '2026-02-02', 'nomor' => 'B-20260202-01', 'tk' => 450000, 'varian' => $klusterA, 'qty' => 350],
             ['tanggal' => '2026-02-06', 'nomor' => 'B-20260206-01', 'tk' => 400000, 'varian' => $klusterB, 'qty' => 280],
@@ -59,12 +67,11 @@ class BatchProduksiSeeder extends Seeder
             ['tanggal' => '2026-04-24', 'nomor' => 'B-20260424-01', 'tk' => 800000, 'varian' => $semuaProduk, 'qty' => 600],
             ['tanggal' => '2026-04-28', 'nomor' => 'B-20260428-01', 'tk' => 400000, 'varian' => $klusterA, 'qty' => 300],
 
-            // --- BULAN MEI (Bulan Berjalan - Stok Siap Masuk Menu Inventori) ---
+            // --- BULAN MEI ---
             ['tanggal' => '2026-05-06', 'nomor' => 'B-20260506-01', 'tk' => 520000, 'varian' => $klusterA, 'qty' => 380],
             ['tanggal' => '2026-05-13', 'nomor' => 'B-20260513-01', 'tk' => 480000, 'varian' => $klusterB, 'qty' => 310],
             ['tanggal' => '2026-05-16', 'nomor' => 'B-20260516-01', 'tk' => 490000, 'varian' => $klusterC, 'qty' => 300],
             ['tanggal' => '2026-05-20', 'nomor' => 'B-20260520-01', 'tk' => 550000, 'varian' => $klusterA, 'qty' => 400],
-            ['tanggal' => '2026-05-24', 'nomor' => 'B-20260524-01', 'tk' => 950000, 'varian' => $semuaProduk, 'qty' => 750],
             ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-01', 'tk' => 500000, 'varian' => $klusterB, 'qty' => 250],
             ['tanggal' => '2026-05-28', 'nomor' => 'B-20260528-02', 'tk' => 500000, 'varian' => $klusterA, 'qty' => 150],
         ];
@@ -170,8 +177,6 @@ class BatchProduksiSeeder extends Seeder
 
             foreach ($kebutuhanBahanBatch as $bahanBakuId => $dataBahan) {
 
-                // Gunakan number_format untuk mengunci desimal menjadi 3 angka di belakang koma 
-                // agar dibaca sempurna sebagai desimal oleh MySQL driver
                 $targetFix = number_format($dataBahan['target'], 3, '.', '');
                 $aktualFix = number_format($dataBahan['aktual'], 3, '.', '');
 

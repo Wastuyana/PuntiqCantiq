@@ -27,16 +27,17 @@
             </div>
         </form>
 
+
         @include('owner.partials._stats_grid')
-
-        @include('owner.partials._avg_chart_hpp')
-
-        @include('owner.partials._rekap_produksi')
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             @include('owner.partials._proporsi_biaya_prod')
+            @include('owner.partials._rekap_produksi')
         </div>
-    @include('owner.partials._sales_chart')
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        @include('owner.partials._avg_chart_hpp')
+
+        @include('owner.partials._sales_chart')
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </x-app-layout>
