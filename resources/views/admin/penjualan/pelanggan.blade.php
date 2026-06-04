@@ -79,7 +79,7 @@
 
         <div class="space-y-3">
             <h3 class="font-bold text-lg">Riwayat Transaksi</h3>
-            <form method="GET" action="{{ route('owner.penjualan.pelanggan.index') }}" class="flex flex-wrap gap-4 items-end mb-4 bg-base-200 p-4 rounded-xl">
+            <form method="GET" action="{{ route('admin.penjualan.pelanggan.index') }}" class="flex flex-wrap gap-4 items-end mb-4 bg-base-200 p-4 rounded-xl">
                 <div class="form-control">
                     <label class="label-text font-bold">Dari Tanggal</label>
                     <input type="date" name="start_date" value="{{ request('start_date') }}" class="input input-sm input-bordered">

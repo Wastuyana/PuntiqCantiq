@@ -92,7 +92,7 @@
             <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
                 Riwayat Transaksi Penjualan
             </h3>
-            <form method="GET" action="{{ route('owner.penjualan.mitra.index') }}" class="flex flex-wrap gap-4 items-end mb-4 bg-base-200 p-4 rounded-xl">
+            <form method="GET" action="{{ route('admin.penjualan.mitra.index') }}" class="flex flex-wrap gap-4 items-end mb-4 bg-base-200 p-4 rounded-xl">
                 <div class="form-control">
                     <label class="label-text font-bold">Dari Tanggal</label>
                     <input type="date" name="start_date" value="{{ request('start_date') }}" class="input input-sm input-bordered">
