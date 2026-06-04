@@ -10,21 +10,23 @@ use Illuminate\Support\Facades\DB;
 
 class PenjualanMitraController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Penjualan::with(['mitra', 'Detail_Penjualan.produk'])
+                            ->where('status_customer', 'mitra');
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal_penj', [$request->start_date, $request->end_date]);
+        }
+
+        $history = $query->latest('tanggal_penj')->paginate(10)->withQueryString();
+
         $mitra = Mitra::orderBy('nama_mitra', 'asc')->get();
-        $produk = Produk::where('stok', '>', 0)->get(); 
-        
-        // Tambahan: .produk artinya kita sekalian mengambil data produk di dalam detail_penjualan
-        $history = Penjualan::with(['mitra', 'Detail_Penjualan.produk'])
-                    ->where('status_customer', 'mitra')
-                    ->orderBy('tanggal_penj', 'desc')
-                    ->get();
+        $produk = Produk::where('stok', '>', 0)->get();
 
         return view('admin.penjualan.mitra', compact('mitra', 'produk', 'history'));
     }
 
-        // 2. Proses Simpan Transaksi
     public function store(Request $request)
     {
         $request->validate([
@@ -36,18 +38,14 @@ class PenjualanMitraController extends Controller
 
         DB::beginTransaction();
         try {
-            // --- GENERATE KODE PENJUALAN OTOMATIS ---
-            // Format: INV-20260601-001
             $today = date('Ymd');
             $lastPenjualan = DB::table('penjualan')
                 ->whereDate('tanggal_penj', date('Y-m-d'))
                 ->latest('id')
                 ->first();
 
-            // Jika hari ini belum ada transaksi, mulai dari 001. Jika sudah ada, tambah 1.
             $nextNumber = $lastPenjualan ? (intval(substr($lastPenjualan->kode_penjualan, -3)) + 1) : 1;
             $kodePenjualan = 'INV-' . $today . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-            // ----------------------------------------
 
             $total_harga = 0;
             $total_qty = 0;
@@ -63,10 +61,8 @@ class PenjualanMitraController extends Controller
                     throw new \Exception("Stok gudang untuk produk {$produk->nama_produk} tidak mencukupi!");
                 }
 
-                // Kurangi stok gudang
                 $produk->decrement('stok', $qty);
 
-                // Jika hutang, pindahkan ke stok_mitra
                 if ($request->metode_pembayaran === 'hutang') {
                     $produk->increment('stok_mitra', $qty);
                 }
@@ -82,9 +78,8 @@ class PenjualanMitraController extends Controller
                 ];
             }
 
-            // Simpan ke tabel penjualan
             $penjualan_id = DB::table('penjualan')->insertGetId([
-                'kode_penjualan'    => $kodePenjualan, // Kode disimpan di sini
+                'kode_penjualan'    => $kodePenjualan,
                 'tanggal_penj'      => now(),
                 'total_prod'        => $total_qty,
                 'subtotal_harga'    => $total_harga,
@@ -94,7 +89,6 @@ class PenjualanMitraController extends Controller
                 'created_at'        => now(),
             ]);
 
-            // Simpan detail_penjualan
             foreach ($detail_items as $item) {
                 DB::table('detail_penjualan')->insert([
                     'penjualan_id'  => $penjualan_id,
@@ -113,7 +107,6 @@ class PenjualanMitraController extends Controller
             return back()->withErrors(['error' => 'Gagal simpan: ' . $e->getMessage()])->withInput();
         }
     }
-    // 3. Proses Pembatalan / Hapus Transaksi (Kembalikan Stok Otomatis)
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -125,11 +118,9 @@ class PenjualanMitraController extends Controller
                 $produk = Produk::findOrFail($item->produk_id);
                 
                 if ($penjualan->metode_pembayaran === 'hutang') {
-                    // Kembalikan dari mitra ke gudang
                     $produk->decrement('stok_mitra', $item->jumlah_produk);
                     $produk->increment('stok', $item->jumlah_produk);
                 } else {
-                    // Kembalikan ke gudang saja
                     $produk->increment('stok', $item->jumlah_produk);
                 }
             }

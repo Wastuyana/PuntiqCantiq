@@ -10,23 +10,24 @@ use Illuminate\Support\Facades\DB;
 
 class PenjualanPelangganController extends Controller
 {
-    // 1. Halaman Utama (Gabungan Form Input & Tabel History)
-    // 1. Halaman Utama (Gabungan Form Input & Tabel History)
-    public function index()
+    
+    public function index(Request $request)
     {
         $pelanggan = Pelanggan::orderBy('nama_pelanggan', 'asc')->get();
         $produk = Produk::where('stok', '>', 0)->get(); 
         
-        // Tambahan: .produk artinya kita sekalian mengambil data produk di dalam detail_penjualan
-        $history = Penjualan::with(['pelanggan', 'Detail_Penjualan.produk'])
-                    ->where('status_customer', 'pelanggan')
-                    ->orderBy('tanggal_penj', 'desc')
-                    ->get();
+        $query = Penjualan::with(['pelanggan', 'Detail_Penjualan.produk'])
+                            ->where('status_customer', 'pelanggan');
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal_penj', [$request->start_date, $request->end_date]);
+        }
+
+        $history = $query->latest('tanggal_penj')->paginate(10)->withQueryString();
 
         return view('admin.penjualan.pelanggan', compact('pelanggan', 'produk', 'history'));
     }
 
-    // 2. Proses Simpan Transaksi
     public function store(Request $request)
     {
         $request->validate([
@@ -38,18 +39,16 @@ class PenjualanPelangganController extends Controller
 
         DB::beginTransaction();
         try {
-            // --- GENERATE KODE PENJUALAN OTOMATIS ---
-            // Format: INV-20260601-001
+            
             $today = date('Ymd');
             $lastPenjualan = DB::table('penjualan')
                 ->whereDate('tanggal_penj', date('Y-m-d'))
                 ->latest('id')
                 ->first();
 
-            // Jika hari ini belum ada transaksi, mulai dari 001. Jika sudah ada, tambah 1.
+            
             $nextNumber = $lastPenjualan ? (intval(substr($lastPenjualan->kode_penjualan, -3)) + 1) : 1;
             $kodePenjualan = 'INV-' . $today . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-            // ----------------------------------------
 
             $total_harga = 0;
             $total_qty = 0;
@@ -75,7 +74,6 @@ class PenjualanPelangganController extends Controller
                     'subtotal_harga'=> $subtotal,
                 ];
 
-                // Kurangi stok produk secara real-time
                 $produk->decrement('stok', $qty);
             }
 
@@ -83,7 +81,6 @@ class PenjualanPelangganController extends Controller
                 return back()->withErrors(['produk' => "Pilih minimal satu produk dengan jumlah yang valid!"])->withInput();
             }
 
-            // Simpan data ke tabel penjualan utama
             $penjualan_id = DB::table('penjualan')->insertGetId([
                 'kode_penjualan'    => $kodePenjualan, // Kode disimpan di sini
                 'tanggal_penj'      => now(),
@@ -96,13 +93,12 @@ class PenjualanPelangganController extends Controller
                 'updated_at'        => now(),
             ]);
 
-            // Simpan data ke tabel detail_penjualan (Menggunakan kolom total_harga)
             foreach ($detail_items as $item) {
                 DB::table('detail_penjualan')->insert([
                     'penjualan_id'  => $penjualan_id,
                     'produk_id'     => $item['produk_id'],
                     'jumlah_produk' => $item['jumlah_produk'],
-                    'total_harga'   => $item['subtotal_harga'], // <--- SUDAH FIX: menggunakan nama kolom 'total_harga'
+                    'total_harga'   => $item['subtotal_harga'], 
                     'created_at'    => now(),
                     'updated_at'    => now(),
                 ]);
@@ -117,20 +113,16 @@ class PenjualanPelangganController extends Controller
         }
     }
 
-    // 3. Proses Pembatalan / Hapus Transaksi (Kembalikan Stok Otomatis)
     public function destroy($id)
     {
         DB::beginTransaction();
         try {
-            // Ambil detail items transaksi yang mau dihapus
             $details = DB::table('detail_penjualan')->where('penjualan_id', $id)->get();
 
-            // Kembalikan stok masing-masing produk ke tabel produk
             foreach ($details as $item) {
                 Produk::where('id', $item->produk_id)->increment('stok', $item->jumlah_produk);
             }
 
-            // Hapus data dari detail dan tabel utama penjualan
             DB::table('detail_penjualan')->where('penjualan_id', $id)->delete();
             DB::table('penjualan')->where('id', $id)->delete();
 

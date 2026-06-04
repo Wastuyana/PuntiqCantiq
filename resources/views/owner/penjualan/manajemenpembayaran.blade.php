@@ -14,7 +14,6 @@
                     class="px-6 py-2 rounded-md font-bold text-sm">Riwayat Lunas</button>
         </div>
 
-        {{-- TAB HUTANG --}}
         <div x-show="tab === 'hutang'">
             <form method="GET" class="flex gap-2 mb-4 items-end">
                 <input type="hidden" name="tab" value="hutang">
@@ -42,7 +41,6 @@
             <div class="mt-4">{{ $pembayaran_hutang->links() }}</div>
         </div>
 
-        {{-- TAB LUNAS --}}
         <div x-show="tab === 'lunas'" x-cloak>
             <form method="GET" class="flex gap-2 mb-4 items-end">
                 <input type="hidden" name="tab" value="lunas">
@@ -71,7 +69,6 @@
         </div>
     </div>
 
-    {{-- MODAL --}}
     @foreach($pembayaran_hutang as $row)
     <dialog id="modal_lunas_{{ $row->id }}" class="modal">
         <div class="modal-box">

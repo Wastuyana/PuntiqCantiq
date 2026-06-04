@@ -78,7 +78,21 @@
         </form>
 
         <div class="space-y-3">
-            <h3 class="font-bold text-lg">📋 Riwayat Transaksi</h3>
+            <h3 class="font-bold text-lg">Riwayat Transaksi</h3>
+            <form method="GET" action="{{ route('owner.penjualan.pelanggan.index') }}" class="flex flex-wrap gap-4 items-end mb-4 bg-base-200 p-4 rounded-xl">
+                <div class="form-control">
+                    <label class="label-text font-bold">Dari Tanggal</label>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="input input-sm input-bordered">
+                </div>
+                <div class="form-control">
+                    <label class="label-text font-bold">Sampai Tanggal</label>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="input input-sm input-bordered">
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-warning text-white">Filter</button>
+                    <a href="{{ route('admin.penjualan.pelanggan.index') }}" class="btn btn-sm btn-ghost">Reset</a>
+                </div>
+            </form>
             <div class="overflow-x-auto border rounded-xl bg-base-100">
                 <table class="table table-zebra">
                     <thead class="bg-base-200 text-gray-700">
@@ -111,8 +125,7 @@
                                 </form>
                             <dialog id="modal_detail_{{ $row->id }}" class="modal text-left">
                             <div class="modal-box w-11/12 max-w-2xl whitespace-normal">
-                                <h3 class="font-bold text-lg border-b pb-2 text-warning italic">📄 Rincian Nota Transaksi</h3>
-                                
+                                <h3 class="font-bold text-lg border-b pb-2 text-warning italic">Rincian Nota Transaksi</h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-4 text-xs bg-base-200 p-3 rounded-lg">
                                 <div><strong>Pelanggan:</strong> {{ $row->pelanggan->nama_pelanggan ?? 'Umum' }} ({{ $row->pelanggan->kode_pelanggan ?? '-' }})</div>
                                 <div><strong>Waktu Transaksi:</strong> {{ \Carbon\Carbon::parse($row->tanggal_penj)->translatedFormat('d F Y') }}</div>
@@ -193,6 +206,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="mt-4 p-4">
+                    {{ $history->links() }}
+                </div>
             </div>
         </div>
     </div>
