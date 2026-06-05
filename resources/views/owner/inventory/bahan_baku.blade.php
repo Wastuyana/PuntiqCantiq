@@ -20,7 +20,7 @@
                         <th>Nama Bahan</th>
                         <th>Harga Satuan</th>
                         <th>Stok</th>
-                        <th>Status</th> 
+                        <th>Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -31,10 +31,12 @@
                             <td class="font-bold text-gray-700">{{ $bb->nama }}</td>
                             <td>
                                 <div>Rp {{ number_format($bb->harga_satuan, 0, ',', '.') }}</div>
-                                <div class="text-[10px] text-gray-400 italic">Update: {{ $bb->harga_updated_at ? \Carbon\Carbon::parse($bb->harga_updated_at)->diffForHumans() : '-' }}</div>
+                                <div class="text-[10px] text-gray-400 italic">Update:
+                                    {{ $bb->harga_updated_at ? \Carbon\Carbon::parse($bb->harga_updated_at)->diffForHumans() : '-' }}
+                                </div>
                             </td>
                             <td>{{ $bb->stok }} {{ $bb->satuan }}</td>
-                            
+
                             <td>
                                 <div class="flex flex-col">
                                     @if ($bb->stok <= $bb->ss_bahan)
@@ -46,26 +48,34 @@
                                         <span class="badge badge-success badge-sm badge-outline">Aman</span>
                                     @endif
                                     <div class="flex items-center gap-1.5 opacity-60 text-xs mt-1">
-                                            Min: {{ $bb->rop_bahan }}
-                                        </div>
+                                        Min: {{ $bb->rop_bahan }}
                                     </div>
+                                </div>
                             </td>
 
                             <td class="flex justify-center gap-2">
-                                <form action="{{ route('owner.inventory.bahan_baku.hitung-ulang', $bb->id) }}" method="POST">
+                                <form action="{{ route('owner.inventory.bahan_baku.hitung-ulang', $bb->id) }}"
+                                    method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-square btn-outline btn-warning" title="Hitung Ulang SS/ROP">↻</button>
+                                    <button type="submit" class="btn btn-sm btn-square btn-outline btn-warning"
+                                        title="Hitung Ulang SS/ROP">↻</button>
                                 </form>
-                                
-                                <label for="modal-edit-{{ $bb->id }}" class="btn btn-sm btn-square btn-outline btn-info">✎</label>
-                                <form action="{{ route('owner.inventory.bahan_baku.destroy', $bb->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus bahan {{ $bb->nama }}?');">
+
+                                <label for="modal-edit-{{ $bb->id }}"
+                                    class="btn btn-sm btn-square btn-outline btn-info">✎</label>
+                                <form action="{{ route('owner.inventory.bahan_baku.destroy', $bb->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus bahan {{ $bb->nama }}?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-square btn-outline btn-error" title="Hapus Bahan">✕</button>
+                                    <button type="submit" class="btn btn-sm btn-square btn-outline btn-error"
+                                        title="Hapus Bahan">✕</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center py-10 opacity-50">Belum ada data.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-10 opacity-50">Belum ada data.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -73,23 +83,38 @@
     </div>
 
     @foreach ($bahanBakus as $bb)
-        <input type="checkbox" id="modal-edit-{{ $bb->id }}" class="modal-toggle" style="display: none !important;" />
+        <input type="checkbox" id="modal-edit-{{ $bb->id }}" class="modal-toggle" />
         <div class="modal">
-            <div class="modal-box">
+            <div class="modal-box max-w-lg">
                 <h3 class="font-bold text-lg mb-4">Edit Bahan: {{ $bb->nama }}</h3>
                 <form action="{{ route('owner.inventory.bahan_baku.update', $bb->id) }}" method="POST">
-                    @csrf @method('PUT')
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control mb-3">
-                            <label class="label"><span class="label-text">Stok</span></label>
-                            <input type="number" name="stok" value="{{ $bb->stok }}" class="input input-bordered w-full" required />
+                    @csrf
+                    @method('PUT')
+
+                    <div class="form-control mb-3">
+                        <label class="label"><span class="label-text">Nama Bahan Baku</span></label>
+                        <input type="text" name="nama" value="{{ $bb->nama }}"
+                            class="input input-bordered w-full" required />
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text">Satuan</span></label>
+                            <input type="text" name="satuan" value="{{ $bb->satuan }}"
+                                class="input input-bordered w-full" required />
                         </div>
-                        <div class="form-control mb-3">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text">Stok</span></label>
+                            <input type="number" name="stok" value="{{ $bb->stok }}"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
                             <label class="label"><span class="label-text">Harga Satuan</span></label>
-                            <input type="number" name="harga_satuan" value="{{ $bb->harga_satuan }}" class="input input-bordered w-full" required />
+                            <input type="number" name="harga_satuan" value="{{ $bb->harga_satuan }}"
+                                class="input input-bordered w-full" required />
                         </div>
                     </div>
+
                     <div class="modal-action">
                         <label for="modal-edit-{{ $bb->id }}" class="btn btn-ghost">Batal</label>
                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -111,7 +136,8 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="form-control mb-3">
                         <label class="label"><span class="label-text">Satuan</span></label>
-                        <input type="text" name="satuan" placeholder="kg/pcs" class="input input-bordered w-full" required />
+                        <input type="text" name="satuan" placeholder="kg/pcs"
+                            class="input input-bordered w-full" required />
                     </div>
                     <div class="form-control mb-3">
                         <label class="label"><span class="label-text">Stok</span></label>

@@ -110,7 +110,6 @@
                 </div>
             </div>
 
-            <!-- ISI TAB 2: HISTORY -->
             <div x-show="tab === 'history'" x-transition>
                 <div class="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
                     <table class="table table-zebra">

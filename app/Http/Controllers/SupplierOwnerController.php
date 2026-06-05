@@ -54,7 +54,7 @@ class SupplierOwnerController extends Controller
         $supplier = Supplier::findOrFail($id);
         $supplier->update($request->all());
 
-        return redirect()->route('owner.supplier.index')->with('success', 'Data diperbarui!');
+        return redirect()->route('owner.partner.supplier.index')->with('success', 'Data diperbarui!');
     }
 
     public function destroy($id)

@@ -12,12 +12,10 @@ class QcController extends Controller
 {
     public function index()
     {
-        // Antrian QC (yang masih pending)
         $waitingList = BahanMasuk::with(['bahan_baku', 'supplier'])
             ->where('status', 'pending')
             ->get();
 
-        // History QC (yang sudah diproses)
         $historyQC = \App\Models\QcBahan::with(['bahan_masuk.bahan_baku', 'bahan_masuk.supplier'])
             ->latest()
             ->get();
@@ -36,7 +34,6 @@ class QcController extends Controller
         DB::transaction(function () use ($request) {
             $bm = BahanMasuk::findOrFail($request->bahan_masuk_id);
 
-            // 1. Simpan ke tabel qc_bahan
             QcBahan::create([
                 'bahan_masuk_id' => $bm->id,
                 'jumlah_bagus' => $request->jumlah_bagus,
@@ -45,12 +42,10 @@ class QcController extends Controller
                 'tanggal_qc' => now(),
             ]);
 
-            // 2. Tambah stok ke tabel bahan_baku (Hanya yang bagus)
             $bahan = BahanBaku::findOrFail($bm->bahan_baku_id);
             $bahan->stok += $request->jumlah_bagus;
             $bahan->save();
 
-            // 3. Update status kedatangan jadi completed
             $bm->status = 'completed';
             $bm->save();
         });

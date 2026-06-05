@@ -51,7 +51,7 @@ class MitraController extends Controller
     {
         // Validasi unik untuk update (abaikan nama milik data ini sendiri yang sedang di-edit)
         $request->validate([
-            'nama_mitra' => 'required|unique:mitra,nama_pmitra,' . $id,
+            'nama_mitra' => 'required|unique:mitra,nama_mitra,' . $id,
             'alamat_mitra'         => 'required',
             'no_hp'          => 'required',
         ], [
