@@ -17,8 +17,8 @@ class SupplierOwnerController extends Controller
     {
         // 1. Validasi Unik (Tambah Baru)
         $request->validate([
-            'nama_supplier' => 'required|max:100|unique:Supplier,nama_supplier',
-            'no_hp' => 'nullable|numeric|unique:Supplier,no_hp',
+            'nama_supplier' => 'required|max:100|unique:supplier,nama_supplier',
+            'no_hp' => 'nullable|numeric|unique:supplier,no_hp',
         ], [
             'nama_supplier.unique' => 'Gagal! Nama supplier ini sudah terdaftar.',
             'no_hp.unique' => 'Gagal! Nomor HP ini sudah digunakan supplier lain.',
