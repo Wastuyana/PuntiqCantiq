@@ -1,6 +1,5 @@
 <x-app-layout>
     <div class="p-6 space-y-6">
-        <!-- Header -->
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800">Quality Control Bahan</h2>
@@ -31,7 +30,6 @@
                 </button>
             </div>
 
-            <!-- ISI TAB 1: ANTRIAN -->
             <div x-show="tab === 'antrian'" x-transition>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($waitingList as $item)
@@ -62,7 +60,6 @@
                             </div>
                         </div>
 
-                        <!-- MODAL (DaisyUI Native Dialog - NO CHECKBOX) -->
                         <dialog id="modal_qc_{{ $item->bahan_masuk_id }}" class="modal modal-bottom sm:modal-middle">
                             <div class="modal-box border-t-8 border-warning">
                                 <h3 class="font-bold text-xl">Cek Kondisi: {{ $item->bahan_baku->nama }}</h3>
@@ -110,7 +107,6 @@
                 </div>
             </div>
 
-            <!-- ISI TAB 2: HISTORY -->
             <div x-show="tab === 'history'" x-transition>
                 <div class="bg-base-100 rounded-2xl border border-base-300 shadow-sm overflow-hidden">
                     <table class="table table-zebra">

@@ -67,15 +67,20 @@ class PenjualanMitraController extends Controller
                     $produk->increment('stok_mitra', $qty);
                 }
 
-                $subtotal = $produk->harga_jual * $qty;
-                $total_harga += $subtotal;
+                // --- LOGIKA DISKON 10% ---
+                $harga_asli = $produk->harga_jual * $qty;
+                $diskon = $harga_asli * 0.10; // Diskon 10%
+                $subtotal_setelah_diskon = $harga_asli - $diskon;
+                
+                $total_harga += $subtotal_setelah_diskon;
                 $total_qty += $qty;
 
                 $detail_items[] = [
                     'produk_id'     => $prod_id,
                     'jumlah_produk' => $qty,
-                    'total_harga'   => $subtotal,
+                    'total_harga'   => $subtotal_setelah_diskon, // Simpan harga bersih ke DB
                 ];
+                // -------------------------
             }
 
             $penjualan_id = DB::table('penjualan')->insertGetId([
@@ -100,7 +105,7 @@ class PenjualanMitraController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', "Transaksi berhasil! Kode: $kodePenjualan");
+            return back()->with('success', "Transaksi berhasil dengan diskon 10%! Kode: $kodePenjualan");
             
         } catch (\Exception $e) {
             DB::rollBack();

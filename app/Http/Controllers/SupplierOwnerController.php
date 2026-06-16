@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BahanBaku;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -10,51 +11,58 @@ class SupplierOwnerController extends Controller
     public function index()
     {
         $suppliers = Supplier::all();
-        return view('owner.partner.supplier', compact('suppliers'));
+        $bahanBakus = \App\Models\BahanBaku::all();
+        return view('owner.partner.supplier', compact('suppliers', 'bahanBakus'));
     }
 
     public function store(Request $request)
     {
-        // 1. Validasi Unik (Tambah Baru)
         $request->validate([
-            'nama_supplier' => 'required|max:100|unique:Supplier,nama_supplier',
-            'no_hp' => 'nullable|numeric|unique:Supplier,no_hp',
+            'nama_supplier'  => 'required|max:100|unique:supplier,nama_supplier',
+            'no_hp'          => 'nullable|numeric|unique:supplier,no_hp',
+            'bahan_baku_ids' => 'required|array', 
         ], [
             'nama_supplier.unique' => 'Gagal! Nama supplier ini sudah terdaftar.',
-            'no_hp.unique' => 'Gagal! Nomor HP ini sudah digunakan supplier lain.',
+            'no_hp.unique'         => 'Gagal! Nomor HP ini sudah digunakan supplier lain.',
+            'bahan_baku_ids.required' => 'Wajib memilih minimal satu bahan baku.',
         ]);
 
         $lastSupplier = Supplier::orderBy('id', 'desc')->first();
         $number = $lastSupplier ? ((int) substr($lastSupplier->kode_supplier, 4)) + 1 : 1;
         $kode = 'SPL-' . str_pad($number, 3, '0', STR_PAD_LEFT);
 
-        Supplier::create([
-            'kode_supplier' => $kode,
-            'nama_supplier' => $request->nama_supplier,
+        
+        $supplier = Supplier::create([
+            'kode_supplier'   => $kode,
+            'nama_supplier'   => $request->nama_supplier,
             'alamat_supplier' => $request->alamat_supplier,
-            'nama_bb' => $request->nama_bb,
-            'no_hp' => $request->no_hp,
+            'no_hp'           => $request->no_hp,
         ]);
+
+        
+        $supplier->bahanBaku()->attach($request->bahan_baku_ids);
 
         return redirect()->route('owner.partner.supplier.index')->with('success', 'Supplier berhasil ditambah!');
     }
 
     public function update(Request $request, $id)
     {
-        // 1. Validasi Unik (Kecuali ID sendiri)
         $request->validate([
-            'nama_supplier' => 'required|max:100|unique:supplier,nama_supplier,' . $id . ',id',
-            'no_hp' => 'nullable|numeric|unique:supplier,no_hp,' . $id . ',id',
+            'nama_supplier'  => 'required|max:100|unique:supplier,nama_supplier,' . $id . ',id',
+            'no_hp'          => 'nullable|numeric', 
+            'bahan_baku_ids' => 'required|array', 
         ], [
             'nama_supplier.unique' => 'Gagal! Nama sudah digunakan supplier lain.',
-            'no_hp.unique' => 'Gagal! Nomor HP sudah digunakan supplier lain.',
+            'bahan_baku_ids.required' => 'Wajib memilih minimal satu bahan baku.',
         ]);
 
-        // 2. Update Data
         $supplier = Supplier::findOrFail($id);
-        $supplier->update($request->all());
 
-        return redirect()->route('owner.supplier.index')->with('success', 'Data diperbarui!');
+        $supplier->update($request->only(['nama_supplier', 'alamat_supplier', 'no_hp']));
+
+        $supplier->bahanBaku()->sync($request->bahan_baku_ids);
+
+        return redirect()->route('owner.partner.supplier.index')->with('success', 'Data supplier dan bahan baku berhasil diperbarui!');
     }
 
     public function destroy($id)

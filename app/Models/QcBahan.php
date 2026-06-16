@@ -20,4 +20,9 @@ class QcBahan extends Model
     {
         return $this->belongsTo(BahanMasuk::class, 'bahan_masuk_id');
     }
+
+    public function getBahanBakuAttribute()
+    {
+        return $this->bahan_masuk ? $this->bahan_masuk->bahan_baku : null;
+    }
 }

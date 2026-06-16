@@ -15,7 +15,6 @@ class MitraController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi: nama_pelanggan harus unik di tabel pelanggans
         $request->validate([
             'nama_mitra' => 'required|unique:mitra,nama_mitra',
             'alamat_mitra' => 'required',
@@ -24,19 +23,15 @@ class MitraController extends Controller
             'nama_mitra.unique' => 'Nama mitra ini sudah terdaftar, gunakan nama lain!'
         ]);
 
-        // --- PROSES AUTO GENERATE KODE PELANGGAN (PEL-0001) ---
         $latest = Mitra::latest('id')->first();
         if (!$latest) {
             $kode_otomatis = 'MTR-0001';
         } else {
-            // Mengambil angka dari kode terakhir, misal PEL-0001 diambil 1
             $string = preg_replace("/[^0-9]/", "", $latest->kode_mitra);
             $angka_baru = (int)$string + 1;
-            // Pad dengan angka 0 di depan agar formatnya tetap 4 digit (0002)
             $kode_otomatis = 'MTR-' . str_pad($angka_baru, 4, '0', STR_PAD_LEFT);
         }
 
-        // Simpan ke database
         Mitra::create([
             'kode_mitra' => $kode_otomatis,
             'nama_mitra' => $request->nama_mitra,
@@ -49,9 +44,8 @@ class MitraController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validasi unik untuk update (abaikan nama milik data ini sendiri yang sedang di-edit)
         $request->validate([
-            'nama_mitra' => 'required|unique:mitra,nama_pmitra,' . $id,
+            'nama_mitra' => 'required|unique:mitra,nama_mitra,' . $id,
             'alamat_mitra'         => 'required',
             'no_hp'          => 'required',
         ], [
@@ -67,7 +61,12 @@ class MitraController extends Controller
 
         return back()->with('success', 'Data Mitra berhasil diperbarui!');
     }
-
+    public function show($id)
+    {
+        $mitra = Mitra::findOrFail($id);
+        
+        return $mitra; 
+    }
     public function destroy($id)
     {
         $mitra = Mitra::findOrFail($id);

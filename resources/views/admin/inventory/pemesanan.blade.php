@@ -17,37 +17,76 @@
                 <form action="{{ route('admin.inventory.pemesanan.store') }}" method="POST">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Bahan Baku</span></label>
-                            <select name="bahan_baku_id" class="select select-bordered w-full" required>
+                            <select name="bahan_baku_id" id="bahan_select" class="select select-bordered w-full" required>
                                 <option disabled selected>Pilih Bahan...</option>
-                                @foreach($bahan as $b) <option value="{{ $b->id }}">{{ $b->nama }} ( {{ $b->satuan}} )</option> @endforeach
+                                @foreach($bahan as $b) 
+                                    <option value="{{ $b->id }}" data-satuan="{{ $b->satuan }}">{{ $b->nama }}</option> 
+                                @endforeach
                             </select>
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Jumlah Pesan</span></label>
-                            <input type="number" name="jumlah_pesan" class="input input-bordered w-full" placeholder="0" required />
+                            <div class="flex gap-2">
+                                <input type="number" name="jumlah_pesan" class="input input-bordered w-full" placeholder="0" required />
+                                <input type="text" id="satuan_text" class="input input-bordered w-20 bg-base-200" readonly placeholder="-" />
+                            </div>
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Supplier</span></label>
-                            <select name="supplier_id" class="select select-bordered w-full" required>
-                                <option disabled selected>Pilih Supplier...</option>
-                                @foreach($suppliers as $s) <option value="{{ $s->id }}">{{ $s->nama_supplier }}</option> @endforeach
+                            <select name="supplier_id" id="supplier_select" class="select select-bordered w-full" required>
+                                <option disabled selected>Pilih Bahan Dulu...</option>
                             </select>
                         </div>
+
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Harga Pesan (Rp)</span></label>
                             <input type="number" name="harga_beli" class="input input-bordered w-full" placeholder="Contoh: 10000" required />
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Tgl Pesan</span></label>
-                            <input type="date" name="tanggal_pesan" class="input input-bordered w-full" value="{{ date('Y-m-d') }}" required />
+                            <input type="date" name="tanggal_pesan" class="input input-bordered w-full" value="{{ date('Y-m-d') }}" min="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required />
                         </div>
-                    </div>
-                    <div class="mt-6 flex justify-end">
+                    </div> <div class="mt-6 flex justify-end">
                         <button type="submit" class="btn btn-primary px-10 font-bold">Catat Pesanan</button>
                     </div>
                 </form>
+
+                <script>
+                    // Data supplier yang sudah di-load dengan relasi bahanBaku
+                    const suppliersData = @json($suppliers);
+                    const bahanSelect = document.getElementById('bahan_select');
+                    const supplierSelect = document.getElementById('supplier_select');
+                    const satuanText = document.getElementById('satuan_text');
+
+                    bahanSelect.addEventListener('change', function() {
+                        const selectedOption = bahanSelect.options[bahanSelect.selectedIndex];
+                        const selectedBahanId = parseInt(selectedOption.value); // Menggunakan ID
+                        
+                        // Update Satuan
+                        const satuan = selectedOption.getAttribute('data-satuan');
+                        satuanText.value = satuan ? satuan : "";
+
+                        // FILTER SUPPLIER BERDASARKAN RELASI
+                        const filteredSuppliers = suppliersData.filter(s => {
+                            // Cek apakah di dalam array bahanBaku milik supplier ada ID yang sama
+                            return s.bahan_baku.some(bb => bb.id === selectedBahanId);
+                        });
+
+                        // Update Dropdown Supplier
+                        supplierSelect.innerHTML = '<option disabled selected>Pilih Supplier...</option>';
+                        
+                        if (filteredSuppliers.length > 0) {
+                            filteredSuppliers.forEach(s => {
+                                supplierSelect.innerHTML += `<option value="${s.id}">${s.nama_supplier}</option>`;
+                            });
+                        } else {
+                            supplierSelect.innerHTML = '<option disabled selected>Tidak ada supplier untuk bahan ini</option>';
+                        }
+                    });
+                </script>
             </div>
         </div>
 

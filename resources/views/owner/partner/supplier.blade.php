@@ -45,7 +45,9 @@
                                 <td>{{ $s->kode_supplier }}</td>
                                 <td>{{ $s->nama_supplier }}</td>
                                 <td>{{ $s->alamat_supplier ?? '-' }}</td>
-                                <td>{{ $s->nama_bb ?? '-' }}</td>
+                                <td>
+                                    {{ $s->bahanBaku->pluck('nama')->implode(', ') ?: '-' }}
+                                </td>
                                 <td>{{ $s->no_hp ?? '-' }}</td>
                                 <td class="flex justify-center gap-2">
                                     <label for="modal-edit-{{ $s->id }}"
@@ -105,15 +107,31 @@
                 </div>
 
                 <div class="form-control w-full mb-3">
-                    <label class="label"><span class="label-text font-semibold">Alamat</span></label>
-                    <textarea name="alamat_supplier" class="textarea textarea-bordered h-20">{{ old('alamat_supplier') }}</textarea>
+                    <label class="label">
+                        <span class="label-text font-semibold">Alamat</span>
+                    </label>
+                    <textarea 
+                        name="alamat_supplier" 
+                        class="textarea textarea-bordered w-full h-24 resize-none" 
+                        placeholder="Masukkan alamat lengkap supplier..."></textarea>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="form-control w-full mb-3">
-                        <label class="label"><span class="label-text font-semibold">Bahan Baku</span></label>
-                        <input type="text" name="nama_bb" value="{{ old('nama_bb') }}"
-                            class="input input-bordered w-full" />
+                   <div class="form-control w-full mb-3">
+                        <label class="label">
+                            <span class="label-text font-semibold">Pilih Bahan Baku *</span>
+                        </label>
+                        <div class="border border-base-300 rounded-lg p-3 max-h-48 overflow-y-auto bg-base-100">
+                            <div class="flex flex-col gap-1">
+                                @foreach($bahanBakus as $bb)
+                                    <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-base-200 rounded transition">
+                                        <input type="checkbox" name="bahan_baku_ids[]" value="{{ $bb->id }}" 
+                                            class="checkbox checkbox-primary checkbox-sm"
+                                            >
+                                        <span class="text-sm">{{ $bb->nama }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-semibold">No. HP</span></label>
@@ -163,16 +181,33 @@
                     </div>
 
                     <div class="form-control w-full mb-3">
-                        <label class="label"><span class="label-text font-semibold">Alamat</span></label>
-                        <textarea name="alamat_supplier" class="textarea textarea-bordered h-20">{{ old('alamat_supplier', $s->alamat_supplier) }}</textarea>
+                        <label class="label">
+                            <span class="label-text font-semibold">Alamat</span>
+                        </label>
+                        <textarea 
+                            name="alamat_supplier" 
+                            class="textarea textarea-bordered w-full h-24 resize-none" 
+                            placeholder="Masukkan alamat lengkap supplier...">{{ old('alamat_supplier', $s->alamat_supplier ?? '') }}</textarea>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="form-control w-full mb-3">
-                            <label class="label"><span class="label-text font-semibold">Bahan Baku</span></label>
-                            <input type="text" name="nama_bb" value="{{ old('nama_bb', $s->nama_bb) }}"
-                                class="input input-bordered w-full" />
+                        <label class="label">
+                            <span class="label-text font-semibold">Pilih Bahan Baku *</span>
+                        </label>
+                        <div class="border border-base-300 rounded-lg p-3 max-h-48 overflow-y-auto bg-base-100">
+                            <div class="flex flex-col gap-1">
+                                @foreach($bahanBakus as $bb)
+                                    <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-base-200 rounded transition">
+                                        <input type="checkbox" name="bahan_baku_ids[]" value="{{ $bb->id }}" 
+                                            class="checkbox checkbox-primary checkbox-sm"
+                                            {{ (isset($s) && $s->bahanBaku->contains($bb->id)) ? 'checked' : '' }}>
+                                        <span class="text-sm">{{ $bb->nama }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
+                    </div>
                         <div class="form-control w-full mb-3">
                             <label class="label"><span class="label-text font-semibold">No. HP</span></label>
                             <input type="text" name="no_hp" value="{{ old('no_hp', $s->no_hp) }}"

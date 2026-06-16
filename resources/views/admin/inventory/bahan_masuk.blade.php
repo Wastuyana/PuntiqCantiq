@@ -5,13 +5,14 @@
         <div class="card bg-base-100 shadow-sm border mb-8 p-6">
             <h3 class="font-bold text-lg mb-4">Input Barang Datang (Pilih Pesanan)</h3>
             <table class="table w-full">
-                <thead><tr><th>Kode PO</th><th>Bahan</th><th>Qty Pesan</th><th>Aksi Pencatatan</th></tr></thead>
+                <thead><tr><th>Kode PO</th><th>Bahan</th><th>Qty Pesan</th><th>Satuan</th><th>Aksi Pencatatan</th></tr></thead>
                 <tbody>
                     @foreach($pesananPending as $p)
                     <tr>
                         <td>{{ $p->kode_pesanan }}</td>
                         <td>{{ $p->bahan_baku->nama }}</td>
                         <td>{{ $p->jumlah_pesan }}</td>
+                        <td>{{ $p->bahan_baku->satuan }}</td>
                         <td>
                             <form action="{{ route('admin.inventory.bahan_masuk.update', $p->id) }}" method="POST" class="flex gap-2">
                                 @csrf @method('PUT')
