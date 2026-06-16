@@ -7,13 +7,20 @@ use App\Models\Produk;
 use App\Models\Penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\ProductionService;
 
 class PenjualanMitraController extends Controller
 {
+    protected $productionService;
+    public function __construct()
+    {
+        $this->productionService = app()->make('App\Services\ProductionService');
+    }
+
     public function index(Request $request)
     {
         $query = Penjualan::with(['mitra', 'Detail_Penjualan.produk'])
-                            ->where('status_customer', 'mitra');
+            ->where('status_customer', 'mitra');
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tanggal_penj', [$request->start_date, $request->end_date]);
@@ -30,7 +37,7 @@ class PenjualanMitraController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'mitra_id'          => 'required|exists:mitra,id', 
+            'mitra_id'          => 'required|exists:mitra,id',
             'metode_pembayaran' => 'required|in:cash,transfer,qris,hutang',
             'produk_id'         => 'required|array',
             'jumlah_produk'     => 'required|array',
@@ -56,12 +63,13 @@ class PenjualanMitraController extends Controller
                 if ($qty <= 0) continue;
 
                 $produk = Produk::findOrFail($prod_id);
-                
+
                 if ($produk->stok < $qty) {
                     throw new \Exception("Stok gudang untuk produk {$produk->nama_produk} tidak mencukupi!");
                 }
 
                 $produk->decrement('stok', $qty);
+                $this->productionService->cekStokKritis($produk);
 
                 if ($request->metode_pembayaran === 'hutang') {
                     $produk->increment('stok_mitra', $qty);
@@ -101,7 +109,6 @@ class PenjualanMitraController extends Controller
 
             DB::commit();
             return back()->with('success', "Transaksi berhasil! Kode: $kodePenjualan");
-            
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Gagal simpan: ' . $e->getMessage()])->withInput();
@@ -116,7 +123,7 @@ class PenjualanMitraController extends Controller
 
             foreach ($details as $item) {
                 $produk = Produk::findOrFail($item->produk_id);
-                
+
                 if ($penjualan->metode_pembayaran === 'hutang') {
                     $produk->decrement('stok_mitra', $item->jumlah_produk);
                     $produk->increment('stok', $item->jumlah_produk);

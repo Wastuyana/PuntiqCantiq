@@ -52,12 +52,6 @@
                         </div>
                     @endforelse
                 </div>
-
-                @if (auth()->user()->notifications->count() > 0)
-                    <div class="card-actions mt-2 pt-2 border-t">
-                        <a href="#" class="btn btn-ghost btn-block btn-xs text-xs opacity-70">Lihat Semua</a>
-                    </div>
-                @endif
             </div>
         </div>
     </div>

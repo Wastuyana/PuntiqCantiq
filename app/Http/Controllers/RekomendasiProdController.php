@@ -16,7 +16,7 @@ class RekomendasiProdController extends Controller
         $this->productionService = $productionService;
     }
 
-    public function rekomendasiProduksi()
+    public function index()
     {
         $data = $this->productionService->getRekomendasiProduksi();
 
@@ -27,7 +27,7 @@ class RekomendasiProdController extends Controller
         ]));
     }
 
-    public function storeKeBatch(Request $request, BatchController $batchController)
+    public function store(Request $request, BatchController $batchController)
     {
        return $batchController->store($request);
     }

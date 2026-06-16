@@ -25,6 +25,10 @@ class ProdukController extends Controller
 
         $daftarKategori = Produk::distinct()->pluck('kategori');
 
+        foreach ($produks as $produk) {
+            $this->productionService->updateSafetyStockProduk($produk);
+        }
+
         return view('owner.master.produk', compact('produks', 'daftarKategori'));
     }
 

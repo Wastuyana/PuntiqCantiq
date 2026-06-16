@@ -2,7 +2,7 @@
     <div class="p-6">
         <div class="text-sm breadcrumbs mb-4 opacity-50">
             <ul>
-                <li><a href="{{ route('owner.produksi.rekomendasi') }}">REKOMENDASI PRODUKSI</a></li>
+                <li><a href="{{ route('owner.produksi.rekomendasi.index') }}">REKOMENDASI PRODUKSI</a></li>
                 <li>DAFTAR REKOMENDASI</li>
             </ul>
         </div>
@@ -125,7 +125,11 @@
                         <tbody class="text-muted" style="font-size: 0.85rem;">
                             @foreach ($daftarTunggu as $item)
                                 <tr>
-                                    <td class="ps-4">{{ $item['nama'] }}</td>
+                                    <td class="ps-4">{{ $item['nama'] }}
+                                        <div class="text-xs text-muted">Estimasi habis:
+                                            {{ round($item['prioritas'], 1) }}
+                                            hari</div>
+                                    </td>
                                     <td class="text-center">{{ $item['stok_aktual'] }}</td>
                                     <td class="text-danger text-center">{{ $item['q_rec'] }}</td>
                                 </tr>

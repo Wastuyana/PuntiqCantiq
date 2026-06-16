@@ -18,7 +18,7 @@ class RekomendasiProdController extends Controller
         $this->productionService = $productionService;
     }
     
-    public function rekomendasiProduksi()
+    public function index()
     {
         $data = $this->productionService->getRekomendasiProduksi();
 

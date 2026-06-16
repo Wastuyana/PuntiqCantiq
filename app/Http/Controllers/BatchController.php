@@ -31,10 +31,6 @@ class BatchController extends Controller
             ->whereYear('tanggal_produksi', $tahun)
             ->latest()->get();
 
-        $produks = Produk::has('bom')
-            ->with('bom.bahan_baku')
-            ->get();
-
         $generatedNoBatch = $this->productionService->generateNoBatch();
 
         return view('owner.produksi.batch', compact('batches', 'generatedNoBatch'));
@@ -107,12 +103,20 @@ class BatchController extends Controller
                 ]);
 
                 foreach ($produk->bom as $item) {
-                    $totalButuh = $item->jumlah_kebutuhan * $target;
+                    $jumlahBoM = $item->jumlah_kebutuhan; // Ini masih skala kecil (gram/ml) dari tabel BoM
                     $satuanMaster = strtolower($item->bahan_baku->satuan);
+
+                    // 🌟 SINKRONISASI LOGIKA: Bagi 1000 jika satuannya adalah KG atau LITER 🌟
                     if (in_array($satuanMaster, ['kg', 'liter', 'l'])) {
-                        $totalButuh = $totalButuh / 1000; 
+                        $jumlahKebutuhanKonversi = $jumlahBoM / 1000; // Mengubah gram ke kg, atau ml ke liter
+                    } else {
+                        $jumlahKebutuhanKonversi = $jumlahBoM;
                     }
 
+                    // Hitung total kebutuhan bahan baku berdasarkan target jumlah produksi
+                    $totalButuh = $jumlahKebutuhanKonversi * $target;
+
+                    // Simpan atau akumulasikan ke tabel batch_bahan
                     $batchBahan = $batch->batch_bahan()->firstOrNew([
                         'bahan_baku_id' => $item->bahan_baku_id
                     ]);

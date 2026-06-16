@@ -8,6 +8,8 @@
 
     <title>{{ config('app.name', 'Puntiq Cantiq') }}</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('images/puntiq-cantiq.png') }}">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
@@ -100,9 +102,15 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('owner.produksi.rekomendasi') }}"
-                                        class="{{ request()->routeIs('owner.produksi.rekomendasi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                    <a href="{{ route('owner.produksi.rekomendasi.index') }}"
+                                        class="{{ request()->routeIs('owner.produksi.rekomendasi.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Rekomendasi Produksi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('owner.produksi.standar_produksi') }}"
+                                        class="{{ request()->routeIs('owner.produksi.standar_produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
+                                        Standar Produksi
                                     </a>
                                 </li>
                             </ul>
@@ -150,12 +158,7 @@
                                         Panduan Kerja
                                     </a>
                                 </li> --}}
-                                <li>
-                                    <a href="{{ route('owner.master.standar_produksi') }}"
-                                        class="{{ request()->routeIs('owner.master.standar_produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
-                                        Standar Produksi
-                                    </a>
-                                </li>
+                                
                             </ul>
                         </details>
                     </li>
@@ -369,12 +372,6 @@
                                         Bills Of Materials (BoM)
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('admin.produksi.standar_produksi') }}"
-                                        class="{{ request()->routeIs('admin.produksi.standar_produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
-                                        Standar Produksi
-                                    </a>
-                                </li>
                             </ul>
                         </details>
                     </li>
@@ -408,9 +405,15 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.produksi.rekomendasi') }}"
-                                        class="{{ request()->routeIs('admin.produksi.rekomendasi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
+                                    <a href="{{ route('admin.produksi.rekomendasi.index') }}"
+                                        class="{{ request()->routeIs('admin.produksi.rekomendasi.index') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block">
                                         Rekomendasi Produksi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.produksi.standar_produksi') }}"
+                                        class="{{ request()->routeIs('admin.produksi.standar_produksi') ? 'text-primary-content font-semibold' : '' }} rounded-lg ml-6 py-2 px-4 block text-sm">
+                                        Standar Produksi
                                     </a>
                                 </li>
                             </ul>
