@@ -2,7 +2,7 @@
     <div class="p-6 bg-base-100 min-h-screen">
         <div class="text-sm breadcrumbs mb-4 opacity-50">
             <ul>
-                <li><a href="{{ route('owner.produksi.rekomendasi') }}">REKOMENDASI PRODUKSI</a></li>
+                <li><a href="{{ route('owner.produksi.rekomendasi.index') }}">REKOMENDASI PRODUKSI</a></li>
                 <li>DAFTAR REKOMENDASI</li>
             </ul>
         </div>

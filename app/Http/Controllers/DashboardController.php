@@ -70,16 +70,16 @@ class DashboardController extends Controller
         $labels = $dataFinal->pluck('nama_lengkap');
         $dataSales = $dataFinal->pluck('total_jumlah');
 
-        $produkKritis = DB::table('produk')
-            ->whereRaw('stok <= rop_produk') 
-            ->orderBy('stok', 'asc')
-            ->get();
+        $jumlahKrisis = DB::table('produk')
+            ->whereRaw('stok <= rop_produk') // Ganti dengan nama kolom ROP di tabel bahan baku kamu
+            ->count();
 
         return view('owner.dashboard', array_merge(
-            compact('efisiensiHasilProd', 'efisiensiBiayaProd', 'proporsiBiaya', 'categories', 'products', 'bulan', 'tahun', 'labels', 'dataSales', 'produkKritis'),
+            compact('efisiensiHasilProd', 'efisiensiBiayaProd', 'proporsiBiaya', 'categories', 'products', 'bulan', 'tahun', 'labels', 'dataSales', 'jumlahKrisis'),
             ['totalAktual' => $totalAktual, 'totalTarget' => $totalTarget, 'selisihKumulatif' => $totalAktual - $totalTarget]
         ));
     }
+
     public function getHppTrend(Request $request)
     {
         $tahun = $request->get('tahun', now()->year);

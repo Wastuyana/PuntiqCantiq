@@ -6,15 +6,25 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\DetailPenjualan;
+use App\Services\ProductionService;
 
 class ProdukController extends Controller
 {
+    protected $productionService;
+
+    public function __construct(ProductionService $productionService)
+    {
+        $this->productionService = $productionService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $produks = Produk::orderBy('kategori')->get();
+        foreach ($produks as $produk) {
+            $this->productionService->updateSafetyStockProduk($produk);
+        }
 
         $daftarKategori = Produk::distinct()->pluck('kategori');
 
@@ -123,39 +133,16 @@ class ProdukController extends Controller
         return view('admin.produk.bom', compact('produks'));
     }
 
-    public function updateStokMinimal($id)
+    public function updateStokMinimal($id, ProductionService $productionService)
     {
         $produk = Produk::findOrFail($id);
-        $produk->save();
-        $leadTime = 2;
+        $success = $productionService->updateSafetyStockProduk($produk);
 
-        // 1. Ambil data penjualan 30 hari terakhir untuk produk ini
-        $dataPenjualan = DetailPenjualan::where('produk_id', $id)
-            ->whereHas('penjualan', function ($q) {
-                $q->where('tanggal_penj', '>=', now()->subDays(30));
-            })
-            ->selectRaw('DATE(created_at) as tanggal, SUM(jumlah_produk) as total')
-            ->groupBy('tanggal')
-            ->get();
-
-        if ($dataPenjualan->isEmpty()) {
+        if (!$success) {
             return back()->with('error', 'Data penjualan 30 hari terakhir tidak ditemukan.');
         }
 
-        // 2. Hitung d (rata-rata) dan dmax (maksimal harian)
-        $d = $dataPenjualan->avg('total');
-        $dmax = $dataPenjualan->max('total');
-
-        // 3. Hitung sesuai rumus 
-        $safetyStock = ($dmax - $d) * $leadTime;
-        $batasMinimal = ($d * $leadTime) + $safetyStock;
-
-        // 4. Update data ke database
-        $produk->update([
-            'ss_produk' => ceil($batasMinimal) // Kita bulatkan ke atas
-        ]);
-
-        return back()->with('success', 'Batas stok minimal berhasil diperbarui berdasarkan tren 30 hari terakhir!');
+        return back()->with('success', "Batas stok minimal {$produk->kategori}-{$produk->varian}-{$produk->ukuran} berhasil diperbarui!");
     }
 
     public function detailBom($id)

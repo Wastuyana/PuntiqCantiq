@@ -174,9 +174,8 @@ class ProductionService
 
     public function updateSafetyStockProduk($produk)
     {
-        $leadTime = Setting::where('key', 'lead_time')->value('value') ?? 7;
+        $leadTime = Setting::where('key', 'lead_time')->value('value') ?? 4;
 
-        // 1. Ambil data penjualan 30 hari terakhir
         $dataPenjualan = \App\Models\DetailPenjualan::where('produk_id', $produk->id)
             ->whereHas('penjualan', function ($q) {
                 $q->where('tanggal_penj', '>=', now()->subDays(30));
@@ -187,19 +186,17 @@ class ProductionService
             ->get();
 
         if ($dataPenjualan->isEmpty()) {
-            return false; // Beri sinyal ke controller kalau data kosong
+            return false;
         }
 
-        // 2. Hitung d (rata-rata) dan dmax (maksimal harian)
-        $d = $dataPenjualan->avg('total');
+        $totalTerjualSebulan = $dataPenjualan->sum('total');
+        $d = $totalTerjualSebulan / 30;
 
         $dmax = $dataPenjualan->max('total');
 
-        // 3. Hitung rumus Safety Stock & Reorder Point
         $safetyStock = ($dmax - $d) * $leadTime;
         $batasMinimal = ($d * $leadTime) + $safetyStock;
 
-        // 4. Update data ke database
         return $produk->update([
             'ss_produk' => ceil($safetyStock),
             'rop_produk' => ceil($batasMinimal)
@@ -258,14 +255,15 @@ class ProductionService
         $tInterval = Setting::where('key', 't_interval')->value('value') ?? 7;
         $kapasitasMax = Setting::where('key', 'kapasitas_produksi')->value('value') ?? 100;
 
-        $produks = Produk::all();
+        // Perbaikan Performa: Ambil produk SEKALIGUS dengan relasi BoM di awal (Eager Loading)
+        $produks = Produk::with('bom.bahan_baku')->get();
         $daftarRekomendasi = [];
 
         foreach ($produks as $p) {
             $dAvg = $this->getDailyAverageSales($p, 30);
             $rop = $p->rop_produk;
 
-            // 1. Filter: Hanya ambil produk yang menyentuh atau di bawah ROP
+            // 1. Filter: Hanya ambil produk di bawah ROP
             if ($p->stok < $rop) {
                 $sMax = ($dAvg * $tInterval) + $p->ss_produk;
                 $qRec = ceil($sMax) - $p->stok;
@@ -274,6 +272,7 @@ class ProductionService
                 if ($qRec > 0) {
                     $daftarRekomendasi[] = [
                         'id' => $p->id,
+                        'produk_obj' => $p, // Simpan objek produk agar tidak perlu query ulang nanti
                         'nama' => $p->kategori . ' - ' . $p->varian,
                         'stok_aktual' => $p->stok,
                         'ss_produk' => $p->ss_produk,
@@ -286,7 +285,6 @@ class ProductionService
             }
         }
 
-        // Urutkan dari yang paling mendesak/kritis (stok terkecil dibanding penjualan harian)
         $daftarSorted = collect($daftarRekomendasi)->sortBy('prioritas');
 
         $kapasitasTersisa = $kapasitasMax;
@@ -297,21 +295,36 @@ class ProductionService
         $stokBahan = [];
 
         foreach ($daftarSorted as $item) {
-            // JIKA MASIH ADA KAPASITAS UTUH UNTUK MEMENUHI KEBUTUHAN PRODUK INI
-            if ($kapasitasTersisa >= $item['q_rec']) {
-                $item['jumlah_acc'] = $item['q_rec'];
-                $kapasitasTersisa -= $item['q_rec'];
-                $batchAktif[] = $item;
-            }
-            // JIKA KAPASITAS TIDAK CUKUP LAGI, LEMPAR KE DAFTAR TUNGGU SECARA UTUH
-            else {
+            if ($kapasitasTersisa > 0) {
+                if ($kapasitasTersisa >= $item['q_rec']) {
+                    // Kapasitas cukup untuk memenuhi semua kebutuhan produk ini
+                    $item['jumlah_acc'] = $item['q_rec'];
+                    $kapasitasTersisa -= $item['q_rec'];
+                    $batchAktif[] = $item;
+                } else {
+                    // Perbaikan Logika: Ambil sisa kapasitas yang tersedia (dicicil), sisanya masuk daftar tunggu
+                    $item['jumlah_acc'] = $kapasitasTersisa;
+
+                    $sisaBelumTercukupi = $item['q_rec'] - $kapasitasTersisa;
+                    $kapasitasTersisa = 0; // Kapasitas pabrik sekarang habis
+
+                    $batchAktif[] = $item;
+
+                    // Masukkan sisa yang tidak cukup ke daftar tunggu
+                    $itemTunggu = $item;
+                    $itemTunggu['q_rec'] = $sisaBelumTercukupi;
+                    $itemTunggu['jumlah_acc'] = 0;
+                    $daftarTunggu[] = $itemTunggu;
+                }
+            } else {
+                // Kapasitas sudah benar-benar habis, langsung masuk daftar tunggu
                 $item['jumlah_acc'] = 0;
                 $daftarTunggu[] = $item;
             }
 
-            // Hitung bahan baku HANYA untuk barang yang berhasil masuk ke Batch Aktif
+            // Hitung bahan baku menggunakan objek yang sudah di-load di awal (Tanpa query ulang!)
             if ($item['jumlah_acc'] > 0) {
-                $produkWithBom = Produk::with('bom.bahan_baku')->find($item['id']);
+                $produkWithBom = $item['produk_obj'];
                 if ($produkWithBom && $produkWithBom->bom) {
                     foreach ($produkWithBom->bom as $bom) {
                         $namaBahan = $bom->bahan_baku->nama;
@@ -334,7 +347,6 @@ class ProductionService
         }
 
         return [
-            // Dipastikan dibungkus collect() agar fungsi ->count() di Blade berjalan mulus
             'batchAktif'          => collect($batchAktif),
             'daftarTunggu'        => collect($daftarTunggu),
             'totalKebutuhanBahan' => collect($totalKebutuhanBahan)->map(fn($v) => round($v, 2))->toArray(),

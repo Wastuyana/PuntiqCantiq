@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class PenjualanPelangganController extends Controller
 {
+    protected $productionService;
+    public function __construct()
+    {
+        $this->productionService = app()->make('App\Services\ProductionService');
+    }
     
     public function index(Request $request)
     {
@@ -75,6 +80,7 @@ class PenjualanPelangganController extends Controller
                 ];
 
                 $produk->decrement('stok', $qty);
+                $this->productionService->cekStokKritis($produk);
             }
 
             if (empty($detail_items)) {

@@ -29,7 +29,7 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs" />
                 </div>
 
-                <div class="flex items-center justify-between mt-6">
+                {{-- <div class="flex items-center justify-between mt-6">
                     <div class="form-control">
                         <label class="label cursor-pointer gap-2 p-0">
                             <input type="checkbox" id="remember_me" name="remember"
@@ -43,7 +43,7 @@
                             {{ __('Forgot?') }}
                         </a>
                     @endif
-                </div>
+                </div> --}}
 
                 <div class="mt-8">
                     <button type="submit" class="btn btn-primary w-full tracking-widest uppercase">

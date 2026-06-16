@@ -37,6 +37,7 @@ use App\Http\Controllers\PenjualanPelangganController;
 use App\Http\Controllers\PenjualanPlgOwnerController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\SupplierOwnerController;
+use App\Http\Controllers\StandarProduksiController;
 use App\Models\Mitra;
 
 Route::get('/', function () {
@@ -74,25 +75,27 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::resource('owner/master/produk', ProdukController::class)->names('owner.master.produk');
 
     Route::resource('owner/master/panduan_kerja', PanduanKerjaController::class)
-        ->only(['index', 'store', 'destroy'])->names('owner.master.panduan');
-
-    Route::get('owner/master/standar_produksi', [PanduanKerjaController::class, 'standarProduksi'])
-        ->name('owner.master.standar_produksi');
+        ->names('owner.master.panduan');
 
     Route::post('/owner/master/produk/{id}/update-stok-minimal', [ProdukController::class, 'updateStokMinimal'])
         ->name('owner.produk.updateStokMinimal');
 
     Route::resource('owner/produksi/batch', BatchController::class)->names('owner.produksi.batch');
 
-    Route::get('owner/produksi/rekomendasi', [RekomendasiProdController::class, 'rekomendasiProduksi'])
-        ->name('owner.produksi.rekomendasi');
+    Route::resource('owner/produksi/rekomendasi', RekomendasiProdController::class)
+        ->only(['index', 'store'])->names('owner.produksi.rekomendasi');
 
-    Route::post('owner/produksi/rekomendasi', [RekomendasiProdController::class, 'storeKeBatch'])
-        ->name('owner.produksi.rekomendasi.keBatch');;
+    Route::get('owner/produksi/standar_produksi', [PanduanKerjaController::class, 'standarProduksi'])
+        ->name('owner.produksi.standar_produksi');
+
+    // Ganti Route::resource kamu dengan ini:
+    Route::get('/owner/produksi/standar_prod', [StandarProduksiController::class, 'edit'])->name('owner.produksi.standar_prod.edit');
+    Route::put('/owner/produksi/standar_prod', [StandarProduksiController::class, 'update'])->name('owner.produksi.standar_prod.update');
+    Route::post('/owner/produksi/standar-produksi', [StandarProduksiController::class, 'store'])->name('owner.produksi.standar_prod.store');
 
     Route::resource('/owner/inventory/bahan-baku', BahanBakuController::class)->names('owner.inventory.bahan_baku');
     Route::post('/owner/inventory/bahan-baku/{id}/hitung-ulang', [BahanBakuController::class, 'hitungUlang'])
-     ->name('owner.inventory.bahan_baku.hitung-ulang');
+        ->name('owner.inventory.bahan_baku.hitung-ulang');
     Route::resource('/owner/inventory/qc', QcController::class)->names('owner.inventory.qc');
     Route::get('/owner/laporan', [LaporanHppController::class, 'index'])->name('owner.laporan');
 
@@ -103,12 +106,12 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/owner/laporan/hpp', [LaporanHppController::class, 'index'])->name('owner.laporan.hpp');
     Route::get('/laporan-hpp/export-excel', [LaporanHppController::class, 'exportExcel'])->name('owner.laporan.hpp.excel');
     Route::get('/laporan-hpp/export-pdf', [LaporanHppController::class, 'exportPdf'])->name('owner.laporan.hpp.pdf');
-    
+
     Route::get('/owner/laporan/penjualan', [LaporanPenjualanController::class, 'index'])->name('owner.laporan.penjualan');
     Route::get('/owner/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('owner.laporan.penjualan.export');
     Route::get('/owner/laporan/pembelian', [LaporanPembelianController::class, 'index'])->name('owner.laporan.pembelian');
     Route::get('owner/laporan/pembelian/export-excel', [LaporanPembelianController::class, 'exportExcel'])->name('owner.laporan.pembelian.export.excel');
-    Route::get('owner/laporan/pembelian/export-pdf', [LaporanPembelianController::class, 'exportPdf'])->name('owner.laporan.pembelian.export.pdf');    
+    Route::get('owner/laporan/pembelian/export-pdf', [LaporanPembelianController::class, 'exportPdf'])->name('owner.laporan.pembelian.export.pdf');
     Route::resource('/owner/partner/supplier', SupplierOwnerController::class)->names('owner.partner.supplier');
     Route::resource('/owner/partner/mitra', MitraController::class)->names('owner.partner.mitra');
     Route::get('/owner/penjualan/pelanggan', [PenjualanPlgOwnerController::class, 'index'])->name('owner.penjualan.pelanggan.index');
@@ -138,10 +141,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('admin/produksi/penyesuaian/store', [PenyesuaianStokController::class, 'store'])
         ->name('admin.produksi.penyesuaian.store');
 
-    Route::get('admin/produksi/rekomendasi_prod', [AdminRekomendasiProdController::class, 'rekomendasiProduksi'])
-        ->name('admin.produksi.rekomendasi');
+    Route::get('admin/produksi/rekomendasi_prod', [AdminRekomendasiProdController::class, 'index'])
+        ->name('admin.produksi.rekomendasi.index');
 
-    Route::get('admin/produks/standar_prod', [StandarProdController::class, 'index'])
+    Route::get('admin/produksi/standar_prod', [StandarProdController::class, 'index'])
         ->name('admin.produksi.standar_produksi');
     Route::resource('/admin/penjualan/pelanggan', PenjualanPelangganController::class)->names('admin.penjualan.pelanggan');
     Route::resource('/admin/penjualan/mitra', PenjualanMitraController::class)->names('admin.penjualan.mitra');
