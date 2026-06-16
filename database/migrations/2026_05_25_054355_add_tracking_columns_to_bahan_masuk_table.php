@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('bahan_masuk', function (Blueprint $table) {
             $table->string('kode_pesanan')->after('id')->nullable();
             $table->string('proses_pemesanan')->default('di_pesan')->after('kode_pesanan');
-            $table->integer('jumlah_pesan')->after('kode_pesanan')->nullable();
+            $table->decimal('jumlah_pesan', 15,2)->after('kode_pesanan')->nullable();
 
         });
     }

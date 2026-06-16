@@ -88,8 +88,8 @@ class BahanBakuController extends Controller
             'satuan' => $request->satuan, 
             'harga_satuan' => $request->harga_satuan,
             'stok' => $request->stok,
-            'ss_bahan' => $request->ss_bahan,  
-            'rop_bahan' => $request->rop_bahan,
+            'ss_bahan' => $request->input('ss_bahan', $bb->ss_bahan), 
+            'rop_bahan' => $request->input('rop_bahan', $bb->rop_bahan),
             'harga_updated_at' => now(),
         ]);
 

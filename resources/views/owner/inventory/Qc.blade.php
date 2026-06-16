@@ -71,13 +71,13 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div class="form-control">
                                             <label class="label font-bold text-success">Kondisi Bagus</label>
-                                            <input type="number" name="jumlah_bagus" max="{{ $item->jumlah_total }}"
+                                            <input type="number" step="0.01" name="jumlah_bagus" max="{{ $item->jumlah_total }}"
                                                 class="input input-bordered border-success focus:ring-success"
                                                 placeholder="0" required>
                                         </div>
                                         <div class="form-control">
                                             <label class="label font-bold text-error">Kondisi Rusak</label>
-                                            <input type="number" name="jumlah_rusak"
+                                            <input type="number" step="0.01" name="jumlah_rusak"
                                                 class="input input-bordered border-error focus:ring-error"
                                                 placeholder="0" required>
                                         </div>

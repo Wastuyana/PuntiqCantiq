@@ -17,7 +17,7 @@
                             <form action="{{ route('admin.inventory.bahan_masuk.update', $p->id) }}" method="POST" class="flex gap-2">
                                 @csrf @method('PUT')
                                 <input type="date" name="tanggal_masuk" class="input input-bordered w-32" value="{{ date('Y-m-d') }}" required>
-                                <input type="number" name="jumlah_total" placeholder="Jumlah Datang" class="input input-bordered w-24" required>
+                                <input type="number" step="0.01" name="jumlah_total" placeholder="Jumlah Datang" class="input input-bordered w-24" required>
                                 <button class="btn btn-warning text-white">Catat</button>
                             </form>
                         </td>

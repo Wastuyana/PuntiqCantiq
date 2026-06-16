@@ -5,7 +5,7 @@
                 <h2 class="text-2xl font-bold text-gray-800">Master Bahan Baku</h2>
                 <p class="text-sm text-gray-500">Kelola stok, harga, dan titik pemesanan ulang (ROP)</p>
             </div>
-            <button onclick="modal_tambah.showModal()" class="btn btn-primary shadow-md">Tambah Bahan</button>
+            <button onclick="modal_tambah_bb.showModal()" class="btn btn-primary shadow-md">Tambah Bahan</button>
         </div>
 
         @if (session('success'))
@@ -35,7 +35,7 @@
                                     {{ $bb->harga_updated_at ? $bb->harga_updated_at->diffForHumans() : '-' }}
                                 </div>
                             </td>
-                            <td>{{ $bb->stok }} {{ $bb->satuan }}</td>
+                            <td>{{ $bb->stok + 0 }} {{ $bb->satuan }}</td>
                             <td>
                                 @if ($bb->stok <= $bb->ss_bahan)
                                     <span class="badge badge-error badge-sm badge-outline">Kritis</span>
@@ -45,15 +45,13 @@
                                     <span class="badge badge-success badge-sm badge-outline">Aman</span>
                                 @endif
                                 <div class="flex items-center gap-1.5 opacity-60 text-xs mt-1">
-                                    Min: {{ $bb->rop_bahan }}
+                                    Min: {{ $bb->rop_bahan + 0 }}
                                 </div>
                             </td>
                             <td class="flex justify-center gap-2">
-                                <form action="{{ route('owner.inventory.bahan_baku.hitung-ulang', $bb->id) }}"
-                                    method="POST">
+                                <form action="{{ route('owner.inventory.bahan_baku.hitung-ulang', $bb->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-square btn-outline btn-warning"
-                                        title="Hitung Ulang SS/ROP">↻</button>
+                                    <button type="submit" class="btn btn-sm btn-square btn-outline btn-warning" title="Hitung Ulang SS/ROP">↻</button>
                                 </form>
                                 
                                 <button type="button" onclick="edit_modal_{{ $bb->id }}.showModal()" class="btn btn-sm btn-square btn-outline btn-info">✎</button>
@@ -77,16 +75,16 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div class="form-control mb-3">
                                             <label class="label"><span class="label-text">Stok</span></label>
-                                            <input type="number" name="stok" value="{{ $bb->stok }}" class="input input-bordered w-full" required />
+                                            <input type="number" step="0.01" name="stok" value="{{ $bb->stok }}" class="input input-bordered w-full" required />
                                         </div>
                                         <div class="form-control mb-3">
-                                            <label class="label"><span class="label-text">Satuan (kg/pcs)</span></label>
+                                            <label class="label"><span class="label-text">Satuan</span></label>
                                             <input type="text" name="satuan" value="{{ $bb->satuan }}" class="input input-bordered w-full" required />
                                         </div>
                                     </div>
                                     <div class="form-control mb-3">
                                         <label class="label"><span class="label-text">Harga Satuan</span></label>
-                                        <input type="number" name="harga_satuan" value="{{ $bb->harga_satuan }}" class="input input-bordered w-full" required />
+                                        <input type="number" step="0.01" name="harga_satuan" value="{{ $bb->harga_satuan }}" class="input input-bordered w-full" required />
                                     </div>
                                     <div class="modal-action">
                                         <button type="button" class="btn btn-ghost" onclick="edit_modal_{{ $bb->id }}.close()">Batal</button>
@@ -96,58 +94,14 @@
                             </div>
                         </dialog>
                     @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-10 opacity-50">Belum ada data.</td>
-                        </tr>
+                        <tr><td colspan="6" class="text-center py-10 opacity-50">Belum ada data.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    @foreach ($bahanBakus as $bb)
-        <input type="checkbox" id="modal-edit-{{ $bb->id }}" class="modal-toggle" />
-        <div class="modal">
-            <div class="modal-box max-w-lg">
-                <h3 class="font-bold text-lg mb-4">Edit Bahan: {{ $bb->nama }}</h3>
-                <form action="{{ route('owner.inventory.bahan_baku.update', $bb->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="form-control mb-3">
-                        <label class="label"><span class="label-text">Nama Bahan Baku</span></label>
-                        <input type="text" name="nama" value="{{ $bb->nama }}"
-                            class="input input-bordered w-full" required />
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-3 mb-3">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Satuan</span></label>
-                            <input type="text" name="satuan" value="{{ $bb->satuan }}"
-                                class="input input-bordered w-full" required />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Stok</span></label>
-                            <input type="number" name="stok" value="{{ $bb->stok }}"
-                                class="input input-bordered w-full" required />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Harga Satuan</span></label>
-                            <input type="number" name="harga_satuan" value="{{ $bb->harga_satuan }}"
-                                class="input input-bordered w-full" required />
-                        </div>
-                    </div>
-
-                    <div class="modal-action">
-                        <label for="modal-edit-{{ $bb->id }}" class="btn btn-ghost">Batal</label>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endforeach
-    <input type="checkbox" id="modal-tambah-bb" class="modal-toggle" style="display: none !important;" />
-    <div class="modal">
+    <dialog id="modal_tambah_bb" class="modal">
         <div class="modal-box">
             <h3 class="font-bold text-lg mb-4">Tambah Bahan Baru</h3>
             <form action="{{ route('owner.inventory.bahan_baku.store') }}" method="POST">
@@ -159,28 +113,22 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="form-control mb-3">
                         <label class="label"><span class="label-text">Satuan</span></label>
-                        <input type="text" name="satuan" placeholder="kg/pcs"
-                            class="input input-bordered w-full" required />
+                        <input type="text" name="satuan" placeholder="kg/pcs" class="input input-bordered w-full" required />
                     </div>
                     <div class="form-control mb-3">
                         <label class="label"><span class="label-text">Stok</span></label>
-                        <input type="number" name="stok" class="input input-bordered w-full" required />
+                        <input type="number" step="0.01" name="stok" class="input input-bordered w-full" required />
                     </div>
                     <div class="form-control mb-3">
                         <label class="label"><span class="label-text">Harga</span></label>
-                        <input type="number" name="harga_satuan" class="input input-bordered w-full" required />
+                        <input type="number" step="0.01" name="harga_satuan" class="input input-bordered w-full" required />
                     </div>
                 </div>
                 <div class="modal-action">
-                    <button type="button" class="btn btn-ghost" onclick="modal_tambah.close()">Batal</button>
+                    <button type="button" class="btn btn-ghost" onclick="modal_tambah_bb.close()">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan Bahan</button>
                 </div>
             </form>
         </div>
-<<<<<<< HEAD
     </dialog>
 </x-app-layout>
-=======
-    </div>
-</x-app-layout>
->>>>>>> b162563622ca484fd7d8330bc010ccdbf5fa7cbe

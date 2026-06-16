@@ -17,39 +17,35 @@ class BahanMasukController extends Controller
 
         return view('admin.inventory.bahan_masuk', compact('pesananPending', 'bahanMasuk'));
     }
-    
     public function update(Request $request, $id)
     {
         $request->validate([
             'tanggal_masuk' => 'required|date',
-            'jumlah_total'  => 'required|numeric|min:1',
+            'jumlah_total'  => 'required|numeric',
         ]);
 
         $bm = BahanMasuk::findOrFail($id);
-
-        $hargaBeli = $bm->harga_beli; 
-
-        $hargaSatuan = $hargaBeli / $request->jumlah_total;
-
-        $bm->update([
-            'tanggal_masuk'    => $request->tanggal_masuk,
-            'jumlah_total'     => $request->jumlah_total,
-            'proses_pemesanan' => 'selesai_dicatat',
-            'status'           => 'pending'
-        ]);
-
         $bahan = BahanBaku::find($bm->bahan_baku_id);
-        if ($bahan) {
-            $bahan->increment('stok', $request->jumlah_total);
+
+        // Update Harga Satuan (Logic yang Anda inginkan)
+        if ($bahan && $request->jumlah_total > 0) {
+            $hargaSatuan = $bm->harga_beli / $request->jumlah_total;
             $bahan->update([
                 'harga_satuan'     => $hargaSatuan,
                 'harga_updated_at' => now()
             ]);
         }
 
-        return redirect()->back()->with('success', 'Barang dicatat, harga satuan otomatis terupdate!');
+        // Update data masuk
+        $bm->update([
+            'tanggal_masuk'    => $request->tanggal_masuk,
+            'jumlah_total'     => $request->jumlah_total,
+            'proses_pemesanan' => 'selesai_dicatat',
+            'status'           => $bm->status, 
+        ]);
+
+        return redirect()->back()->with('success', 'Barang diterima dan harga terupdate.');
     }
-        
     public function destroy($id)
     {
         BahanMasuk::findOrFail($id)->delete();

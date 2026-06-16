@@ -28,7 +28,7 @@ class PemesananController extends Controller
         $request->validate([
             'bahan_baku_id' => 'required|exists:bahan_baku,id',
             'supplier_id'   => 'required|exists:supplier,id',
-            'jumlah_pesan'  => 'required|numeric|min:1',
+            'jumlah_pesan'  => 'required|numeric',
             'harga_beli'    => 'required|numeric',
             'tanggal_pesan' => 'required|date',
         ]);

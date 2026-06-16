@@ -30,7 +30,7 @@
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold">Jumlah Pesan</span></label>
                             <div class="flex gap-2">
-                                <input type="number" name="jumlah_pesan" class="input input-bordered w-full" placeholder="0" required />
+                                <input type="number" step="0.01" name="jumlah_pesan" class="input input-bordered w-full" placeholder="0" required />
                                 <input type="text" id="satuan_text" class="input input-bordered w-20 bg-base-200" readonly placeholder="-" />
                             </div>
                         </div>
@@ -55,7 +55,6 @@
                 </form>
 
                 <script>
-                    // Data supplier yang sudah di-load dengan relasi bahanBaku
                     const suppliersData = @json($suppliers);
                     const bahanSelect = document.getElementById('bahan_select');
                     const supplierSelect = document.getElementById('supplier_select');
@@ -63,19 +62,15 @@
 
                     bahanSelect.addEventListener('change', function() {
                         const selectedOption = bahanSelect.options[bahanSelect.selectedIndex];
-                        const selectedBahanId = parseInt(selectedOption.value); // Menggunakan ID
+                        const selectedBahanId = parseInt(selectedOption.value); 
                         
-                        // Update Satuan
                         const satuan = selectedOption.getAttribute('data-satuan');
                         satuanText.value = satuan ? satuan : "";
 
-                        // FILTER SUPPLIER BERDASARKAN RELASI
                         const filteredSuppliers = suppliersData.filter(s => {
-                            // Cek apakah di dalam array bahanBaku milik supplier ada ID yang sama
                             return s.bahan_baku.some(bb => bb.id === selectedBahanId);
                         });
 
-                        // Update Dropdown Supplier
                         supplierSelect.innerHTML = '<option disabled selected>Pilih Supplier...</option>';
                         
                         if (filteredSuppliers.length > 0) {

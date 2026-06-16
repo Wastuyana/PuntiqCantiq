@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('qc_bahan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bahan_masuk_id')->constrained('bahan_masuk');
-            $table->integer('jumlah_bagus');
-            $table->integer('jumlah_rusak');
+            $table->decimal('jumlah_bagus', 15,2);
+            $table->decimal('jumlah_rusak', 15,2);
             $table->text('catatan')->nullable();
             $table->date('tanggal_qc');
             $table->timestamps();

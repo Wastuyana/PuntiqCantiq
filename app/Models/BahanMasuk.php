@@ -21,7 +21,9 @@ class BahanMasuk extends Model
         'status',
         'harga_satuan'
     ];
-
+    protected $attributes = [
+        'status' => 'pending',
+    ];
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
