@@ -192,7 +192,7 @@ class ProductionService
         $totalTerjualSebulan = $dataPenjualan->sum('total');
         $d = $totalTerjualSebulan / 30;
 
-        $dmax = $dataPenjualan->max('total');
+        $dmax = $dataPenjualan->sortByDesc('total')->take(3)->avg('total');
 
         $safetyStock = ($dmax - $d) * $leadTime;
         $batasMinimal = ($d * $leadTime) + $safetyStock;

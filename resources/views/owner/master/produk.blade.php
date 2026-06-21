@@ -72,7 +72,7 @@
 
                                 <td class="text-center">
                                     <div class="flex justify-center gap-2">
-                                        <form action="{{ route('owner.produk.updateStokMinimal', $produk->id) }}"
+                                        {{-- <form action="{{ route('owner.produk.updateStokMinimal', $produk->id) }}"
                                             method="POST">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-info btn-square btn-outline"
@@ -84,7 +84,7 @@
                                                         d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                                 </svg>
                                             </button>
-                                        </form>
+                                        </form> --}}
                                         <button class="btn btn-square btn-sm btn-outline btn-warning"
                                             onclick="modal_edit_{{ $produk->id }}.showModal()" title="Edit Produk">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"

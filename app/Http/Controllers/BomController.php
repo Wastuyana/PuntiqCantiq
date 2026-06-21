@@ -102,7 +102,10 @@ class BomController extends Controller
      */
     public function destroy(string $id)
     {
-        Bom::destroy($id);
-        return back()->with('success', 'Bahan berhasil dihapus!');
+        $item = Bom::findOrFail($id);
+        $namaBahan = $item->bahan_baku->nama;
+        $item->delete();
+                
+        return back()->with('success', $namaBahan . ' ' . 'berhasil dihapus!');
     }
 }

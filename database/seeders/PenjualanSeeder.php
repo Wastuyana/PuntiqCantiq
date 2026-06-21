@@ -145,8 +145,8 @@ class PenjualanSeeder extends Seeder
             ],
 
             6 => [
-                'total_target' => 90,
-                'tanggal_pilihan' => ['2026-05-04', '2026-05-6'],
+                'total_target' => 770,
+                'tanggal_pilihan' => ['2026-06-03', '2026-06-10', '2026-06-17', '2026-06-20'],
                 'produk_distribusi' => [
                     'PCR-OR' => 0.15,
                     'PCR-CK' => 0.18,
@@ -156,6 +156,17 @@ class PenjualanSeeder extends Seeder
                     'PCM-CK' => 0.05,
                     'PCM-MB' => 0.05,
                     'CBF-TPL' => 0.04,
+                    'CBF-BIG' => 0.02,
+                    'BP-OR500' => 0.02,
+                    'BP-CK500' => 0.02,
+                    'BP-MB500' => 0.02,
+                    'BP-GR500' => 0.02,
+                    'BP-TL500' => 0.02,
+                    'BP-OR250' => 0.03,
+                    'BP-CK250' => 0.03,
+                    'BP-MB250' => 0.03,
+                    'BP-GR250' => 0.02,
+                    'BP-TL250' => 0.02,
                     'BCJ-CK' => 0.03,
                     'BCJ-TR' => 0.02
                 ]
@@ -205,7 +216,7 @@ class PenjualanSeeder extends Seeder
                                 'updated_at'    => Carbon::parse($tanggal),
                             ]);
 
-                            if ($bulan === 5 && $bulan === 6) {
+                            if ($bulan === 6) {
                                 DB::table('produk')->where('id', $idProduk)->decrement('stok', $qtyProduk);
                             }
 
@@ -225,7 +236,7 @@ class PenjualanSeeder extends Seeder
         $metodePembayaran = ['cash', 'qris', 'cash'];
         $produkKodes = array_keys($produkMap);
 
-        for ($i = 1; $i <= 200; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             $tanggalAcak = "2026-" . sprintf("%02d", rand(2, 5)) . "-" . sprintf("%02d", rand(1, 28));
 
             $penjualanId = DB::table('penjualan')->insertGetId([

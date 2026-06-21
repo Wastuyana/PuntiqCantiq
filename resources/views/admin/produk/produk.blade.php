@@ -57,7 +57,7 @@
                                             <span class="badge badge-success badge-sm badge-outline">Aman</span>
                                         @endif
                                         <div class="flex items-center gap-1.5 opacity-60 text-xs mt-1">
-                                            Min: {{ $produk->ss_produk }}
+                                            Min: {{ $produk->rop_produk }}
                                         </div>
                                     </div>
                                 </td>
