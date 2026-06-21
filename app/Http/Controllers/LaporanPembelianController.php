@@ -12,14 +12,11 @@ class LaporanPembelianController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Ambil input tanggal, gunakan default jika kosong
         $startDate = $request->input('start_date', date('Y-m-01')); 
         $endDate = $request->input('end_date', date('Y-m-d'));
 
-        // 2. Ambil data berdasarkan filter
         $laporan = BahanMasuk::whereBetween('tanggal_masuk', [$startDate, $endDate])->get();
 
-        // 3. KIRIMKAN variabel ke view menggunakan compact()
         return view('owner.laporan_pembelian', compact('laporan', 'startDate', 'endDate'));
     }
 
@@ -38,7 +35,6 @@ class LaporanPembelianController extends Controller
         $start = $request->input('start_date', date('Y-m-01'));
         $end = $request->input('end_date', date('Y-m-d'));
 
-        // Kirim tanggal ke class Export
         return Excel::download(new \App\Exports\LaporanPembelianExport($start, $end), 'Laporan_Pembelian.xlsx');
     }
 }

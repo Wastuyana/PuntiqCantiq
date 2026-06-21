@@ -36,7 +36,7 @@ class PenjualanPelangganController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pelanggan_id'      => 'required|exists:pelanggan,id', // Menyesuaikan dengan nama tabel pelangan/pelanggan kamu
+            'pelanggan_id'      => 'required|exists:pelanggan,id', 
             'metode_pembayaran' => 'required|in:cash,transfer,qris',
             'produk_id'         => 'required|array',
             'jumlah_produk'     => 'required|array',
@@ -88,7 +88,7 @@ class PenjualanPelangganController extends Controller
             }
 
             $penjualan_id = DB::table('penjualan')->insertGetId([
-                'kode_penjualan'    => $kodePenjualan, // Kode disimpan di sini
+                'kode_penjualan'    => $kodePenjualan, 
                 'tanggal_penj'      => now(),
                 'total_prod'        => $total_qty,
                 'subtotal_harga'    => $total_harga,

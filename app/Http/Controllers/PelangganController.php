@@ -43,20 +43,16 @@ class PelangganController extends Controller
     }
     public function storeAjax(Request $request)
     {
-        // Tambahkan 'unique:pelanggan,nama_pelanggan' di sini
         $request->validate([
             'nama_pelanggan' => 'required|string|max:255|unique:pelanggan,nama_pelanggan',
             'no_hp'          => 'nullable|string|max:20',
         ], [
-            // Pesan khusus jika nama sudah ada
             'nama_pelanggan.unique' => 'Nama pelanggan "' . $request->nama_pelanggan . '" sudah terdaftar di database!',
         ]);
 
-        // LOGIKA GENERATE KODE PELANGGAN (sama seperti sebelumnya)
         $latest = \App\Models\Pelanggan::latest('id')->first();
         $kode_otomatis = !$latest ? 'PEL-0001' : 'PEL-' . str_pad((int)preg_replace("/[^0-9]/", "", $latest->kode_pelanggan) + 1, 4, '0', STR_PAD_LEFT);
 
-        // SIMPAN KE DATABASE
         \App\Models\Pelanggan::create([
             'nama_pelanggan' => $request->nama_pelanggan,
             'no_hp'          => $request->no_hp,
