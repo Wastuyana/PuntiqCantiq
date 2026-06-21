@@ -14,7 +14,7 @@ class SettingSeeder extends Seeder
     {
         \App\Models\Setting::create([
             'key' => 'kapasitas_produksi',
-            'value' => '300',
+            'value' => '400',
             'description' => 'Total kapasitas produksi per batch'
         ]);
 

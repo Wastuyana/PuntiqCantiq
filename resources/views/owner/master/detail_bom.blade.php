@@ -103,21 +103,35 @@
                                     Rp {{ number_format($subtotalAsli, 0, ',', '.') }}
                                 </td>
 
-                                {{-- Kolom aksi hapus tetap sama --}}
                                 <td class="text-center">
-                                    <form action="{{ route('owner.master.bom.destroy', $item->id) }}" method="POST">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-outline btn-error btn-xs btn-square"
-                                            onclick="return confirm('Hapus bahan ini?')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 18 18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </form>
+
+                                    <button class="btn btn-square btn-sm btn-outline btn-error"
+                                        onclick="modal_hapus_bom{{ $item->id }}.showModal()" title="Hapus Bom">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </td>
                             </tr>
+
+                            <dialog id="modal_hapus_bom{{ $item->id }}" class="modal">
+                                <div class="modal-box border-t-4 border-error">
+                                    <h3 class="font-bold text-lg text-error flex items-center gap-2">Konfirmasi Hapus
+                                    </h3>
+                                    <p class="py-4 text-sm">Hapus <strong>{{ $item->bahan_baku->nama }}</strong>?</p>
+                                    <div class="modal-action">
+                                        <form action="{{ route('owner.master.bom.destroy', $item->id) }}"
+                                            method="POST">
+                                            @csrf @method('DELETE')
+                                            <button type="button" class="btn btn-ghost"
+                                                onclick="this.closest('dialog').close()">Batal</button>
+                                            <button type="submit" class="btn btn-error text-white">Ya, Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </dialog>
                         @endforeach
 
                         {{-- Baris Tambah Bahan Tetap Sama --}}

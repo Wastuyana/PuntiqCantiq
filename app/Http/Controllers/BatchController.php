@@ -60,7 +60,6 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
-        // Hilangkan status 'selesai' dari validasi karena batch baru WAJIB berstatus 'draft'
         $request->validate([
             'produk_ids' => 'required|array',
             'hasil_target' => 'required|array',
@@ -70,12 +69,11 @@ class BatchController extends Controller
         return DB::transaction(function () use ($request) {
             $generatedNoBatch = $this->productionService->generateNoBatch();
 
-            // Buat data induk batch dengan nilai default 0 (Draft Perencanaan)
             $batch = Batch::create([
                 'nomor_batch'       => $generatedNoBatch,
                 'user_id'           => \Illuminate\Support\Facades\Auth::id(),
                 'tanggal_produksi'  => $request->tanggal_produksi,
-                'status'            => 'draft', // Dikunci langsung ke draft
+                'status'            => 'draft', 
                 'checklist_sop'     => 0,
                 'sop_details'       => null,
                 'biaya_tenagakerja' => 0,
@@ -91,7 +89,6 @@ class BatchController extends Controller
 
                 $produk = Produk::with('bom.bahan_baku')->findOrFail($produkId);
 
-                // Buat draft rencana hasil produksi
                 $batch->batch_hasil()->create([
                     'produk_id'                => $produkId,
                     'hasil_target'             => $target,
@@ -103,20 +100,17 @@ class BatchController extends Controller
                 ]);
 
                 foreach ($produk->bom as $item) {
-                    $jumlahBoM = $item->jumlah_kebutuhan; // Ini masih skala kecil (gram/ml) dari tabel BoM
+                    $jumlahBoM = $item->jumlah_kebutuhan; 
                     $satuanMaster = strtolower($item->bahan_baku->satuan);
 
-                    // 🌟 SINKRONISASI LOGIKA: Bagi 1000 jika satuannya adalah KG atau LITER 🌟
                     if (in_array($satuanMaster, ['kg', 'liter', 'l'])) {
-                        $jumlahKebutuhanKonversi = $jumlahBoM / 1000; // Mengubah gram ke kg, atau ml ke liter
+                        $jumlahKebutuhanKonversi = $jumlahBoM / 1000; 
                     } else {
                         $jumlahKebutuhanKonversi = $jumlahBoM;
                     }
 
-                    // Hitung total kebutuhan bahan baku berdasarkan target jumlah produksi
                     $totalButuh = $jumlahKebutuhanKonversi * $target;
 
-                    // Simpan atau akumulasikan ke tabel batch_bahan
                     $batchBahan = $batch->batch_bahan()->firstOrNew([
                         'bahan_baku_id' => $item->bahan_baku_id
                     ]);

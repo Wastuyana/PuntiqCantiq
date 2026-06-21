@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             BatchProduksiSeeder::class,
             SupplierSeeder::class,
             BahanMasukSeeder::class,
+            FasilitasCheckSeeder::class,
         ]);
     }
 }
