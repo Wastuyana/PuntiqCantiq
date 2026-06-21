@@ -10,12 +10,10 @@ class BahanMasukSeeder extends Seeder
 {
     public function run()
     {
-        // SET FOREIGN KEY CHECKS OFF & TRUNCATE AGAR DATA BERSIH SAAT RE-SEED
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('bahan_masuk')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // 31 DATA BAHAN BAKU DISESUAIKAN 100% SAMA DENGAN BAHANBAKUSEEDER
         $bahanData = [
             // --- BAHAN UTAMA & UTILITY ---
             ['nama' => 'Pisang', 'lead_time' => 1, 'min_order' => 100, 'max_order' => 500],
@@ -32,7 +30,6 @@ class BahanMasukSeeder extends Seeder
             ['nama' => 'Bumbu Garlic non msg', 'lead_time' => 7, 'min_order' => 20, 'max_order' => 50],
             ['nama' => 'Bumbu Taliwang', 'lead_time' => 7, 'min_order' => 20, 'max_order' => 50],
 
-            // --- KEMASAN SEGMENTED ---
             // Kemasan PCR Series
             ['nama' => 'Kemasan PCR Coklat', 'lead_time' => 14, 'min_order' => 200, 'max_order' => 1000],
             ['nama' => 'Kemasan PCR Milky', 'lead_time' => 14, 'min_order' => 200, 'max_order' => 1000],
@@ -71,17 +68,13 @@ class BahanMasukSeeder extends Seeder
             $supplier = DB::table('supplier')->inRandomOrder()->first();
 
             if ($bahan && $supplier) {
-                // Biarkan perulangan membuat tanggal acak
                 for ($i = 0; $i < 5; $i++) {
 
-                    // Contoh jika kamu menggunakan range hari acak (misal rand(15, 90)) seperti kode awalmu:
                     $tanggalPesan = Carbon::now()->subDays(rand(15, 90));
                     $jumlah = rand($data['min_order'], $data['max_order']);
 
-                    // PANDUAN UTAMA: Ambil bulan dari tanggal_pesan
                     $bulanPesanan = Carbon::parse($tanggalPesan)->month;
 
-                    // Penerapan LOGIC IF seperti di seeder batch: Hanya proses jika bulannya adalah Mei (5)
                     if ($bulanPesanan === 5) {
 
                         DB::table('bahan_masuk')->insert([
@@ -99,7 +92,6 @@ class BahanMasukSeeder extends Seeder
                             'updated_at'       => $tanggalPesan,
                         ]);
 
-                        // Increment stok master juga ikut dikurung di dalam IF agar sinkron dengan transaksi masuk
                         DB::table('bahan_baku')->where('id', $bahan->id)->increment('stok', $jumlah);
                     }
                 }

@@ -21,6 +21,10 @@ class BahanBaku extends Model
         'harga_updated_at'
     ];
 
+    protected $casts = [
+        'harga_updated_at' => 'datetime',
+    ];
+
     public function bom(): HasMany
     {
         return $this->hasMany(Bom::class, 'bahan_baku_id');
@@ -34,5 +38,9 @@ class BahanBaku extends Model
     public function bahan_masuks(): HasMany
     {
         return $this->hasMany(BahanMasuk::class, 'bahan_baku_id');
+    }
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'bahan_baku_supplier', 'bahan_baku_id', 'supplier_id');
     }
 }

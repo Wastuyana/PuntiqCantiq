@@ -1,6 +1,5 @@
 <x-app-layout>
     <div class="p-6 space-y-6">
-        <!-- Header -->
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800">Quality Control Bahan</h2>
@@ -31,7 +30,6 @@
                 </button>
             </div>
 
-            <!-- ISI TAB 1: ANTRIAN -->
             <div x-show="tab === 'antrian'" x-transition>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($waitingList as $item)
@@ -62,7 +60,6 @@
                             </div>
                         </div>
 
-                        <!-- MODAL (DaisyUI Native Dialog - NO CHECKBOX) -->
                         <dialog id="modal_qc_{{ $item->bahan_masuk_id }}" class="modal modal-bottom sm:modal-middle">
                             <div class="modal-box border-t-8 border-warning">
                                 <h3 class="font-bold text-xl">Cek Kondisi: {{ $item->bahan_baku->nama }}</h3>
@@ -74,13 +71,13 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div class="form-control">
                                             <label class="label font-bold text-success">Kondisi Bagus</label>
-                                            <input type="number" name="jumlah_bagus" max="{{ $item->jumlah_total }}"
+                                            <input type="number" step="0.01" name="jumlah_bagus" max="{{ $item->jumlah_total }}"
                                                 class="input input-bordered border-success focus:ring-success"
                                                 placeholder="0" required>
                                         </div>
                                         <div class="form-control">
                                             <label class="label font-bold text-error">Kondisi Rusak</label>
-                                            <input type="number" name="jumlah_rusak"
+                                            <input type="number" step="0.01" name="jumlah_rusak"
                                                 class="input input-bordered border-error focus:ring-error"
                                                 placeholder="0" required>
                                         </div>

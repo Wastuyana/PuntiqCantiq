@@ -8,7 +8,7 @@
         <div class="flex p-1 bg-base-200 rounded-lg w-fit mb-6">
             <button @click="tab = 'hutang'; window.history.pushState({}, '', '?tab=hutang')" 
                     :class="tab === 'hutang' ? 'bg-warning text-white' : ''" 
-                    class="px-6 py-2 rounded-md font-bold text-sm">Hutang Aktif</button>
+                    class="px-6 py-2 rounded-md font-bold text-sm">Piutang Aktif</button>
             <button @click="tab = 'lunas'; window.history.pushState({}, '', '?tab=lunas')" 
                     :class="tab === 'lunas' ? 'bg-success text-white' : ''" 
                     class="px-6 py-2 rounded-md font-bold text-sm">Riwayat Lunas</button>
@@ -34,7 +34,7 @@
                         <td><button onclick="document.getElementById('modal_lunas_{{ $row->id }}').showModal()" class="btn btn-xs btn-warning">DETAIL</button></td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="text-center py-4 italic">Tidak ada hutang aktif.</td></tr>
+                    <tr><td colspan="6" class="text-center py-4 italic">Tidak ada Piutang aktif.</td></tr>
                     @endforelse
                 </tbody>
             </table>

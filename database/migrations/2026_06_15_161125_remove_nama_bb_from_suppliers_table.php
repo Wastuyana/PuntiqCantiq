@@ -9,10 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up() 
     {
-        Schema::table('bahan_masuk', function (Blueprint $table) {
-            $table->decimal('jumlah_total', 15,2)->nullable()->change();
+        Schema::table('supplier', function (Blueprint $table) {
+            $table->dropColumn('nama_bb');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('bahan_masuk', function (Blueprint $table) {
+        Schema::table('suppliers', function (Blueprint $table) {
             //
         });
     }

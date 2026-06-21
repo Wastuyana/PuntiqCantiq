@@ -97,36 +97,32 @@
                         <table class="table table-compact w-full text-xs">
                             <thead>
                                 <tr class="bg-base-300">
-                                    <th>Kode Penjualan</th>
-                                    <th>Nama Produk / Varian</th>
-                                    <th class="text-center">Qty Beli</th>
-                                    <th class="text-right">Harga Satuan</th>
+                                    <th>Produk</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-right">Harga Asli</th>
+                                    <th class="text-right text-error">Potongan (10%)</th>
                                     <th class="text-right">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if($row->detail_penjualan)
-                                    @foreach($row->detail_penjualan as $detail)
-                                    <tr>
-                                        <td class="font-semibold text-gray-800">
-                                            {{ $detail->penjualan->kode_penjualan ?? '' }}
-                                        </td>
-                                        <td class="font-semibold text-gray-800">
-                                            {{ $detail->produk->kategori ?? 'Produk' }} - {{ $detail->produk->varian ?? 'Terhapus' }}
-                                        </td>
-                                        <td class="text-center font-bold">{{ $detail->jumlah_produk }} pcs</td>
-                                        <td class="text-right">
-                                            Rp {{ number_format($detail->produk->harga_jual ?? 0, 0, ',', '.') }}
-                                        </td>
-                                        <td class="text-right font-bold text-amber-600">
-                                            Rp {{ number_format($detail->total_harga, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                @endif
+                                @foreach($row->detail_penjualan as $detail)
+                                @php
+                                    $harga_bersih = $detail->total_harga;
+                                    $harga_asli = $harga_bersih / 0.9;
+                                    $nominal_diskon = $harga_asli * 0.10;
+                                @endphp
+                                <tr>
+                                    <td>{{ $detail->produk->kategori }} - {{ $detail->produk->varian }}</td>
+                                    <td class="text-center font-bold">{{ $detail->jumlah_produk }}</td>
+                                    <td class="text-right">Rp {{ number_format($harga_asli, 0, ',', '.') }}</td>
+                                    <td class="text-right text-error">- Rp {{ number_format($nominal_diskon, 0, ',', '.') }}</td>
+                                    <td class="text-right font-bold text-amber-600">Rp {{ number_format($harga_bersih, 0, ',', '.') }}</td>
+                                </tr>
+                                @endforeach
+                                
                                 <tr class="bg-base-200 font-bold text-sm">
-                                    <td colspan="3" class="text-right">TOTAL BELANJA:</td>
-                                    <td colspan="3" class="text-right text-warning">
+                                    <td colspan="4" class="text-right">TOTAL BAYAR (SETELAH DISKON):</td>
+                                    <td class="text-right text-warning">
                                         Rp {{ number_format($row->subtotal_harga, 0, ',', '.') }}
                                     </td>
                                 </tr>

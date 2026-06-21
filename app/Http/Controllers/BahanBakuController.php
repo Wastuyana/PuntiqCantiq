@@ -10,7 +10,6 @@ class BahanBakuController extends Controller
 {
     protected $prodService;
 
-    // Inject Service agar bisa dipakai di method manapun
     public function __construct(ProductionService $prodService)
     {
         $this->prodService = $prodService;
@@ -22,7 +21,6 @@ class BahanBakuController extends Controller
         return view('owner.inventory.bahan_baku', compact('bahanBakus'));
     }
 
-    // Aksi untuk hitung ulang SS & ROP secara otomatis berdasarkan data produksi
     public function hitungUlang($id)
     {
         $bb = BahanBaku::findOrFail($id);
@@ -75,8 +73,8 @@ class BahanBakuController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nama' => 'required|max:250|unique:bahan_baku,nama,' . $id . ',id',
-            'satuan' => 'required',
+            'nama' => 'required|max:250|unique:bahan_baku,nama,' . $id, 
+            'satuan' => 'required', 
             'harga_satuan' => 'required|numeric',
             'stok' => 'required|numeric',
             'ss_bahan' => 'nullable|numeric', 
@@ -87,15 +85,15 @@ class BahanBakuController extends Controller
 
         $bb->update([
             'nama' => $request->nama,
-            'satuan' => $request->satuan,
+            'satuan' => $request->satuan, 
             'harga_satuan' => $request->harga_satuan,
             'stok' => $request->stok,
-            'ss_bahan' => $request->ss_bahan,  
-            'rop_bahan' => $request->rop_bahan,
+            'ss_bahan' => $request->input('ss_bahan', $bb->ss_bahan), 
+            'rop_bahan' => $request->input('rop_bahan', $bb->rop_bahan),
             'harga_updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Data bahan baku & parameter stok berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Data berhasil diperbarui!');
     }
 
     public function destroy(string $id)

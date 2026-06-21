@@ -49,15 +49,12 @@ class LaporanPenjualanController extends Controller
             })
             ->get();
 
-        // 1. Logika Ekspor Excel
         if ($request->format == 'excel') {
             return Excel::download(new PenjualanExport($data), 'Laporan_Penjualan_' . $dari . '_sd_' . $sampai . '.xlsx');
         }
 
-        // 2. Logika Ekspor PDF
         if ($request->format == 'pdf') {
             try {
-                // Memastikan tidak ada output yang tersisa di buffer
                 if (ob_get_contents()) ob_end_clean();
 
                 $pdf = Pdf::loadView('owner.laporan.pdf_penjualan', compact('data', 'dari', 'sampai'));

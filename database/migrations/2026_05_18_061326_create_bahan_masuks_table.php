@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained('supplier');
             $table->foreignId('bahan_baku_id')->constrained('bahan_baku');
             $table->date('tanggal_masuk');
-            $table->integer('jumlah_total');
+            $table->decimal('jumlah_total', 15,2);
             $table->decimal('harga_beli', 12, 2);
             $table->enum('status', ['pending', 'completed'])->default('pending');
             $table->timestamps();
