@@ -68,9 +68,10 @@ class BahanMasukSeeder extends Seeder
             $supplier = DB::table('supplier')->inRandomOrder()->first();
 
             if ($bahan && $supplier) {
-                for ($i = 0; $i < 5; $i++) {
+                for ($i = 0; $i < 3; $i++) {
 
-                    $tanggalPesan = Carbon::now()->subDays(rand(15, 90));
+                    $day = rand(1, 28); 
+                    $tanggalPesan = Carbon::create(2026, 5, $day); 
                     $jumlah = rand($data['min_order'], $data['max_order']);
 
                     $bulanPesanan = Carbon::parse($tanggalPesan)->month;

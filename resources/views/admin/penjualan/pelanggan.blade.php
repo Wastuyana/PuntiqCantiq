@@ -20,7 +20,7 @@
             @csrf
 
             <div class="card bg-base-100 border shadow-sm p-5 space-y-4 h-fit">
-                <h3 class="font-bold text-base border-b pb-2 text-warning">🛒 Detail Kasir</h3>
+                <h3 class="font-bold text-base border-b pb-2 text-warning">Detail Kasir</h3>
                 
                 <div class="form-control">
                     <label class="label-text font-semibold mb-1 text-xs">Nama Pelanggan</label>

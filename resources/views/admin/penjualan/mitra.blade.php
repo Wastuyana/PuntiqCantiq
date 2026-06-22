@@ -20,7 +20,7 @@
             @csrf
 
             <div class="card bg-base-100 border shadow-sm p-5 space-y-4 h-fit">
-                <h3 class="font-bold text-base border-b pb-2 text-warning">🛒 Detail Kasir</h3>
+                <h3 class="font-bold text-base border-b pb-2 text-warning">Detail Kasir</h3>
                 
                 <div class="form-control">
                     <label class="label-text font-semibold mb-1 text-xs">Nama Mitra</label>
@@ -152,7 +152,7 @@
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-4 text-xs bg-base-200 p-3 rounded-lg">
                     <div><strong>Mitra:</strong> {{ $row->mitra->nama_mitra ?? 'Umum' }} ({{ $row->mitra->kode_mitra ?? '-' }})</div>
-                    <div><strong>Waktu Transaksi:</strong> {{ \Carbon\Carbon::parse($row->tanggal_penj)->translatedFormat('d F Y, H:i') }}</div>
+                    <div><strong>Waktu Transaksi:</strong> {{ \Carbon\Carbon::parse($row->tanggal_penj)->translatedFormat('d F Y') }}</div>
                     
                     <div>
                         <strong>Metode Bayar:</strong> 
