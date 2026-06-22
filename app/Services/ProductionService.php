@@ -385,11 +385,9 @@ class ProductionService
             ->get();
 
         if ($dataPemakaian->isEmpty()) return false;
-
-        if ($dataPemakaian->isEmpty()) return false;
-
-        $d = $dataPemakaian->avg('total');
-        $dmax = $dataPemakaian->max('total');
+        
+        $d = $dataPemakaian->avg('total');      
+        $dmax = $dataPemakaian->max('total');   
         $safetyStock = ($dmax - $d) * $avgLeadTime;
         $rop = ($d * $avgLeadTime) + $safetyStock;
 

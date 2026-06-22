@@ -27,7 +27,6 @@ class BahanMasukController extends Controller
         $bm = BahanMasuk::findOrFail($id);
         $bahan = BahanBaku::find($bm->bahan_baku_id);
 
-        // Update Harga Satuan (Logic yang Anda inginkan)
         if ($bahan && $request->jumlah_total > 0) {
             $hargaSatuan = $bm->harga_beli / $request->jumlah_total;
             $bahan->update([
@@ -36,7 +35,6 @@ class BahanMasukController extends Controller
             ]);
         }
 
-        // Update data masuk
         $bm->update([
             'tanggal_masuk'    => $request->tanggal_masuk,
             'jumlah_total'     => $request->jumlah_total,

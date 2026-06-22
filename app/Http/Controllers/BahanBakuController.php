@@ -29,7 +29,6 @@ class BahanBakuController extends Controller
         if ($result === false) {
             return redirect()->back()->with('error', 'Gagal: Data produksi 30 hari terakhir untuk bahan ini belum tersedia.');
         }
-
         return redirect()->back()->with('success', "SS & ROP {$bb->nama} berhasil dihitung ulang!");
     }
 
@@ -62,8 +61,8 @@ class BahanBakuController extends Controller
             'satuan' => $request->satuan,
             'harga_satuan' => $request->harga_satuan,
             'stok' => $request->stok,
-            'ss_bahan' => 0, // Default awal
-            'rop_bahan' => 0,          // Default awal
+            'ss_bahan' => 0, 
+            'rop_bahan' => 0,          
             'harga_updated_at' => now(),
         ]);
 
