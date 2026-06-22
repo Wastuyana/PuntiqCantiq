@@ -19,7 +19,7 @@
                 $table->foreignId('bahan_baku_id')
                     ->constrained('bahan_baku')
                     ->onDelete('cascade');
-                $table->decimal('jumlah_kebutuhan', 10, 2);
+                $table->decimal('jumlah_kebutuhan', 10, 3);
                 $table->timestamps();
             });
         }

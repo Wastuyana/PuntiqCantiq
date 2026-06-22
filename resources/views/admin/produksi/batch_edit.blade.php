@@ -86,7 +86,7 @@
                                             </span>
                                         </div>
                                         <div class="flex items-center gap-3">
-                                            <input type="number" step="0.01"
+                                            <input type="number" step="0.001"
                                                 name="bahan_aktual[{{ $bahan->id }}]"
                                                 value="{{ $bahan->bahan_target }}"
                                                 class="input input-bordered input-sm w-28 font-bold text-right focus:input-primary">

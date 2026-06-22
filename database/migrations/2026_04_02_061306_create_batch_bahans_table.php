@@ -18,8 +18,8 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('bahan_baku_id')
                 ->constrained('bahan_baku');
-            $table->decimal('bahan_target', 15, 2);
-            $table->decimal('bahan_aktual', 15, 2)->default(0);
+            $table->decimal('bahan_target', 10, 3);
+            $table->decimal('bahan_aktual', 10, 3)->default(0);
             $table->timestamps();
         });
     }

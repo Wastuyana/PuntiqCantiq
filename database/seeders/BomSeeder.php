@@ -188,5 +188,51 @@ class BomSeeder extends Seeder
             $bom['updated_at'] = now();
             DB::table('bom')->insert($bom);
         }
+
+        $produkIds = array_unique(array_column($boms, 'produk_id'));
+
+        foreach ($produkIds as $produkId) {
+            // Ambil semua item BoM milik produk saat ini beserta detail bahan bakunya
+            $bomItems = DB::table('bom')
+                ->join('bahan_baku', 'bom.bahan_baku_id', '=', 'bahan_baku.id')
+                ->where('bom.produk_id', $produkId)
+                ->select('bom.jumlah_kebutuhan', 'bahan_baku.satuan', 'bahan_baku.harga_satuan')
+                ->get();
+
+            $totalBahan = 0;
+
+            // Loop tiap bahan baku untuk menghitung total biaya bahan (termasuk konversi)
+            foreach ($bomItems as $item) {
+                $jumlahBoM = $item->jumlah_kebutuhan;
+                $satuanMaster = strtolower($item->satuan);
+                $hargaMaster = $item->harga_satuan;
+
+                // Logika konversi satuan persis seperti rumusmu
+                if (in_array($satuanMaster, ['kg', 'liter', 'l'])) {
+                    $jumlahKebutuhanKonversi = $jumlahBoM / 1000;
+                } else {
+                    $jumlahKebutuhanKonversi = $jumlahBoM;
+                }
+
+                $totalBahan += ($jumlahKebutuhanKonversi * $hargaMaster);
+            }
+
+            // Ambil data produk untuk mendapatkan nilai tenaga kerja dan overhead
+            $produk = DB::table('produk')->where('id', $produkId)->first();
+
+            if ($produk) {
+                // Logika perhitungan overhead berbasis persen (Contoh: 10 / 100)
+                $overhead = ($totalBahan + $produk->est_biaya_tenaga) * ($produk->est_biaya_overhead / 100);
+
+                // Total akhir HPP Standar
+                $totalHpp = $totalBahan + $overhead + $produk->est_biaya_tenaga;
+
+                // Update otomatis kolom hpp_standar di tabel produk
+                DB::table('produk')->where('id', $produkId)->update([
+                    'hpp_standar' => $totalHpp,
+                    'updated_at'  => now()
+                ]);
+            }
+        }
     }
 }

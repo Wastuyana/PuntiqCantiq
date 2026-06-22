@@ -30,7 +30,7 @@ class ProductionService
 
             return $jumlahKebutuhanKonversi * $hargaMaster;
         });
-        $overhead = $totalBahan * ($produk->est_biaya_overhead / 100);
+        $overhead = ($totalBahan + $produk->est_biaya_tenaga) * ($produk->est_biaya_overhead / 100);
         $totalHpp = $totalBahan + $overhead + $produk->est_biaya_tenaga;
 
         return $totalHpp;
@@ -252,15 +252,24 @@ class ProductionService
      */
     public function getRekomendasiProduksi()
     {
-        $tInterval = Setting::where('key', 't_interval')->value('value') ?? 7;
-        $kapasitasMax = Setting::where('key', 'kapasitas_produksi')->value('value') ?? 100;
+        $tInterval = Setting::where('key', 't_interval')->value('value');
+        $kapasitasMax = Setting::where('key', 'kapasitas_produksi')->value('value');
 
         // Perbaikan Performa: Ambil produk SEKALIGUS dengan relasi BoM di awal (Eager Loading)
         $produks = Produk::with('bom.bahan_baku')->get();
         $daftarRekomendasi = [];
 
         foreach ($produks as $p) {
-            $dAvg = $this->getDailyAverageSales($p, 30);
+            $dataPenjualan = \App\Models\DetailPenjualan::where('produk_id', $p->id)
+                ->whereHas('penjualan', function ($q) {
+                    $q->where('tanggal_penj', '>=', now()->subDays(30));
+                })
+                ->join('penjualan', 'detail_penjualan.penjualan_id', '=', 'penjualan.id')
+                ->selectRaw('DATE(penjualan.tanggal_penj) as tanggal, SUM(detail_penjualan.jumlah_produk) as total')
+                ->groupBy('tanggal')
+                ->get();
+            $totalTerjualSebulan = $dataPenjualan->sum('total');
+            $dAvg = $totalTerjualSebulan / 30;
             $rop = $p->rop_produk;
 
             // 1. Filter: Hanya ambil produk di bawah ROP
@@ -370,7 +379,7 @@ class ProductionService
 
         $dataPemakaian = \App\Models\BatchBahan::join('batch', 'batch_bahan.batch_id', '=', 'batch.id')
             ->where('batch_bahan.bahan_baku_id', $bahanBaku->id)
-            ->where('batch.tanggal_produksi', '>=', now()->subDays(30)) 
+            ->where('batch.tanggal_produksi', '>=', now()->subDays(30))
             ->selectRaw('DATE(batch.tanggal_produksi) as tanggal, SUM(batch_bahan.bahan_aktual) as total')
             ->groupBy('tanggal')
             ->get();
@@ -379,8 +388,8 @@ class ProductionService
 
         if ($dataPemakaian->isEmpty()) return false;
 
-        $d = $dataPemakaian->avg('total');      
-        $dmax = $dataPemakaian->max('total');   
+        $d = $dataPemakaian->avg('total');
+        $dmax = $dataPemakaian->max('total');
         $safetyStock = ($dmax - $d) * $avgLeadTime;
         $rop = ($d * $avgLeadTime) + $safetyStock;
 

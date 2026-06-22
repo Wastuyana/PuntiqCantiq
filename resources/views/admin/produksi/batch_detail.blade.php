@@ -75,7 +75,7 @@
                                     <td>
                                         <span
                                             class="badge {{ $bahan->bahan_aktual > $bahan->bahan_target ? 'badge-error' : 'badge-ghost' }}">
-                                            {{ number_format($bahan->bahan_aktual, 2) }}
+                                            {{ number_format($bahan->bahan_aktual, 3, '.', '') }}
                                             {{ $bahan->bahan_baku->satuan }}
                                         </span>
                                     </td>
